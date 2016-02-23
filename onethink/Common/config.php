@@ -36,14 +36,6 @@ return array(
     /* 全局过滤配置 */
     'DEFAULT_FILTER' => 'strip_tags,htmlspecialchars', //全局过滤函数
 
-    /* 正式环境数据库配置 */
-//     'DB_TYPE'   => 'mysql', // 数据库类型
-//     'DB_HOST'   => '115.29.7.155', // 服务器地址
-//     'DB_NAME'   => 'aladdin', // 数据库名
-//     'DB_USER'   => 'mtuser', // 用户名
-//     'DB_PWD'    => 'mtuser',  // 密码
-//     'DB_PORT'   => '3306', // 端口
-//     'DB_PREFIX' => 't_', // 数据库表前缀
     
     /* 本地数据库配置 */
     'DB_TYPE'   => 'mysql', // 数据库类型
