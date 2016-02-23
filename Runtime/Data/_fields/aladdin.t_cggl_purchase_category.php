@@ -1,1 +1,0 @@
-a:9:{i:0;s:2:"id";i:1;s:8:"category";i:2;s:4:"name";i:3;s:11:"description";i:4;s:9:"parent_id";i:5;s:6:"status";i:6;s:4:"type";s:3:"_pk";s:2:"id";s:5:"_type";a:7:{s:2:"id";s:7:"int(11)";s:8:"category";s:11:"varchar(45)";s:4:"name";s:11:"varchar(45)";s:11:"description";s:12:"varchar(100)";s:9:"parent_id";s:7:"int(11)";s:6:"status";s:10:"varchar(3)";s:4:"type";s:11:"varchar(45)";}}
