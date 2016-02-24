@@ -1,18 +1,13 @@
 <?php
 // +----------------------------------------------------------------------
-// | OneThink [ WE CAN DO IT JUST THINK IT ]
+// | Date:2016年2月23日
 // +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
+// | Author: EK_熊<1439527494@qq.com>
 // +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
+// | Description: 订单控制器
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-
-/**
- * 订单控制器
- * @author 麦当苗儿 <glghan@sina.com>
- */
 
 class BookController extends AdminController {
 	
@@ -33,13 +28,48 @@ class BookController extends AdminController {
      * date:2016年2月23日
      * author: EK_熊
      */
-	public function shezhi(){
+	public function config(){
+	    $label = 'book_cfg';
 	    
 	    if ($_POST){
-	        
+	       $configAry = array(
+	           'auto_rece_time' => I('post.auto_rece_time'),
+	           'auto_close_time' => I('post.auto_close_time'),
+	           'return_condi' => I('post.return_condi'),
+	           'return_time' => I('post.return_time'),
+	           'exchange_condi' => I('post.exchange_condi'),
+	           'exchange_time' => I('post.exchange_time'),
+	           'commission_rate'=>I('post.commission_rate')
+	       ); 
+	       $setRet = set_config_common($label,$configAry);
+	       if ($setRet) {
+	           $this->success('保存成功！',U(''));
+	       }
 	    }
 	    
+	    /*订单自动关闭时间 选项*/
+	    $type['auto_close_time'] = array(
+	        '1小时' =>switchToSecond('hour',1),
+	        '1天' =>switchToSecond('day',1),
+	        '3天' =>switchToSecond('day',3),
+	        '7天' =>switchToSecond('day',7),
+	        '30天' =>switchToSecond('day',30),
+	        '永不关闭' =>'no',
+	    );
+	    /*自动收货时间 选项*/
+	    $type['auto_rece_time'] = array(
+	        '3天' =>switchToSecond('day',3),
+	        '5天' =>switchToSecond('day',5),
+	        '7天' =>switchToSecond('day',7),
+	        '15天' =>switchToSecond('day',15),
+	        '30天' =>switchToSecond('day',30),
+	    );
+	    $condi = C('STU_BOOK');
+	    $bookCfg = get_config_common($label);
 	    $this->meta_title = '订单设置';
+	    $this->assign('bookCfg',$bookCfg);
+	    $this->assign('type',$type);
+	    $this->assign('condi',$condi);
 	    $this->display();
 	}
 	

@@ -51,4 +51,9 @@ return array(
 
     //模板后辍设置为php
     'TMPL_TEMPLATE_SUFFIX'=>'.php',
+    
+    /* 加载拓展方法库 */
+    'LOAD_EXT_FILE'=>'function_ek',
+    /* 加载拓展配置 */
+    'LOAD_EXT_CONFIG'=>'status'
 );
