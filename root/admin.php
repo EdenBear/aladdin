@@ -39,6 +39,12 @@ define('CUSTOM_CONF_PATH',      ROOT_PATH.DS.'onethink/');
 // define('CUSTOM_CONF_PATH',      '/mnt/hgfs/tubahu/onethink/');
 
 /**
+ * 定义情景配置
+ * 正式环境：db_server; 本地开发环境db_local
+ */
+define('APP_STATUS','db_local');
+
+/**
  * 引入核心入口
  * ThinkPHP亦可移动到WEB以外的目录
  */
