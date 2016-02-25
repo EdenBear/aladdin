@@ -1,95 +1,39 @@
 <?php
 // +----------------------------------------------------------------------
-// | OneThink [ WE CAN DO IT JUST THINK IT ]
+// | Date:2016年2月25日
 // +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
+// | Author: EK_熊<1439527494@qq.com>
 // +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
+// | Description: 此文件作用于 商品管理控制器
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-
-/**
- * 商品管理控制器
- * @author 麦当苗儿 <glghan@sina.com>
- */
-
+use Admin\Controller\AdminController;
 class GoodsController extends AdminController{
-	
-	//商品列表
-	public function index(){
-		//实例化模型
-		$goods = M('goods');
-		//获取商品列表
-		$list = $goods->select();
-		//分配变量到模板
-		$this->assign('list',$list);
-		$this->display();
-	}
-	
-	//添加商品
-	public function add(){
-		if(IS_POST){
-			$goods = D('goods');
-			if($goods->create()){
-				if($goods->add()){
-					$this->success('添加商品成功',U('lit'));
-					exit();
-				}else{
-					$this->error('添加商品失败');
-				}
-			}
-		}
-		
-		//获取分类信息
-		$cates = M('category')->select();
-		$cates = D('Common/Tree')->toFormatTree($cates);
-		$cates = array_merge(array(0=>array('id'=>0,'title_show'=>'顶级分类')),$cates);
-		
-		$cate_list = array();
-		foreach ($cates as $cate){
-			$cate_list[$cate['id']] = $cate['title_show'];
-		}
-		$this->assign('$cates',$cate_list);
-		$this->meta_title = '添加商品';
-		$this->display();
-		
-		
-	}
-	
-	//编辑商品
-	public function edit($id=0){
-		
-		if(IS_POST){
-			$goods = D('goods');
-			if($goods->create()!==false){
-				if($goods->save()!==false){
-					$this->success('处理成功',U('index'),1);
-					exit();
-				}else {
-					$this->error('处理失败');
-				}
-			}else{
-				$goods->getError();
-			}
-		}
-		
-		//获取分类信息
-		$cates = M('category')->select();
-		$cates = D('Common/Tree')->toFormatTree($cates);
-		$cates = array_merge(array(0=>array('id'=>0,'title_show'=>'顶级分类')),$cates);
-		
-		$cate_list = array();
-		foreach ($cates as $cate){
-			$cate_list[$cate['id']] = $cate['title_show'];
-		}
-		$this->assign('$cates',$cate_list);
-			
-		//获取商品信息
-		$list = M('goods')->where('goods_id = '.$id)->select();
-		$this->assign('list',$list);
-		$this->meta_title = '编辑商品';
-		$this->display();
-	}
-	
+ 
+    /**
+     * 商品列表页
+     * date:2016年2月25日
+     * author: EK_熊
+     */
+    public function index(){
+        $this->meta_title = '商品管理';
+        $this->display();
+    }
+    
+    /**
+     * 商品规格
+     * date:2016年2月25日
+     * author: EK_熊
+     */
+    public function norms(){
+        
+        $this->meta_title = '商品规格';
+        $this->display();        
+    }
+    
+    public function attr(){
+        $attr = '[{"id":1,"name":"小白","value":"","values":[{"id":1,"name":"1","checked":false,"$$hashKey":"008"},{"id":2,"name":"2","checked":false,"$$hashKey":"009"},{"id":3,"name":"3","checked":false,"$$hashKey":"00A"}],"$$hashKey":"006"},{"id":1,"name":"小黑","value":"","values":[{"id":1,"name":"1","checked":false},{"id":2,"name":"2","checked":false},{"id":3,"name":"3","checked":false}],"$$hashKey":"006"},{"id":1,"name":"啊","value":"","values":[{"id":1,"name":"1","checked":false},{"id":2,"name":"2","checked":false},{"id":3,"name":"3","checked":false},{"id":4,"name":"4","checked":false}]},{"id":1,"name":"啊","value":"","values":[{"id":1,"name":"1","checked":false},{"id":2,"name":"2","checked":false},{"id":3,"name":"3","checked":false},{"id":4,"name":"4","checked":false}]},{"id":1,"name":"啊","value":"","values":[{"id":1,"name":"1","checked":false},{"id":2,"name":"2","checked":false},{"id":3,"name":"3","checked":false},{"id":4,"name":"4","checked":false}]},{"id":1,"name":"啊","value":"","values":[{"id":1,"name":"1","checked":false},{"id":2,"name":"2","checked":false},{"id":3,"name":"3","checked":false},{"id":4,"name":"4","checked":false}]},{"id":1,"name":"啊","value":"","values":[{"id":1,"name":"1","checked":false},{"id":2,"name":"2","checked":false},{"id":3,"name":"3","checked":false},{"id":4,"name":"4","checked":false}]},{"id":1,"name":"你好","value":"","values":[{"id":1,"name":"啊","checked":false},{"id":2,"name":"是","checked":false},{"id":3,"name":"的","checked":false}]},{"id":1,"name":"啊","value":"","values":[{"id":1,"name":"啊","checked":false},{"id":2,"name":"不","checked":false}]},{"id":1,"name":"啊","value":"","values":[{"id":1,"name":"不","checked":false},{"id":2,"name":"呃","checked":false}]},{"id":1,"name":"颜色","value":"","values":[{"id":1,"name":"黑","checked":false},{"id":2,"name":"蓝","checked":false},{"id":3,"name":"红","checked":false}]},{"id":1,"name":"颜色","value":"","values":[{"id":1,"name":"黄","checked":false},{"id":2,"name":"红","checked":false}]},{"id":1,"name":"颜色","value":"","values":[{"id":1,"name":"黄","checked":false},{"id":2,"name":"红","checked":false}]},{"id":"11","name":"5555","value":"","values":[{"id":3,"name":"12","checked":false}]}]';
+    }
+    
 }
