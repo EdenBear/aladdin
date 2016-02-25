@@ -41,7 +41,7 @@ function set_config_common($label='',$config=array()){
         $setRet = $configModel->where('id='.$findLabel['id'])->save($save);
     }
     if ($setRet){
-        F('cfg_com_'.$label,$config);//配置信息，写入文件缓存
+        F('cfg_com_'.$label, $config);//配置信息，写入文件缓存
         return $setRet;
     }
     return false;
@@ -57,7 +57,6 @@ function set_config_common($label='',$config=array()){
 function get_config_common($label){
 
     $cacheCfg = F('cfg_com_'.$label);
-
     return $cacheCfg;
     
 }

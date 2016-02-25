@@ -11,8 +11,8 @@ use Think\Controller;
 class TestController extends Controller{
     
     public function index(){
-        session();
-        $a = session('1');
+        $test = M('ConfigCommon')->select();
+        dump($test);
     }
     
 }

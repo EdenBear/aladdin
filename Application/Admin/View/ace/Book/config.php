@@ -39,7 +39,7 @@
                                    <option value="{$k}" <eq name="k" value="$bookCfg['return_condi']">selected</eq>>{$vo}</option>
                                 </foreach>
                             </select>后 
-    				        <input type="text" value="{$bookCfg.return_time}" style='width: 50px' name='return_time' />天内(含)可退货
+    				        <input type="text" value="{$bookCfg.return_day}" style='width: 50px' name='return_day' />天内(含)可退货
     					</td>
     				</tr>
     				<tr>
@@ -50,7 +50,7 @@
                                    <option value="{$k}" <eq name="k" value="$bookCfg['exchange_condi']">selected</eq>>{$vo}</option>
                                 </foreach>
         					</select>后 
-        					<input type="text" value="{$bookCfg.exchange_time}" style='width: 50px' name='exchange_time' />天内(含)可退货
+        					<input type="text" value="{$bookCfg.exchange_day}" style='width: 50px' name='exchange_day' />天内(含)可退货
     					</td>
     				</tr>
     				<tr>
