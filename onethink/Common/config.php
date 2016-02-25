@@ -38,13 +38,13 @@ return array(
 
     
     /* 本地数据库配置 */
-    'DB_TYPE'   => 'mysql', // 数据库类型
-    'DB_HOST'   => 'localhost', // 服务器地址
-    'DB_NAME'   => 'aladdin', // 数据库名
-    'DB_USER'   => 'root', // 用户名
-    'DB_PWD'    => '',  // 密码
-    'DB_PORT'   => '3306', // 端口
-    'DB_PREFIX' => 't_', // 数据库表前缀
+//     'DB_TYPE'   => 'mysql', // 数据库类型
+//     'DB_HOST'   => 'localhost', // 服务器地址
+//     'DB_NAME'   => 'aladdin', // 数据库名
+//     'DB_USER'   => 'root', // 用户名
+//     'DB_PWD'    => '',  // 密码
+//     'DB_PORT'   => '3306', // 端口
+//     'DB_PREFIX' => 't_', // 数据库表前缀
 
     /* 文档模型配置 (文档模型核心配置，请勿更改) */
     'DOCUMENT_MODEL_TYPE' => array(2 => '主题', 1 => '目录', 3 => '段落'),
@@ -54,6 +54,7 @@ return array(
     
     /* 加载拓展方法库 */
     'LOAD_EXT_FILE'=>'function_ek',
+    
     /* 加载拓展配置 */
     'LOAD_EXT_CONFIG'=>'status'
 );
