@@ -3650,7 +3650,7 @@ function() {
 				supply_price: b,
 				quantity: 50
 			} : null === _[v.key].name && (_[v.key].name = v.name);
-			return t.stocks = _, t.headers = h.getHeader()
+			return t.stocks = _, t.headers = h.getHeader(),PRO_ATTR_OBJ = t.stocks;
 		}, !0), c = 0, t.$watch("templates", function() {
 			var e;
 			return c += 1, void 0 !== t.templates && c > 2 ? (e = JSON.stringify(t.templates), $.post("/admin/products/update_tpl", {

@@ -21,6 +21,7 @@
 		"gross_sales_fee_ratio" : 0.0
 	};
 	//]]>
+	 
 </script>
 <style>
 i:hover{cursor:pointer}
@@ -55,34 +56,37 @@ i:hover{cursor:pointer}
 				var product_id = 0;
 				var product_o2o_flag = false;
 				var user_name = "测试账户";
+				var PRO_ATTR_OBJ= new Object();
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
-                <div class="tab-box" style="float: left;">
-                    <ul id="editor">
-                      <li class="product-tab-info">
-                        <a href="http://www.vancii.com/admin/products/new#info" data-toggle="tab">基本信息</a>
-                      </li>
-                        <li class="product-tab-norms active">
-                          <a href="http://www.vancii.com/admin/products/new#norms" data-toggle="tab">商品规格</a>
-                        </li>
-                        <li class="product-tab-category">
-                          <a href="http://www.vancii.com/admin/products/new#category" data-toggle="tab">商品类别</a>
-                        </li>
-                      <li class="product-tab-labels">
-                        <a href="http://www.vancii.com/admin/products/new#labels" data-toggle="tab">商品标签</a>
-                      </li>
-                      <li class="btn-box">
-                            <button type="button" class="btn btn-primary btn-save">保存</button>
-                        <button type="button" class="btn btn-default btn-cancel">取消</button>
-                      </li>
-                    </ul>
-                </div>             
+           
 
 				<form id="product_form" class="simple_form form-horizontal" role="form" novalidate="novalidate" action="" accept-charset="UTF-8" method="post">
 					
 					<div class="tab-content" style='border:none'>
-                      <!--放置其他标签页 -->  
-
+                        <!-- tag标签导航 begin -->
+                        <div class="tab-box" style="float: left;">
+                            <ul id="editor">
+                              <li class="product-tab-info">
+                                <a href="http://www.vancii.com/admin/products/new#info" data-toggle="tab">基本信息</a>
+                              </li>
+                                <li class="product-tab-norms active">
+                                  <a href="http://www.vancii.com/admin/products/new#norms" data-toggle="tab">商品规格</a>
+                                </li>
+                                <li class="product-tab-category">
+                                  <a href="http://www.vancii.com/admin/products/new#category" data-toggle="tab">商品类别</a>
+                                </li>
+                              <li class="product-tab-labels">
+                                <a href="http://www.vancii.com/admin/products/new#labels" data-toggle="tab">商品标签</a>
+                              </li>
+                              <li class="btn-box">
+                                    <button type="button" class="btn btn-primary" id='savebtn'>保存</button>
+                                <button type="button" class="btn btn-default btn-cancel">取消</button>
+                              </li>
+                            </ul>
+                        </div>  
+                        <!-- tag标签导航 end -->
+                        <!--放置其他标签页 -->  
 						<div class="tab-pane active" id="norms">
 							<div class="box norms" id="norms-stocks">
 								<div class="name">
@@ -357,6 +361,19 @@ i:hover{cursor:pointer}
 	</div>
 </div>
 
+<script>
+$('#savebtn').click(function(){
+	//PRO_ATTR_OBJ 获取到的规格数据，obj
+	var obj = new Object();
+	　　obj.name="userObject";
+	　　obj.name2="userObject2";
+	
+	$.post("{:U('saveAttr')}", { attrobj: PRO_ATTR_OBJ} );
 
+})
+	
+
+
+</script>
 
 </block>
