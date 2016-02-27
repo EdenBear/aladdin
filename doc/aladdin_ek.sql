@@ -1,5 +1,11 @@
-/*业务配置记录表  2016-2-24*/
-CREATE TABLE IF NOT EXISTS `t_config_common` (
+
+/*==============================================================*/
+/* Table: t_cart_product_sku  业务配置记录表
+/* Date:  2016-2-24
+/* Create: ek                          
+/*==============================================================*/
+drop table if exists t_config_common;
+CREATE TABLE `t_config_common` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(20) NOT NULL COMMENT '标签名字(前缀可使用控制器名称),json格式',
   `config` varchar(255) NOT NULL,
@@ -92,7 +98,8 @@ create table t_product_sku
 (
    ID                   int not null auto_increment,
    productID            int,
-   skuPrice             bigint,
+   applyPrice           bigint(20) DEFAULT NULL COMMENT '供货价',
+   skuPrice             bigint(20) DEFAULT NULL COMMENT '销售价',
    skuImg               varchar(200),
    skuStock             int,
    createTime           datetime,
@@ -127,14 +134,16 @@ alter table t_product_sku_attr comment '存储sku的属性记录。
 /*==============================================================*/
 /* Table: t_product_stock                                       */
 /*==============================================================*/
+drop table if exists t_product_stock;
 create table t_product_stock
 (
    ID                   int not null,
    skuID                int,
    optType              varchar(3) comment 'ADD：增加库存
             DEL：删除库存',
-   createTime           datetime,
    uid                  int,
+   count                int,
+   createTime           datetime,
    primary key (ID)
 );
 

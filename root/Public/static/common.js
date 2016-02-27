@@ -81,7 +81,7 @@ window.updateAlert = function (text,c) {
 };
 
 $(document).ready(function(){
-    
+
 	$("input:password,input.only-num-letter").keyup(function(){
 		var $this = $(this);
 		$this.val($this.val().replace(/[^\w\.\/]/ig,''));
@@ -265,4 +265,6 @@ var calculateFunctionValue = function (func, args, defaultValue) {
         return false;
     });
 });
+
+
 

@@ -3682,7 +3682,7 @@ function() {
 			}), i.length > 0 ? !0 : !1
 		}, t.add_item_value = function() {
 			var e, i, o, n;
-			return e = t.editor, o = l(), n = s(e.values), i = o > n ? o : n, void 0 === e.value || "" === e.value.trim() ? void toastr.error("\u89c4\u683c\u503c\u4e0d\u80fd\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u89c4\u683c\u503c\uff01") : r(e.value, e.values) ? void toastr.error("\u89c4\u683c\u503c\u540d\u79f0\u91cd\u590d") : (t.editor.values.push({
+			return e = t.editor, o = l(), n = s(e.values), i = o > n ? o : n, void 0 === e.value || "" === e.value.trim() ? void toastr.error("规格值不能为空，请输入规格值！") : r(e.value, e.values) ? void toastr.error("规格值名称重复") : (t.editor.values.push({
 				id: i + 1,
 				name: e.value,
 				checked: !1
@@ -3696,7 +3696,7 @@ function() {
 			}), i.length > 0 ? !0 : !1
 		}, t.add_item = function() {
 			var e, i;
-			return i = t.editor, e = i.edit_index, void 0 === i.name || "" === i.name.trim() ? void toastr.error("\u89c4\u683c\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a\uff0c\u8bf7\u8f93\u5165\u89c4\u683c\u540d\u79f0\uff01") : i.values.length < 1 ? void toastr.error("\u81f3\u5c11\u8981\u6709\u4e00\u4e2a\u89c4\u683c\u503c\uff01") : void 0 === e ? n(t.editor.name) ? void toastr.error("\u5b58\u5728\u91cd\u590d\u89c4\u683c\u540d\u79f0\uff01") : (t.items.push(angular.copy(i)), t.is_show_box = !1) : i.old_name !== i.name && n(t.editor.name) ? void toastr.error("\u5b58\u5728\u91cd\u590d\u89c4\u683c\u540d\u79f0\uff01") : (delete i.value, delete i.old_name, t.items[e] = i, t.editor.edit_index = void 0, t.open_show_box_scope.is_show_box = !1)
+			return i = t.editor, e = i.edit_index, void 0 === i.name || "" === i.name.trim() ? void toastr.error("规格名称不能为空，请输入规格名称！") : i.values.length < 1 ? void toastr.error("至少要有一个规格值！") : void 0 === e ? n(t.editor.name) ? void toastr.error("存在重复规格名称！") : (t.items.push(angular.copy(i)), t.is_show_box = !1) : i.old_name !== i.name && n(t.editor.name) ? void toastr.error("存在重复规格名称！") : (delete i.value, delete i.old_name, t.items[e] = i, t.editor.edit_index = void 0, t.open_show_box_scope.is_show_box = !1)
 		}, t.new_tag = function() {
 			var e;
 			return t.open_show_box_scope && (t.open_show_box_scope.is_show_box = !1), t.open_show_box_scope = this, this.is_show_box = !0, e = s(t.items) + 1, t.editor = {
@@ -3998,8 +3998,8 @@ function() {
 				"click .btn-save": function(e) {
 					var t, i, o, n, r, s, l, d, c, u, h, p, f, g, m, v, _, b, y, k, C, w, N, x, $, S, T, A, E, L, I, R, B;
 					if (h = this.getProductTypeId() === VIRTUAL_LADING_BILL, console.debug("isLadingBill: " + h + "."), n = angular.element(".stock-editor").scope()) {
-						if (!h && 0 === n.items.length) return toastr.error("\u5546\u54c1\u89c4\u683c\u4e0d\u80fd\u4e3a\u7a7a"), !1;
-						if (!h && 0 === n.matrix.length) return toastr.error("\u81f3\u5c11\u9009\u62e9\u4e00\u4e2a\u89c4\u683c"), !1
+						if (!h && 0 === n.items.length) return toastr.error("商品规格不能为空"), !1;
+						if (!h && 0 === n.matrix.length) return toastr.error("至少选择一个规格"), !1
 					}
 					if (window.photos = this.photos, t = this.$("#product_form"), log.warn("btn-save"), this.isNewEditor() && (N = this.photos.map(function(e) {
 						return e.id
@@ -4015,9 +4015,9 @@ function() {
 						if (h && (E = this.productDefaultStock()), !E) {
 							E = n.stocks, console.debug(n.stocks), x = n.stocks;
 							for (S in x) {
-								if (A = x[S], console.debug(A.quantity), "" === A.quantity || A.quantity < 0) return void toastr.error("\u6570\u91cf\u4e0d\u80fd\u4e3a\u7a7a\u6216\u5c0f\u4e8e\u96f6");
-								if ("" === A.price || A.price < 0) return void toastr.error("\u4ef7\u683c\u4e0d\u80fd\u4e3a\u7a7a\u6216\u5c0f\u4e8e\u96f6");
-								if ("" === A.supply_price || A.supply_price < 0) return void toastr.error("\u4f9b\u8d27\u4ef7\u4e0d\u80fd\u4e3a\u7a7a\u6216\u5c0f\u4e8e\u96f6")
+								if (A = x[S], console.debug(A.quantity), "" === A.quantity || A.quantity < 0) return void toastr.error("数量不能为空或小于零");
+								if ("" === A.price || A.price < 0) return void toastr.error("价格不能为空或小于零");
+								if ("" === A.supply_price || A.supply_price < 0) return void toastr.error("供货价不能为空或小于零")
 							}
 							E = function() {
 								var e;
@@ -4042,11 +4042,11 @@ function() {
 						value: I
 					}), t.append(u)), y = this.$("#product_lading_bill_valid_type"), b = this.$("#product_lading_bill_valid_days"), _ = this.$("#product_lading_bill_start_date"), v = this.$("#product_lading_bill_end_date"), log.debug("getProductTypeId: " + this.getProductTypeId()), this.getProductTypeId() === VIRTUAL_LADING_BILL)
 						if (log.debug("lading_bill_valid_type_input.val: " + y.val()), "2" === y.val()) {
-							if (b.val(0), "" === _.val()) return void toastr.error("\u8bf7\u8f93\u5165\u6709\u6548\u5f00\u59cb\u65f6\u95f4");
-							if ("" === v.val()) return void toastr.error("\u8bf7\u8f93\u5165\u6709\u6548\u7ed3\u675f\u65f6\u95f4")
+							if (b.val(0), "" === _.val()) return void toastr.error("请输入有效开始时间");
+							if ("" === v.val()) return void toastr.error("请输入有效结束时间")
 						} else {
-							if ("" === b.val()) return void toastr.error("\u8bf7\u8f93\u5165\u6709\u6548\u5929\u6570");
-							if (parseInt(b.val()) < 1) return void toastr.error("\u6709\u6548\u671f\u5fc5\u987b\u5927\u4e8e\u7b49\u4e8e1")
+							if ("" === b.val()) return void toastr.error("请输入有效天数");
+							if (parseInt(b.val()) < 1) return void toastr.error("有效期必须大于等于1")
 						}
 					for (l = [], B = [], $ = ["promotion-labels_tree", "labels_tree"], c = 0, k = $.length; k > c; c++)
 						if (m = $[c], o = angular.element("#" + m).scope(), o && (console.debug("is changed: " + o.is_changed()), o.is_changed(m))) {

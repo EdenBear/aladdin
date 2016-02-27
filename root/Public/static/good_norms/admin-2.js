@@ -5105,9 +5105,9 @@ function() {
 	})
 }.call(this),
 function() {
-	$(document).ajaxError(function(t, e, i, n) {
-		return n ? toastr.error(n) : void 0
-	})
+/*	$(document).ajaxError(function(t, e, i, n) {
+		return n ? toastr.error('eee') : void 0
+	})*/
 }.call(this),
 function() {
 	! function(t) {

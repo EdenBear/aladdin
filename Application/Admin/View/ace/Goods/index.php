@@ -6,6 +6,10 @@
 		<!-- 配置列表 -->
 		<a href="{:U('norms')}" target="_blank">商品规格</a>
 
-	</div>
-</div>
+		<form action="">
+		
+		</form>
+<script>
+
+</script>
 </block>

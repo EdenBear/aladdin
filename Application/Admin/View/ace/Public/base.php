@@ -24,6 +24,7 @@
         <link rel="stylesheet" href="__ACE__/css/ace.min.css" />
         <link rel="stylesheet" href="__ACE__/css/ace-rtl.min.css" />
         <link rel="stylesheet" href="__ACE__/css/ace-skins.min.css" />
+        
         <link rel="stylesheet" href="__PUBLIC__/Admin/css/common.css" />
 
         <!--[if lte IE 8]>
@@ -35,6 +36,7 @@
         <!-- ace settings handler -->
 
         <script src="__ACE__/js/ace-extra.min.js"></script>
+        
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 
@@ -309,6 +311,10 @@
         <script src="__ACE__/js/ace.min.js"></script>
         <!-- inline scripts related to this page -->
         
+        <!-- load toastr.js  -->
+        <link rel="stylesheet" href="__ACE__/css/toastr.css" />
+        <script src="__ACE__/js/toastr.js"></script>
+        
 	    <script type="text/javascript" src="__JS__/common.js"></script>
 	    <script type="text/javascript" src="__STATIC__/common.js"></script>
 	    <script type="text/javascript">
@@ -319,6 +325,21 @@
 	            url = url.replace(/(\/(p)\/\d+)|(&\w*=.+)/, "");
 	            $subnav.find("a[href='" + url + "']").parent().addClass("active");
 	        }();
+	    	/*消息通知插件配置*/
+	    	toastr.options = {
+	    			closeButton: !0,
+	    			debug: !1,
+	    			positionClass: "toast-bottom-right",
+	    			onclick: null,
+	    			showDuration: "300",
+	    			hideDuration: "1000",
+	    			timeOut: "5000",
+	    			extendedTimeOut: "1000",
+	    			showEasing: "swing",
+	    			hideEasing: "linear",
+	    			showMethod: "fadeIn",
+	    			hideMethod: "fadeOut"
+	    		}
 	    </script>
 	    <block name="script"></block>
     </body>

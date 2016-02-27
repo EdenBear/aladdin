@@ -18,10 +18,10 @@ class QiniuController extends AdminController {
 
     public function _initialize(){
         $config = array(
-            'accessKey'=>'__ODsglZwwjRJNZHAu7vtcEf-zgIxdQAY-QqVrZD',
-            'secrectKey'=>'Z9-RahGtXhKeTUYy9WCnLbQ98ZuZ_paiaoBjByKv',
-            'bucket'=>'blackwhite',
-            'domain'=>'blackwhite.u.qiniudn.com'
+            'accessKey'=>'6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4',
+            'secrectKey'=>'nFJExmiVlpJnPD5l02hLAPjJ8rnfgvCrjR3Ve0Nj',
+            'bucket'=>'aladdin ',
+            'domain'=>'maiquan@sz'
         );
         $this->qiniu = new QiniuStorage($config);
         parent:: _initialize();

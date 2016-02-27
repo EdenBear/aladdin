@@ -12,8 +12,11 @@
 <script src="__STATIC__/good_norms/backbone-min.js"></script>
 <script src="__STATIC__/good_norms/bootstrap.min.js"></script> 
 <script src="__STATIC__/good_norms/handlebars.min.js"></script>
-<script src="__STATIC__/good_norms/admin-50206f4e659834a9281ea8e860c11f66.js"></script>
+<script src="__STATIC__/good_norms/admin-2.js"></script>
+
+
 <script type="text/javascript" charset="utf-8">
+
 	//<![CDATA[
 	var site = {
 		"esaoying_fee" : 0.0,
@@ -21,9 +24,10 @@
 		"gross_sales_fee_ratio" : 0.0
 	};
 	//]]>
-	 
+
 </script>
 <style>
+.tab-pane{display:none}
 i:hover{cursor:pointer}
 </style>
 <div class="table-responsive">
@@ -36,8 +40,8 @@ i:hover{cursor:pointer}
 			<link rel="stylesheet" media="screen" href="__STATIC__/good_norms/index-db1e18bcdecc30f13f70e3e05d3d5a63.css">
 			<link rel="stylesheet" media="screen" href="__STATIC__/good_norms/index-a7d8c6866c24bd29e4bda498b02a6a64.css">
     		<script src="__STATIC__/good_norms/angular.min.js"></script>
-            <script src="__STATIC__/good_norms/index-1.js"></script> 
-            <script src="__STATIC__/good_norms/selectize.min.js"></script>
+            <script src="__STATIC__/good_norms/index-1.js"></script>  
+            <script src="__STATIC__/good_norms/selectize.min.js"></script> 
             <script src="__STATIC__/good_norms/index-701d7e61fa626c9c41e884a2ea92c189.js"></script>	
 
 
@@ -68,10 +72,10 @@ i:hover{cursor:pointer}
                         <div class="tab-box" style="float: left;">
                             <ul id="editor">
                               <li class="product-tab-info">
-                                <a href="http://www.vancii.com/admin/products/new#info" data-toggle="tab">基本信息</a>
+                                <a href="{:U('norms#info')}" data-toggle="tab">基本信息</a>
                               </li>
                                 <li class="product-tab-norms active">
-                                  <a href="http://www.vancii.com/admin/products/new#norms" data-toggle="tab">商品规格</a>
+                                  <a href="{:U('norms#norms')}" data-toggle="tab">商品规格</a>
                                 </li>
                                 <li class="product-tab-category">
                                   <a href="http://www.vancii.com/admin/products/new#category" data-toggle="tab">商品类别</a>
@@ -86,8 +90,9 @@ i:hover{cursor:pointer}
                             </ul>
                         </div>  
                         <!-- tag标签导航 end -->
+                        <div class="tab-pane" id='info'> 基本信息</div>
                         <!--放置其他标签页 -->  
-						<div class="tab-pane active" id="norms">
+						<div class="tab-pane" id="norms">
 							<div class="box norms" id="norms-stocks">
 								<div class="name">
 									<span class="norms-tabs" data-target="norms">商品规格</span>
@@ -97,6 +102,7 @@ i:hover{cursor:pointer}
 										<div class="stock-editor ng-scope" ng-app="StockEditor"
 											ng-controller="stockCtrl">
 											<div class="ui-tag-box ng-pristine ng-valid ui-sortable"
+											    id='norms_choose'
 												ui-sortable="{axis:&#39;y&#39;,cursor:&#39;move&#39;,handle:&#39;.move-icon&#39;}"
 												ng-model="items">
 												<!-- ngRepeat: item in items track by $index -->
@@ -105,9 +111,10 @@ i:hover{cursor:pointer}
 													ng-init="is_show_box=false">
 													<ul ng-hide="is_show_box" class="">
 														<div class="header ng-binding">
-															{{item.name}} <i class="glyphicon glyphicon-pencil"ng-click="edit_item2($index)"  title="点击编辑规格名称和规格值"
+															<span>{{item.name}}</span> 
+															<i class="glyphicon glyphicon-pencil"ng-click="edit_item2($index)"  title="点击编辑规格名称和规格值"
 																ng-show="can_add()"></i> 
-																<i class="glyphicon glyphicon-trash"ng-click="delete_item($index)" title="点击删除规格"
+															<i class="glyphicon glyphicon-trash"ng-click="delete_item($index)" title="点击删除规格"
 																ng-show="can_add()"></i>
 														</div>
 														<div ui-sortable="{cursor:&#39;move&#39;}"ng-model="item.values"class="ng-pristine ng-valid ui-sortable">
@@ -197,7 +204,7 @@ i:hover{cursor:pointer}
           </ul>
         </div>
         <div class="ui-row toolbar">
-          <button class="btn btn-sm btn-success" type="button" ng-click="add_item()">确定</button>
+          <button class="btn btn-sm btn-success" type="button" ng-click="add_item()" id='add_tiem'>确定</button>
           <button class="btn btn-sm btn-default" type="button" ng-click="cancel_edit_item()">取消</button>
         </div>
         <div class="tools">
@@ -362,17 +369,42 @@ i:hover{cursor:pointer}
 </div>
 
 <script>
-$('#savebtn').click(function(){
-	//PRO_ATTR_OBJ 获取到的规格数据，obj
-	var obj = new Object();
-	　　obj.name="userObject";
-	　　obj.name2="userObject2";
-	
-	$.post("{:U('saveAttr')}", { attrobj: PRO_ATTR_OBJ} );
-
-})
-	
-
+    $('#savebtn').click(function(){
+    	//PRO_ATTR_OBJ 获取到的规格数据，obj
+    	
+    	var tagNum = $('#norms_choose').children(".tag-item-box").length;
+    	var attrObj = new Object();
+    	for (var i=0; i<tagNum; i++){
+//     		attrObj[i] = getAttrObj(i);
+    		var singleAttrObj = getAttrObj(i);
+			attrObj[singleAttrObj.name] = singleAttrObj.value;
+    	}
+    	if (!!PRO_ATTR_OBJ) {
+        	toastr.error('请选择您要保存的规格');
+    	}else{
+    		$.post("{:U('addAttr')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj} );
+        }
+        	
+    	
+    
+    })
+    //获取单个属性规格的对象
+    function getAttrObj($index){
+    	var attrObj = new Object();
+    	var attrValueObj = new Object();
+    	var attrBox = $('#norms_choose').children(".tag-item-box:eq("+$index+")");
+    	var attrValueNum = attrBox.find('ul .ng-pristine li').length;
+    	var attrValAry = new Array();
+    	attrObj.name = attrBox.find(".header span").text();
+    	for (var i=0; i<attrValueNum; i++){
+    		attrValAry[i] = attrBox.find("ul .ng-pristine li:eq("+i+") label").text();
+    		}
+    	attrObj.value = attrValAry;
+    	return attrObj;
+    	
+    } 
+//导航标签切换
+    
 
 </script>
 
