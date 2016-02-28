@@ -14,6 +14,8 @@
 <script src="__STATIC__/good_norms/handlebars.min.js"></script>
 <script src="__STATIC__/good_norms/admin-2.js"></script>
 
+<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+<link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
 
 <script type="text/javascript" charset="utf-8">
 
@@ -24,7 +26,24 @@
 		"gross_sales_fee_ratio" : 0.0
 	};
 	//]]>
-
+	function uploadPicture(file, data){
+		var data = $.parseJSON(data);
+		var src = '';
+		console.log(data);
+//	 	if(data.status){
+//	 		src = data.url || '__ROOT__' + data.path
+//	 		$("#cover_id_{$o_key}").parent().find('.upload-img-box').append(
+//	 			'<div class="upload-pre-item" val="' + data.id + '"><img src="__ROOT__' + src + '" ondblclick="removePicture{$o_key}(this)"/></div>'
+//	 		);
+//	 		setPictureIds{$o_key}();
+//	 	} else {
+//	 		updateAlert(data.info);
+//	 		setTimeout(function(){
+//	 			$('#top-alert').find('button').click();
+//	 			$(that).removeClass('disabled').prop('disabled',false);
+//	 		},1500);
+//	 	}
+	}
 </script>
 <style>
 .tab-pane{display:none}
@@ -65,7 +84,7 @@ i:hover{cursor:pointer}
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
            
 
-				<form id="product_form" class="simple_form form-horizontal" role="form" novalidate="novalidate" action="" accept-charset="UTF-8" method="post">
+				<form id="product_form" enctype ="multipart/form-data" class="simple_form form-horizontal" role="form" novalidate="novalidate" action="" accept-charset="UTF-8" method="post">
 					
 					<div class="tab-content" style='border:none'>
                         <!-- tag标签导航 begin -->
@@ -156,11 +175,12 @@ i:hover{cursor:pointer}
 															<th width="80">供货价</th>
 															<th width="80">标价</th>
 															<th width="80">库存</th>
+															<th width="80">图片</th>
 														</tr>
 													</thead>
 													<tbody>
 														<!-- ngRepeat: row in matrix track by $index -->
-														<tr class="ui-row" ng-repeat="row in matrix track by $index" data-item-key="{{row.key}}">
+														<tr class="ui-row norms_add" ng-repeat="row in matrix track by $index" data-item-key="{{row.key}}">
                                                           <td ng-repeat="cell in row track by $index" rowspan="{{cell.parent.rows}}">{{cell.name}}</td>
                                                             <td>
                                                                 <input class="stock-supply" type="text" ng-model="stocks[row.key].supply_price" ng-disabled="uniform_price" >
@@ -177,10 +197,69 @@ i:hover{cursor:pointer}
                                                           <td>
                                                               <input type="text" ng-model="stocks[row.key].quantity" ng-readonly="is_o2o_product" ng-disabled="is_o2o_product">
                                                         </td>
-                                                        </tr>
+                                                        <td>
+                                                       
+                                                            <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}"' name='qiniu[]' style='width: 218px;'/>
+<!--                                                             <input type="file" id="uploadFileImg{{stocks[row.key].key}}"  name='qiniu_file[]'/> -->
+                                            
+                                                           <script>
+                                                           	var trIndex = $('.norms_add').size();
+//                                                                 $(".uploadFileImg"+trIdnex).uploadify({
+//                                                          		   "height"          : 30,
+//                                                                		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+//                                                                		"fileObjName"     : "qinniu[]",
+//                                                                		"buttonText"      : "上传图片",
+//                                                                		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
+//                                                                		"width"           : 120,
+//                                                                		'removeTimeout'   : 1,
+//                                                                		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+//                                                                		"onUploadSuccess" : function(file, data, response){
+//                                                                			var data = eval("("+data+")");
+// //                                                                			var data = $.parseJSON(data);
+// //                                                                			var src = '';
+//                                                                			console.log(data);
+//                                                                    		},
+//                                                                		'onFallback' : function() {
+//                                                                	        alert('未检测到兼容版本的Flash.');
+//                                                                	    },
+                                                               	  
+                                                               	  
+//                                                          	   });
+
+//                                                            $(".uploadFileImg").each(function(index) {
+//                                                                $(this).uploadify({
+//                                                         		   "height"          : 30,
+//                                                               		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+//                                                               		"fileObjName"     : "qinniu[]",
+//                                                               		"buttonText"      : "上传图片",
+//                                                               		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
+//                                                               		"width"           : 120,
+//                                                               		'removeTimeout'   : 1,
+//                                                               		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+//                                                               		"onUploadSuccess" : function(file, data, response){
+//                                                               			var data = eval("("+data+")");
+// //                                                               			var data = $.parseJSON(data);
+// //                                                               			var src = '';
+//                                                               			console.log(data);
+//                                                                   		},
+//                                                               		'onFallback' : function() {
+//                                                               	        alert('未检测到兼容版本的Flash.');
+//                                                               	    },
+                                                              	  
+                                                              	  
+//                                                         	   });
+//                                                         	});
+//                                               
+                                                       
+                                                           </script>
+                                                        </td>
 														
+                                                        </tr>
 													</tbody>
 												</table>
+												
+
+
 											</div>
 																						<script id="new_tab_box" type="text/ng-template">
       <div class="new-tag-box">
@@ -359,6 +438,7 @@ i:hover{cursor:pointer}
 							</div>
 						</div>
 					</div>
+					
 				</form>
 			</div>
 
@@ -369,25 +449,45 @@ i:hover{cursor:pointer}
 </div>
 
 <script>
+
+
     $('#savebtn').click(function(){
     	//PRO_ATTR_OBJ 获取到的规格数据，obj
-    	
     	var tagNum = $('#norms_choose').children(".tag-item-box").length;
     	var attrObj = new Object();
     	for (var i=0; i<tagNum; i++){
-//     		attrObj[i] = getAttrObj(i);
     		var singleAttrObj = getAttrObj(i);
 			attrObj[singleAttrObj.name] = singleAttrObj.value;
     	}
-    	if (!!PRO_ATTR_OBJ) {
-        	toastr.error('请选择您要保存的规格');
-    	}else{
-    		$.post("{:U('addAttr')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj} );
-        }
+    	var formData = new FormData($( "#product_form" )[0]);//获取文件流
+
+    	$.ajax({
+   	     url : "{:U('UploadFile/uploadImgQiniuAjax')}",
+   	     type : "POST",
+      	  data: formData,
+          async: false,
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function (returndata) {
+				if (returndata.status) {
+					$.post("{:U('addProduct')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,imgBox:returndata.img} );
+					
+					}else{
+						toastr.error('图片上传失败');
+					}
+          },
+   	});
+    	//     	if (!!PRO_ATTR_OBJ) {
+//         	toastr.error('请选择您要保存的规格');
+//     	}else{
+//     		$.post("{:U('addAttr')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,formdata:$('form').serialize()} );
+//         }
         	
     	
     
     })
+    
     //获取单个属性规格的对象
     function getAttrObj($index){
     	var attrObj = new Object();
@@ -403,7 +503,7 @@ i:hover{cursor:pointer}
     	return attrObj;
     	
     } 
-//导航标签切换
+    
     
 
 </script>

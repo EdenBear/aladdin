@@ -83,3 +83,46 @@ function switchToSecond($name, $num){
     }
     return $sec;
 }
+
+function Qiniu_Encode($str) // URLSafeBase64Encode
+{
+    $find = array('+', '/');
+    $replace = array('-', '_');
+    return str_replace($find, $replace, base64_encode($str));
+}
+
+/**
+ * 获取七牛私有空间资源路径的凭证加密方法
+ * @param unknown $url
+ * @return string
+ * date:2016年2月28日
+ * author: EK_熊
+ */
+function qiniu_download_url($url) {//$info里面的url
+    $setting = C ( 'UPLOAD_SITEIMG_QINIU' );
+    $duetime = NOW_TIME + 86400;//下载凭证有效时间
+    $DownloadUrl = $url . '?e=' . $duetime;
+    $Sign = hash_hmac ( 'sha1', $DownloadUrl, $setting ["driverConfig"] ["secrectKey"], true );
+    $EncodedSign = Qiniu_Encode ( $Sign );
+    $Token = $setting ["driverConfig"] ["accessKey"] . ':' . $EncodedSign;
+    $RealDownloadUrl = $DownloadUrl . '&token=' . $Token;
+    return $RealDownloadUrl;
+}
+
+/**
+ * 图片上传，使用七牛驱动
+ * 前端input的name值设置为'qiniu[]'
+ * 
+ * date:2016年2月28日
+ * author: EK_熊
+ */
+function qiniu_upload(){
+    
+    $setting=C('UPLOAD_SITEIMG_QINIU');
+    $Upload = new \Think\Upload($setting);
+    $info = $Upload->upload($_FILES);
+    foreach ($info as $key=>$val) {
+        $info[$key]['qiniuImgUrl'] = qiniu_download_url($val['url']);//返回私有空间访问链接
+    }
+    return $info;
+}

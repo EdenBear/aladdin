@@ -16,14 +16,16 @@ use Think\Upload\Driver\Qiniu\QiniuStorage;
  */
 class QiniuController extends AdminController {
 
-    public function _initialize(){
-        $config = array(
+    var $config = array(
             'accessKey'=>'6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4',
             'secrectKey'=>'nFJExmiVlpJnPD5l02hLAPjJ8rnfgvCrjR3Ve0Nj',
-            'bucket'=>'aladdin ',
-            'domain'=>'maiquan@sz'
+            'bucket'=>'aladdin',
+            'domain'=>'7xrade.com2.z0.glb.qiniucdn.com'
         );
-        $this->qiniu = new QiniuStorage($config);
+    
+    public function _initialize(){
+
+        $this->qiniu = new QiniuStorage($this->config);
         parent:: _initialize();
     }
 
@@ -130,25 +132,41 @@ tpl;
         }
 
     }
+    
+    public function upload($isBtch=false){
+        $file = $_FILES['qiniu_file'];
+        if ($isBtch){//多图上传
+
+        }
+        
+    }
 
     //上传单个文件 用uploadify
     public function uploadOne(){
+//         $url = $this->qiniu->privateDownloadUrl('http://7xrade.com2.z0.glb.qiniucdn.com/10510507_192528089311_2.jpg');
+
         $file = $_FILES['qiniu_file'];
+
         $file = array(
             'name'=>'file',
             'fileName'=>$file['name'],
             'fileBody'=>file_get_contents($file['tmp_name'])
         );
-        $config = array();
-        $result = $this->qiniu->upload($config, $file);
-        if($result){
-            $this->success('上传成功','', $result);
+        $result = $this->qiniu->upload($this->config, $file);
+        
+        
+        dump($result);
+        exit();
+         if($result){
+             $result['private_download_url'] = $this->qiniu->privateDownloadUrl($result['key']);
+             return $result;
+//             $this->success('上传成功','', $result);
         }else{
             $this->error('上传失败','', array(
                 'error'=>$this->qiniu->error,
                 'errorStr'=>$this->qiniu->errorStr
             ));
-        }
+        } 
         exit;
     }
 

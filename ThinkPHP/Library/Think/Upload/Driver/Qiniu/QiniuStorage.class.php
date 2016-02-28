@@ -69,7 +69,6 @@
 
 		public function upload($config, $file){
 			$uploadToken = $this->UploadToken($this->sk, $this->ak, $config);
-
 			$url = "{$this->QINIU_UP_HOST}";
 			$mimeBoundary = md5(microtime());
 			$header = array('Content-Type'=>'multipart/form-data;boundary='.$mimeBoundary);
@@ -107,6 +106,7 @@
 
 			$body = implode("\r\n", $data);
 			$response = $this->request($url, 'POST', $header, $body);
+			
 			return $response;
 		}
 
@@ -225,6 +225,25 @@
 			return str_replace($find, $replace, $str);
 		}
 
+        /**
+         * 获取私有资源链接
+         * @param unknown $url
+         * @return string
+         * date:2016年2月28日
+         * author: EK_熊
+         */
+		public function privateDownloadUrl($url) {//http://空间域名/图片key
+		    $duetime = NOW_TIME + 86400;//下载凭证有效时间
+		    $DownloadUrl = $url . '?e=' . $duetime;
+		    
+		    $Sign = hash_hmac ( 'sha1', $DownloadUrl, $this->sk, true );
+		    $EncodedSign = self::Qiniu_Encode ( $Sign );
+		    $Token = $this->ak . ':' . $EncodedSign;
+		    $RealDownloadUrl = $DownloadUrl . '&token=' . $Token;
+		    return $RealDownloadUrl;
+		}
+		
+		
 	    /**
 	     * 请求百度云服务器
 	     * @param  string   $path    请求的PATH
@@ -298,6 +317,7 @@
 	            $this->error($header , $body);
 	            return false;
 	        }
+	        
 	    }
 
         /**
@@ -330,4 +350,5 @@
 	        $this->errorStr = json_decode($body ,1);
 	        $this->errorStr = $this->errorStr['error'];
 	    }
+	    
 	}
