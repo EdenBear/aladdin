@@ -21,12 +21,9 @@ class UploadFileController extends AdminController{
         }
         $data['status'] = true;
 //         $data['img'][]=array(
-//             'qiniuImgUrl'=>'1:'.time(),
+//             'url'=>'http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_ce67ebba96adfde9e9ceee88ce4f16a0.jpg',
 //         );
-//         $data['img'][]=array(
-//             'qiniuImgUrl'=>'2:'.time(),        
-            
-//         );
+
         $this->ajaxReturn($data);
     }
     

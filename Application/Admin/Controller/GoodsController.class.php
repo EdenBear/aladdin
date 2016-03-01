@@ -30,17 +30,22 @@ dump($_FILES);
         $this->display();
     }
     
+    public function testAdd(){
+        dump(I('proinfo'));
+    }
+    
     /**
-     * 商品规格
+     * 添加商品
      * date:2016年2月25日
      * author: EK_熊
      */
     public function add(){
         
-        $this->meta_title = '商品规格';
+        $this->meta_title = '添加商品';
         $this->display();        
     }
     
+    //TODO获取商品规格属性
     public function attr(){
         $values[]= array(
             'id'=>1,
@@ -52,16 +57,7 @@ dump($_FILES);
             'name'=>2,
             'checked'=>false,
         );
-//         $values[]= array(
-//             'id'=>3,
-//             'name'=>3,
-//             'checked'=>false,
-//         );
-//         $values[]= array(
-//             'id'=>4,
-//             'name'=>4,
-//             'checked'=>false,
-//         );
+
         
         $data[] = array(
             'id'=>1,
@@ -81,34 +77,10 @@ dump($_FILES);
         
         $this->ajaxReturn($data);
     }
-    public function saveAttr(){
-        $sttr = array(
-            '1-4' =>array (
-                'key' =>  '1-4' ,
-                'name' =>  '颜色:白,尺寸:22' ,
-                'price' =>  '0.0' ,
-                'supply_price' =>  '0.0' ,
-                'quantity' =>  '50' 
-                ),
-            '1-3' =>array(
-                'key' => '1-3' ,
-                'name' =>  '颜色:白,尺寸:21' ,
-                'price' =>  '0.0' ,
-                'supply_price' =>  '0.0' ,
-                'quantity' =>  '50' ,
-            ),
-            );
-
-        
-        $attrCombin = I('attrCombin');
-        $attrVal = I('attrVal');
-        dump($attrCombin);
-        dump($attrVal);
-    }
     
     /**
      * 
-     * 添加商品
+     * 添加商品触发控制器
      * date:2016年2月28日
      * author: EK_熊
      */
@@ -116,7 +88,6 @@ dump($_FILES);
         $sttr = I('attrCombin');//sku数据
         $attr = I('attrVal');
         $imgBox = I('imgBox');
-        dump($imgBox);
         foreach ($sttr as $key => $val){
             $sttr[$key]['skuimg'] = $imgBox[$key-1]['qiniuImgUrl'];
         }
@@ -127,6 +98,9 @@ dump($_FILES);
         dump($addAttr);
     }
     
+    public function addInfo(){
+        $this->display();
+    }
     
      /**
      * 商品属性入库 
@@ -136,30 +110,23 @@ dump($_FILES);
      * @author han <glghan@sina.com>
      */
 	public function addAttr($productID,$attr,$sttr){
-		//商品id(唯一)
-// 		$productID = ;
-		//操作员id
-		$uid = UID;
-// 		//属性及属性值数据
-// 		$attr = $attr;		
-// 		//sku数据
-// 		$sttr = $sttr;
-		
-	if(is_array($sttr)){
-		foreach($sttr as $k=>$v){
-			$name = $sttr[$k]['name'];	
-			$name = explode(',',$name);
-			foreach ($name as $k1=>$v1){
-				$attrValue = explode(':',$name[$k1]);
-				$attrName = $attrValue[0];
-				$value1 = $attrValue[1];
-				$newAttr[$attrName] = $value1;
-			}
-			$sttr[$k]['name'] = $newAttr;		
-		}
-	}else{
-		return false;
-	};
+        $uid = UID;
+    		
+    	if(is_array($sttr)){
+    		foreach($sttr as $k=>$v){
+    			$name = $sttr[$k]['name'];	
+    			$name = explode(',',$name);
+    			foreach ($name as $k1=>$v1){
+    				$attrValue = explode(':',$name[$k1]);
+    				$attrName = $attrValue[0];
+    				$value1 = $attrValue[1];
+    				$newAttr[$attrName] = $value1;
+    			}
+    			$sttr[$k]['name'] = $newAttr;		
+    		}
+    	}else{
+    		return false;
+    	};
 		
 		//导入属性
 		if(is_array($attr)){

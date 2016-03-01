@@ -51,6 +51,9 @@
 	    <!--[if gte IE 9]><!-->
 	    <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
 	    <!--<![endif]-->
+	    
+	    <link rel="stylesheet" href="__STATIC__/artDialog/skins/simple.css">
+	    <script src="__STATIC__/artDialog/jquery.artDialog.js"></script>
     </head>
     
     <body class="skin-2">

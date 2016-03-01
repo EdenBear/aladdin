@@ -57,18 +57,17 @@ return array(
     
     /* 加载拓展配置 */
     'LOAD_EXT_CONFIG'=>'status',
-        
     /* 七牛驱动配置*/
-    'UPLOAD_SITEIMG_QINIU' => array (
-        'maxSize' => '',//文件大小
-        'rootPath' => './',
-        'saveName' => array ('uniqid', ''),
-        'driver' => 'Qiniu',
-        'driverConfig' => array (
-            'secrectKey' => 'nFJExmiVlpJnPD5l02hLAPjJ8rnfgvCrjR3Ve0Nj',
-            'accessKey' => '6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4',
-            'domain' => '7xrade.com2.z0.glb.qiniucdn.com',
-            'bucket' => 'aladdin',
-        ),
-     ),
+//     'UPLOAD_SITEIMG_QINIU' => array (
+//         'maxSize' => '',//文件大小
+//         'rootPath' => './',
+//         'saveName' => array ('uniqid', ''),
+//         'driver' => 'Qiniu',
+//         'driverConfig' => array (
+//             'secrectKey' => 'nFJExmiVlpJnPD5l02hLAPjJ8rnfgvCrjR3Ve0Nj',
+//             'accessKey' => '6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4',
+//             'domain' => '7xrade.com2.z0.glb.qiniucdn.com',
+//             'bucket' => 'aladdin',
+//         ),
+//     ),
 );

@@ -46,7 +46,6 @@
 	}
 </script>
 <style>
-.tab-pane{display:none}
 i:hover{cursor:pointer}
 </style>
 <div class="table-responsive">
@@ -79,7 +78,8 @@ i:hover{cursor:pointer}
 				var product_id = 0;
 				var product_o2o_flag = false;
 				var user_name = "测试账户";
-				var PRO_ATTR_OBJ= new Object();
+				var PRO_ATTR_OBJ= new Object();//商品属性变量
+				var PRO_INGO_OBJ = new Object();//商品基本信息
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
            
@@ -90,17 +90,17 @@ i:hover{cursor:pointer}
                         <!-- tag标签导航 begin -->
                         <div class="tab-box" style="float: left;">
                             <ul id="editor">
-                              <li class="product-tab-info">
+                              <li class="product-tab-info active">
                                 <a href="{:U('norms#info')}" data-toggle="tab">基本信息</a>
                               </li>
-                                <li class="product-tab-norms active">
+                                <li class="product-tab-norms ">
                                   <a href="{:U('norms#norms')}" data-toggle="tab">商品规格</a>
                                 </li>
                                 <li class="product-tab-category">
-                                  <a href="http://www.vancii.com/admin/products/new#category" data-toggle="tab">商品类别</a>
+                                  <a href="new#category" data-toggle="tab">商品类别</a>
                                 </li>
                               <li class="product-tab-labels">
-                                <a href="http://www.vancii.com/admin/products/new#labels" data-toggle="tab">商品标签</a>
+                                <a href="new#labels" data-toggle="tab">商品标签</a>
                               </li>
                               <li class="btn-box">
                                     <button type="button" class="btn btn-primary" id='savebtn'>保存</button>
@@ -109,7 +109,13 @@ i:hover{cursor:pointer}
                             </ul>
                         </div>  
                         <!-- tag标签导航 end -->
-                        <div class="tab-pane" id='info'> 基本信息</div>
+                        <div class="tab-pane active" id='info'> 
+                            <!-- 基本信息 -->
+                            <include file="Goods:add_info" />
+                            
+                        </div>
+                        
+                        
                         <!--放置其他标签页 -->  
 						<div class="tab-pane" id="norms">
 							<div class="box norms" id="norms-stocks">

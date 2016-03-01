@@ -32,13 +32,19 @@ class UploadController extends AddonsController{
 		$setting['rootPath']=$setting['rootPath'].$dir_name . "/";
         
 		/* 调用文件上传组件上传文件 */
-		$this->uploader = new Upload($setting, 'Local');
-		$info   = $this->uploader->upload($_FILES);
-		if($info){
-			$url = $setting['urlPath'].'image/'.$info['imgFile']['savepath'].$info['imgFile']['savename'];
-			$url = str_replace('./', '/', $url);
-			$info['fullpath'] = __ROOT__.$url;
-		}
+		
+		/**修改开始**/
+		$info = qiniu_upload();
+        dump($info);
+		/**修改结束**/
+		
+// 		$this->uploader = new Upload($setting, 'Local');
+// 		$info   = $this->uploader->upload($_FILES);
+// 		if($info){
+// 			$url = $setting['urlPath'].'image/'.$info['imgFile']['savepath'].$info['imgFile']['savename'];
+// 			$url = str_replace('./', '/', $url);
+// 			$info['fullpath'] = __ROOT__.$url;
+// 		}
 		session('upload_error', $this->uploader->getError());
 		return $info;
 	}
@@ -151,6 +157,17 @@ class UploadController extends AddonsController{
 		/* 返回标准数据 */
 		$return  = array('error' => 0, 'info' => '上传成功', 'data' => '');
 		$img = $this->upload();
+		
+		/* 修改开始：添加七牛驱动 */
+		$pic_driver = C('UPLOAD_SITEIMG_QINIU');
+		if (strtolower($pic_driver) == 'local') {
+		    $imgurl = $img['imgFile']['path'];
+		} else {
+// 		    $imgurl = $img['imgFile']['url'];
+ 		    $imgurl = $img['imgFile']['qiniuImgUrl'];
+		}
+		/* 修改结束 */
+		
 		/* 记录附件信息 */
 		if($img){
 			$return['url'] = $img['fullpath'];

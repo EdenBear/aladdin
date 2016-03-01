@@ -98,8 +98,8 @@ function Qiniu_Encode($str) // URLSafeBase64Encode
  * date:2016年2月28日
  * author: EK_熊
  */
-function qiniu_download_url($url) {//$info里面的url
-    $setting = C ( 'UPLOAD_SITEIMG_QINIU' );
+function qiniu_private_url($url) {//$info里面的url
+    $setting = C ( 'UPLOAD_QINIU_CONFIG' );
     $duetime = NOW_TIME + 86400;//下载凭证有效时间
     $DownloadUrl = $url . '?e=' . $duetime;
     $Sign = hash_hmac ( 'sha1', $DownloadUrl, $setting ["driverConfig"] ["secrectKey"], true );
@@ -117,12 +117,11 @@ function qiniu_download_url($url) {//$info里面的url
  * author: EK_熊
  */
 function qiniu_upload(){
-    
-    $setting=C('UPLOAD_SITEIMG_QINIU');
+    $setting=C('UPLOAD_QINIU_CONFIG');
     $Upload = new \Think\Upload($setting);
     $info = $Upload->upload($_FILES);
     foreach ($info as $key=>$val) {
-        $info[$key]['qiniuImgUrl'] = qiniu_download_url($val['url']);//返回私有空间访问链接
+        $info[$key]['qiniuPrivateUrl'] = qiniu_private_url($val['url']);//返回私有空间访问链接
     }
     return $info;
 }

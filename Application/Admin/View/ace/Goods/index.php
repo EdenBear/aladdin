@@ -6,9 +6,9 @@
 		<!-- 配置列表 -->
 		<a href="{:U('norms')}" target="_blank">商品规格</a>
 
-<form action='{:U('')}' enctype="multipart/form-data" method="post" >
-<!--     <input type="file" id="uploadFile" runat="server" name='qiniu_file[]'/>
-    <input type="file" id="uploadFile" runat="server" name='qiniu_file[]'/> -->
+<form action="{:U('UploadFile/uploadImgQiniuAjax')}" enctype="multipart/form-data" method="post" >
+<input type="file" id="uploadFile" runat="server" name='qiniu_file[]'/> 
+<input type="file" id="uploadFile" runat="server" name='qiniu_file[]'/> 
     <!--<input type="button" id="btnUpload" value="确定" onclick="uploadImage()" />  -->
     
     <input type="submit" id="" value="确定" />
@@ -25,6 +25,11 @@
     
     <script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
 <link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
+
+
+<div class="ap">添加</div>
+
+
 
 
 <script type="text/javascript">
