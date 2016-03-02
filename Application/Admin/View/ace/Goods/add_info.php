@@ -6,6 +6,7 @@
 .picshow li{float: left;position: relative;margin-right: 10px;width: 150px;height: 150px;}
 .picshow li i{color: #428bca;position: absolute;top:-7px;right: -7px;}
 .picshow li i:hover{cursor: pointer;}
+.checkbox{margin-right: 10px;}
 </style>
 <div class="table-responsive proinfo">
 	<div class="dataTables_wrapper">
@@ -29,23 +30,29 @@
 						<td>供应商</td>
 						<td>
 							<select name="pro_info_supplier" id="" class='span12'>
-			                    <foreach name="type['auto_close_time']" item="vo" key="k" >
-			                       <option value="{$vo}" <eq name="vo" value="$bookCfg['auto_close_time']">selected</eq>>{$k}</option>
-			                    </foreach>
+			                       <option value="1">阿迪达斯</option>
+			                       <option value="2">耐克</option>
+			                    
 							</select>
 						</td>
 					</tr>
 					<tr>
 						<td>商品名称</td>
 						<td>
-					        <input type="text" value="保温杯" class='input-large' name='pro_info_name' />限30字
+					        <input type="text" value="保温杯" class='input-xxlarge' name='pro_info_fullname' />限30字
+						</td>
+					</tr>
+					<tr>
+						<td>商品简称</td>
+						<td>
+					        <input type="text" value="保温杯111" class='input-large' name='pro_info_shortname' />限30字
 						</td>
 					</tr>
 					<tr>
 						<td>商品图片</td>
-						<td> 
+						<td style='position: relative;'> 
 							<input type="file" id="uploadImg_info"  name='qinniu[]'/>
-							<span>默认第一幅图为主图</span>
+							<span style='position: absolute;top: 22px;left: 135px;'>默认第一幅图为主图</span>
 							<ul class='picshow list-group'>
 <li class="list-group-item" is-first="true"><img src="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_1d0ca5290e76e384ce76bd127c03355f.jpg?e=1456913421&amp;token=6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4:pm16-GnpZvUrLO1ZC8G_QVcEPw8=" id="pic-1" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-1" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_1d0ca5290e76e384ce76bd127c03355f.jpg"></li>
 <li class="list-group-item" is-first="false"><img src="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_7792ef91fc8c65dd1b339c02f9a250e5.jpg?e=1456913421&amp;token=6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4:2T-fLO5Q6hQIhv6pSJ5PXiypaMQ=" id="pic-2" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-2" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_7792ef91fc8c65dd1b339c02f9a250e5.jpg"></li>	
@@ -55,10 +62,8 @@
 					<tr>
 						<td>商品描述</td>
 						<td>
-							<label class="textarea">
 							<textarea name="pro_info_desc" rows="" cols=""></textarea>
 							{:hook('adminArticleEdit',array('name'=>'pro_info_desc'))}
-							</label>
 						</td>
 					</tr>
 					<tr>
@@ -93,13 +98,30 @@
 						</td>
 					</tr>
 					<tr>
+						<td>上架平台</td>
+						<td>
+							<label for="" class='checkbox inline' >
+								<input type="checkbox" name='pro_info_platform' value='APP'>APP
+							</label>
+							<label for="" class='checkbox inline'>
+								<input type="checkbox" name='pro_info_platform' value='WX#'>微信
+							</label>
+							<label for="" class='checkbox inline' >
+								<input type="checkbox" name='pro_info_platform' value='FB#'>facebook 
+							</label>
+							<label for="" class='checkbox inline'>
+								<input type="checkbox" name='pro_info_platform' value='PC#'>PC
+							</label>
+						</td>
+					</tr>
+					<tr>
 						<td>上架设置</td>
 						<td>
 							<label for="" class='radio' >
-								<input type="radio" name='pro_info_status' value='hold'>暂不上架，保存到商品库 
+								<input type="radio" name='pro_info_status' value='HOLD'>暂不上架，保存到商品库 
 							</label>
 							<label for="" class='radio'>
-								<input type="radio" name='pro_info_status' value='up'>立即出售(上架后类目不可修改，请确认无误)
+								<input type="radio" name='pro_info_status' value='UP#'>立即出售(上架后类目不可修改，请确认无误)
 							</label>
 						</td>
 					</tr>
@@ -115,27 +137,34 @@
 
 <script>
 
+
 $('#testsubmit').click(function(){
-	var proInfoObj = new Object();
 	var infoForm = $('#form-pro-info');
-	var imgAry = new Array();
 	editor_pro_info_desc.sync();
-	console.log(editor_pro_info_desc);
-	proInfoObj.procode = infoForm.find("input[name='pro_info_code']").val();//自编号
-	proInfoObj.name = infoForm.find("input[name='pro_info_name']").val();//名称
-	proInfoObj.supplier = infoForm.find("input[name='pro_info_supplier']").val();//供应商
-	proInfoObj.desc = editor_pro_info_desc.html();//描述
-	proInfoObj.price = infoForm.find("input[name='pro_info_price']").val();//价格
-	proInfoObj.weight = infoForm.find("input[name='pro_info_weight']").val();//重量
-	proInfoObj.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
-	proInfoObj.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态
+	PRO_INGO_OBJ.procode = infoForm.find("input[name='pro_info_code']").val();//自编号
+	PRO_INGO_OBJ.fullname = infoForm.find("input[name='pro_info_fullname']").val();//名称
+	PRO_INGO_OBJ.shortname = infoForm.find("input[name='pro_info_shortname']").val();//简短名称
+	PRO_INGO_OBJ.supplier = infoForm.find("select[name='pro_info_supplier'] option:selected").val();//供应商
+	PRO_INGO_OBJ.desc = editor_pro_info_desc.html();//描述
+	PRO_INGO_OBJ.price = infoForm.find("input[name='pro_info_price']").val();//价格
+	PRO_INGO_OBJ.weight = infoForm.find("input[name='pro_info_weight']").val();//重量
+	PRO_INGO_OBJ.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
+	PRO_INGO_OBJ.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态
 	
+	/*获取上架平台，拼接字符串，逗号隔开*/
+	var pro_platform = '';
+	infoForm.find("input[name=pro_info_platform]:checked").each(function() {  
+                pro_platform += ","+$(this).val();  
+        });
+    if (pro_platform.substr(0,1)==',') pro_platform=pro_platform.substr(1);    
+
+    PRO_INGO_OBJ.platform = pro_platform; //上架平台
+	PRO_INGO_OBJ.img = new Array();//图片
 	infoForm.find("input[name='pro_info_pic']").each(function(index){
-		imgAry[index] = $(this).val();
+		PRO_INGO_OBJ.img[index] = $(this).val();
 	})
-	proInfoObj.img = imgAry;
-	console.log(proInfoObj);
-	$.post("{:U('testAdd')}",{"proinfo":proInfoObj}); 
+	console.log(PRO_INGO_OBJ);
+	$.post("{:U('addProInfo')}",{"proinfo":PRO_INGO_OBJ}); 
 })
 
 var picNum = 0;//添加预览图的数量

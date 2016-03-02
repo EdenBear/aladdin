@@ -90,7 +90,7 @@ return array(
 //         'timeout'=>3600,
 //     ),
 
-    /* 七牛驱动配置*/
+    /* 七牛私库驱动配置*/
     'UPLOAD_QINIU_CONFIG' => array (
         'maxSize' => '',//文件大小
         'rootPath' => './',
@@ -101,6 +101,19 @@ return array(
             'accessKey' => '6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4',
             'domain' => '7xrade.com2.z0.glb.qiniucdn.com',
             'bucket' => 'aladdin',
+        ),
+    ),
+    /* 七牛公库配置*/
+    'UPLOAD_QINIU_PUBLIC_CONFIG' => array (
+        'maxSize' => '',//文件大小
+        'rootPath' => './',
+        'saveName' => array ('uniqid', ''),
+        'driver' => 'Qiniu',
+        'driverConfig' => array (
+            'secrectKey' => 'nFJExmiVlpJnPD5l02hLAPjJ8rnfgvCrjR3Ve0Nj',
+            'accessKey' => '6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4',
+            'domain' => '7xrd9k.com2.z0.glb.qiniucdn.com',
+            'bucket' => 'aladdin-public',
         ),
     ),
 

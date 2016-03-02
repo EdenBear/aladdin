@@ -30,8 +30,80 @@ dump($_FILES);
         $this->display();
     }
     
-    public function testAdd(){
-        dump(I('proinfo'));
+   //添加商品基本信息
+    public function addProInfo(){
+        $proInfo = I('proinfo');
+        
+        dump($proInfo);
+        //TODO 处理运费
+        do{
+            
+            $ret['status'] = false;
+            //添加商品基础信息
+            $data_pro_info = array(
+                'productCode'=>$proInfo['procode'],
+                'shortName'=>$proInfo['shortname'],
+                'productName'=>$proInfo['fullname'],
+                'supplyID'=>$proInfo['supplier'],
+                'price'=>$proInfo['price'],   //TODO转换单位分
+                'weight'=>$proInfo['weight'],//TODO转换单位克存放
+                'productName'=>$proInfo['fullname'],
+                'limitCount'=>$proInfo['limitCount'],
+                'status'=>$proInfo['status'],
+                'platform'=>$proInfo['platform'],
+                'uid'=>UID,
+                'createTime'=>date('Y-m-d H:i:s'),
+            );
+            $productModel = M('Product','','DB_PRODUCT');
+            $productModel->startTrans();
+            $proId = $productModel->add($data_pro_info);
+            if (!$proId) {
+                $ret['info'] = '商品基础信息添加错误！';
+                break;
+            }
+
+            //保存描述html
+            $proDetailModel = M('ProductDetail','','DB_PRODUCT');
+            $data_pro_detail = array(
+                'productID'=>$proId,
+                'productDesc'=>$proInfo['desc'],
+                'uid'=>UID,
+                'createTime'=>date('Y-m-d H:i:s')
+            );
+            $addDetail = $proDetailModel->add($data_pro_detail);
+            if (!$addDetail) {
+                $ret['info'] = '商品描述详情添加异常！'; 
+                break;
+            }
+            
+            //保存图片
+            $proImgModel = M('ProductImg','','DB_PRODUCT');
+            foreach ($proInfo['img'] as $k => $v){
+                $data_pro_Img[$k] = array(
+                    'productID'=>$proId,
+                    'imgPath'  =>$v,
+                    'uid'      =>UID,
+                    'createTime'=>date('Y-m-d H:i:s'),
+                    'status'    =>'OK#'
+                );
+                if ($k == 0) {
+                    $data_pro_Img[$k]['imgPos'] = 'MAJ';
+                }else{
+                    $data_pro_Img[$k]['imgPos'] = 'SEC';
+                }
+            }
+           
+            $addProImg = $proImgModel->addAll($data_pro_Img);
+            $ret['status'] = true;
+            $ret['info'] = '商品添加成功';
+        }while(false);
+        
+        if (!$ret['status']) {
+            $productModel->rollback();
+        }else{
+            $productModel->commit();
+        }
+        dump($ret);
     }
     
     /**
@@ -87,17 +159,23 @@ dump($_FILES);
     public function addProduct(){
         $sttr = I('attrCombin');//sku数据
         $attr = I('attrVal');
-        $imgBox = I('imgBox');
-        foreach ($sttr as $key => $val){
-            $sttr[$key]['skuimg'] = $imgBox[$key-1]['qiniuImgUrl'];
-        }
+
+        dump($sttr);
+        dump($attr);
+        exit();
         //TODO保存商品数据
         
         /* 保存 sku属性数据*/
         $addAttr = $this->addAttr($productID=1, $attr, $sttr);
-        dump($addAttr);
+
     }
     
+    /**
+     * 商品基本信息展示页
+     * 
+     * date:2016年3月2日
+     * author: EK_熊
+     */
     public function addInfo(){
         $this->display();
     }

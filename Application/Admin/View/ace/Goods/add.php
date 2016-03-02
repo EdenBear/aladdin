@@ -2,7 +2,7 @@
 
 <block name="body">
 <!-- <link rel="stylesheet" media="all" href="__STATIC__/good_norms/bootstrap-b9db6fb6a7044a11a821eb232dbc425f.css"> -->
-<link rel="stylesheet" media="all" href="__STATIC__/good_norms/admin-1b8b10b1e9691c31443ae07992a8ff68.css">
+<!--<link rel="stylesheet" media="all" href="__STATIC__/good_norms/admin-1b8b10b1e9691c31443ae07992a8ff68.css">-->
 <link rel="stylesheet" media="all" href="__STATIC__/good_norms/index-1.css">
 <!-- <link rel="stylesheet" media="all" href="__STATIC__/good_norms/admin-c7b228bfa4e82c350100527a56dca1d3.css">
  --> 
@@ -26,24 +26,7 @@
 		"gross_sales_fee_ratio" : 0.0
 	};
 	//]]>
-	function uploadPicture(file, data){
-		var data = $.parseJSON(data);
-		var src = '';
-		console.log(data);
-//	 	if(data.status){
-//	 		src = data.url || '__ROOT__' + data.path
-//	 		$("#cover_id_{$o_key}").parent().find('.upload-img-box').append(
-//	 			'<div class="upload-pre-item" val="' + data.id + '"><img src="__ROOT__' + src + '" ondblclick="removePicture{$o_key}(this)"/></div>'
-//	 		);
-//	 		setPictureIds{$o_key}();
-//	 	} else {
-//	 		updateAlert(data.info);
-//	 		setTimeout(function(){
-//	 			$('#top-alert').find('button').click();
-//	 			$(that).removeClass('disabled').prop('disabled',false);
-//	 		},1500);
-//	 	}
-	}
+
 </script>
 <style>
 i:hover{cursor:pointer}
@@ -56,7 +39,7 @@ i:hover{cursor:pointer}
 		<div id="content">
 			<link rel="stylesheet" href="__STATIC__/good_norms/selectize.css">
 			<link rel="stylesheet" media="screen" href="__STATIC__/good_norms/index-db1e18bcdecc30f13f70e3e05d3d5a63.css">
-			<link rel="stylesheet" media="screen" href="__STATIC__/good_norms/index-a7d8c6866c24bd29e4bda498b02a6a64.css">
+			<!--<link rel="stylesheet" media="screen" href="__STATIC__/good_norms/index-a7d8c6866c24bd29e4bda498b02a6a64.css">-->
     		<script src="__STATIC__/good_norms/angular.min.js"></script>
             <script src="__STATIC__/good_norms/index-1.js"></script>  
             <script src="__STATIC__/good_norms/selectize.min.js"></script> 
@@ -78,8 +61,8 @@ i:hover{cursor:pointer}
 				var product_id = 0;
 				var product_o2o_flag = false;
 				var user_name = "测试账户";
-				var PRO_ATTR_OBJ= new Object();//商品属性变量
-				var PRO_INGO_OBJ = new Object();//商品基本信息
+				var PRO_ATTR_OBJ= new Object();//提交对象：商品属性变量
+				var PRO_INGO_OBJ = new Object();//提交对象：商品基本信息
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
            
@@ -206,58 +189,7 @@ i:hover{cursor:pointer}
                                                         <td>
                                                        
                                                             <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}"' name='qiniu[]' style='width: 218px;'/>
-<!--                                                             <input type="file" id="uploadFileImg{{stocks[row.key].key}}"  name='qiniu_file[]'/> -->
                                             
-                                                           <script>
-                                                           	var trIndex = $('.norms_add').size();
-//                                                                 $(".uploadFileImg"+trIdnex).uploadify({
-//                                                          		   "height"          : 30,
-//                                                                		"swf"             : "__STATIC__/uploadify/uploadify.swf",
-//                                                                		"fileObjName"     : "qinniu[]",
-//                                                                		"buttonText"      : "上传图片",
-//                                                                		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
-//                                                                		"width"           : 120,
-//                                                                		'removeTimeout'   : 1,
-//                                                                		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-//                                                                		"onUploadSuccess" : function(file, data, response){
-//                                                                			var data = eval("("+data+")");
-// //                                                                			var data = $.parseJSON(data);
-// //                                                                			var src = '';
-//                                                                			console.log(data);
-//                                                                    		},
-//                                                                		'onFallback' : function() {
-//                                                                	        alert('未检测到兼容版本的Flash.');
-//                                                                	    },
-                                                               	  
-                                                               	  
-//                                                          	   });
-
-//                                                            $(".uploadFileImg").each(function(index) {
-//                                                                $(this).uploadify({
-//                                                         		   "height"          : 30,
-//                                                               		"swf"             : "__STATIC__/uploadify/uploadify.swf",
-//                                                               		"fileObjName"     : "qinniu[]",
-//                                                               		"buttonText"      : "上传图片",
-//                                                               		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
-//                                                               		"width"           : 120,
-//                                                               		'removeTimeout'   : 1,
-//                                                               		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-//                                                               		"onUploadSuccess" : function(file, data, response){
-//                                                               			var data = eval("("+data+")");
-// //                                                               			var data = $.parseJSON(data);
-// //                                                               			var src = '';
-//                                                               			console.log(data);
-//                                                                   		},
-//                                                               		'onFallback' : function() {
-//                                                               	        alert('未检测到兼容版本的Flash.');
-//                                                               	    },
-                                                              	  
-                                                              	  
-//                                                         	   });
-//                                                         	});
-//                                               
-                                                       
-                                                           </script>
                                                         </td>
 														
                                                         </tr>
@@ -476,8 +408,16 @@ i:hover{cursor:pointer}
           contentType: false,
           processData: false,
           success: function (returndata) {
+          		var imgAry = new Array();
+          		imgAry = returndata.img;
 				if (returndata.status) {
-					$.post("{:U('addProduct')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,imgBox:returndata.img} );
+					var imgNum = 0;
+					for (var _key in PRO_ATTR_OBJ) {
+						PRO_ATTR_OBJ[_key].skuimg = imgAry[imgNum].url;
+						imgNum ++;
+					};
+					console.log(PRO_ATTR_OBJ);
+					$.post("{:U('addProduct')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj} );
 					
 					}else{
 						toastr.error('图片上传失败');

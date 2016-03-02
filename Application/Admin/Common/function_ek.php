@@ -116,12 +116,30 @@ function qiniu_private_url($url) {//$info里面的url
  * date:2016年2月28日
  * author: EK_熊
  */
-function qiniu_upload(){
-    $setting=C('UPLOAD_QINIU_CONFIG');
+function qiniu_upload($isPublic = false){
+    if ($isPublic) {
+        $setting=C('UPLOAD_QINIU_PUBLIC_CONFIG');//公库配置
+    }else{
+        $setting=C('UPLOAD_QINIU_CONFIG');//私库配置
+    }
+    
     $Upload = new \Think\Upload($setting);
     $info = $Upload->upload($_FILES);
     foreach ($info as $key=>$val) {
         $info[$key]['qiniuPrivateUrl'] = qiniu_private_url($val['url']);//返回私有空间访问链接
     }
     return $info;
+}
+
+//重量转换
+function weight_format($units,$num){
+    $num = intval($num);
+    switch ($units){
+        case 'kg': $ret = $num/1000;break;
+        case 'g': $ret = $num*1000;break;
+    }
+    return $ret;
+}
+function mony_format(){
+    
 }
