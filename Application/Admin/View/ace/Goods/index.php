@@ -1,93 +1,140 @@
 <extend name="Public/base" />
 
 <block name="body">
+<?php $status = ['UP#'=>'上架','DW#'=>'下架','HOLD'=>'暂不上架'];?>
 <div class="table-responsive">
 	<div class="dataTables_wrapper">
-		<!-- 配置列表 -->
-		<a href="{:U('norms')}" target="_blank">商品规格</a>
-		<div id='ts'>点击添加</div>
-		<div class="a">
-			
-			
-		</div>
+		<div class="row">
+                <div class="col-sm-12">
+                    <form class="search-form">
+        	            <label for="">
+						    <input class="span2" size="16" type="text" value="{:date('Y-m-d')}" id='date_stat' class='datepicker'>至
+						    <input class="span2" size="16" type="text" value="{:date('Y-m-d')}"  id='date_end' class='datepicker'>
+        	            </label>
+                        <label>供应商
+                            <select name="" id="">
+                            	<option value=""></option>
+                            	<option value=""></option>
+                            	<option value=""></option>
+                            </select>
+                        </label>
+                        <label for="">
+                        	<button class="btn btn-sm btn-primary">供应商导出</button>
+                        	<button class="btn btn-sm btn-primary">财务导出</button>
+                        	<button class="btn btn-sm btn-primary">批量操作</button>
+                        </label>
+
+                        <label for="">
+                        	<input type="text" class="search-input " name="mobilenum" value="{:I('mobilenum')}" placeholder="商品编号">
+	                        <input type="text" class="search-input day-input" name="edate" value="{:I('edate')}" placeholder="商品自编号">
+	                        <input type="text" class="search-input " name="nick_name" value="{:I('nick_name')}" placeholder="商品名称">
+                        </label>
+                        <button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('information')}">
+                           <i class="icon-search"></i>搜索
+                        </button>
+                        
+                    </form>  
+                </div>
+            </div>
+
+            <!-- 数据列表 -->
+            <table class="table table-striped table-bordered table-hover dataTable">
+                <thead>
+                    <tr>
+                    	<th>选项</th>
+                        <th>编号</th>
+                        <th>自编号</th>
+                        <th>供应商</th>
+                        <th>图片</th>
+                        <th>名称</th>
+                        <th>分类</th>
+                        <th>供货价</th>
+                        <th>销售价</th>
+                        <th>总销量</th>
+                        <th>状态</th>
+                        <th>日期</th>
+                        <th>商品操作</th>
+                        <th>推广情况</th>
+                    </tr>
+                </thead>
+                <tbody>
+				<notempty name="_list">
+                <volist name="_list" id="item">
+                    <tr>
+                    	<td align="center"><input class="J_check" name="ids[]" value="{$vo.id}" type="checkbox"></td>
+                        <td>{$item.id}</td>
+                        <td>{$item.productcode}</td>
+                        <td>{$item.supplyname}</td>
+                        <td><img src="{$item.imgmaj}" alt="" /></td>
+                        <td>{$item.productname}</td>
+                        <td>{$item.categoryname}</td>
+                        <td>供货价</td>
+                        <td>销售价</td>
+                        <td>总销量</td>
+                        <td>{$status[$item['status']]}</td>
+                        <td>{$item.createtime}</td>
+                        <td>
+                            <switch name='item.status'>
+                                <case value='DW#'>
+                                    <a href="{}">上架</a>
+                                    <a href="{}">删除</a>
+                                </case>
+                                <case value='HOLD'>
+                                    <a href="{}">上架</a>
+                                    <a href="{}">删除</a>
+                                </case>
+                            </switch>
+                        </td>
+                        <td>
+                            <a href="">推广情况</a>
+                        </td>
+                    </tr>
+                </volist>
+				<else/>
+				<td colspan="10" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-sm-4">
+                </div>
+                <div class="col-sm-8">
+                    <include file="Public/page"/>
+                </div>
+            </div>
+
+	</div>
+</div>	
+
+		
 
 
-<input type="file" id="uploadImg_info"  name='qinniu[]'/>
-<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
-<link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
+
+
+
+
+</block>
+
+<block name='script'>
+<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 <script type="text/javascript">
 
-$('#ts').click(function(){
-	var html = '<input type="file" class="aa" id="uploadImg_info1"  name="qinniu[]"/><input class="aa" type="file" id="uploadImg_info2"  name="qinniu[]"/>';
-	$('.a').append(html);
-	$('.aa').uploadify(uploadCfg);
-})
-var uploadCfg = {
-	   "height"          : 30,
-  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
-  		"fileObjName"     : "qinniu[]",
-  		"buttonText"      : "上传图片",
-  		"uploader"        : "{:U('Test/index')}",
-  		"width"           : 120,
-  		'removeTimeout'   : 1,
-  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-  		"onUploadSuccess" : function(file, data, response){
-  			
-  		},
-  		'onFallback' : function() {
-  	        alert('未检测到兼容版本的Flash.');
-          	    },
-  };
-$("#uploadImg_info1").uploadify({
-	   "height"          : 30,
-  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
-  		"fileObjName"     : "qinniu[]",
-  		"buttonText"      : "上传图片",
-  		"uploader"        : "{:U('Test/index')}",
-  		"width"           : 120,
-  		'removeTimeout'   : 1,
-  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-  		"onUploadSuccess" : function(file, data, response){
-  			
-  		},
-  		'onFallback' : function() {
-  	        alert('未检测到兼容版本的Flash.');
-          	    },
-   });
-$("#uploadImg_info2").uploadify({
-	   "height"          : 30,
-  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
-  		"fileObjName"     : "qinniu[]",
-  		"buttonText"      : "上传图片",
-  		"uploader"        : "{:U('Test/index')}",
-  		"width"           : 120,
-  		'removeTimeout'   : 1,
-  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-  		"onUploadSuccess" : function(file, data, response){
-  			
-  		},
-  		'onFallback' : function() {
-  	        alert('未检测到兼容版本的Flash.');
-          	    },
-   });
-$("#uploadImg_info").uploadify({
-	   "height"          : 30,
-  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
-  		"fileObjName"     : "qinniu[]",
-  		"buttonText"      : "上传图片",
-  		"uploader"        : "{:U('Test/index')}",
-  		"width"           : 120,
-  		'removeTimeout'   : 1,
-  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-  		"onUploadSuccess" : function(file, data, response){
-  			
-  		},
-  		'onFallback' : function() {
-  	        alert('未检测到兼容版本的Flash.');
-          	    },
-   });
 
-
+    $('#date_stat').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    $('#date_end').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
 
 </script>
 </block>

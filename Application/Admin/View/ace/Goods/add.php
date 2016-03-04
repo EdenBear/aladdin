@@ -13,6 +13,7 @@
 <script src="__STATIC__/good_norms/bootstrap.min.js"></script> 
 <script src="__STATIC__/good_norms/handlebars.min.js"></script>
 <script src="__STATIC__/good_norms/admin-2.js"></script>
+<script src="__STATIC__/jquery.form.js"></script>
 
 <script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
 <link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
@@ -61,7 +62,7 @@ i:hover{cursor:pointer}
 				var product_id = 0;
 				var product_o2o_flag = false;
 				var user_name = "测试账户";
-				var PRO_ATTR_OBJ= new Object();//提交对象：商品属性变量
+				var PRO_ATTR_OBJ;//提交对象：商品属性变量
 				
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
@@ -225,8 +226,8 @@ i:hover{cursor:pointer}
           <button class="btn btn-sm btn-default" type="button" ng-click="cancel_edit_item()">取消</button>
         </div>
         <div class="tools">
-          <i class="glyphicon glyphicon-floppy-disk" title="保存新规格到模板中" ng-click="save_to_tpl()"></i>
-          <i class="glyphicon glyphicon-th-large" title="从模板中应用规格" ng-click="show_tpl_box()"></i>
+          <!--<i class="glyphicon glyphicon-floppy-disk" title="保存新规格到模板中" ng-click="save_to_tpl()"></i>
+          <i class="glyphicon glyphicon-th-large" title="从模板中应用规格" ng-click="show_tpl_box()"></i>-->
         </div>
         <div class="template-box" ng-show="tpl_box_show">
           <div class="tools">
@@ -386,12 +387,24 @@ i:hover{cursor:pointer}
 	</div>
 </div>
 <script>
-
+//判断是否空对象，true表示是空
+function isEmptyObject(obj){
+	for(var n in obj){return false} 
+	return true; 
+}
+function countObject(obj){
+	var i = 0;
+	for(var each in record){
+          i++;
+    }
+       return i;
+}	
+/* 保存提交按钮*/
     $('#savebtn').click(function(){
     	//PRO_ATTR_OBJ 获取到的规格数据，obj
     	var tagNum = $('#norms_choose').children(".tag-item-box").length;
     	var attrObj = new Object();
-    	var _proInfo = getProInfo();//获取商品基本信息
+    	var _proInfo = new Object();//获取商品基本信息
     	
     	for (var i=0; i<tagNum; i++){
     		var singleAttrObj = getAttrObj(i);
@@ -407,6 +420,32 @@ i:hover{cursor:pointer}
           cache: false,
           contentType: false,
           processData: false,
+          beforeSend: function () {
+		        // 禁用按钮防止重复提交
+		        $(this).attr({ disabled: "disabled" });
+		        //商品基础信息的验证方法，并获取商品基础信息
+		        
+		     	_proInfo = proInfoValid();
+		        if (isEmptyObject(_proInfo)) {
+		        	toastr.error("请先完善商品基础信息");
+		        	return false;
+		        }
+		        if (isEmptyObject(PRO_ATTR_OBJ)) {
+		        	toastr.error("请编辑商品规格");
+		        	return false;
+		        }
+		         
+		         //TODO 规格图片数量验证匹配
+//		        var countAttrImg = $('.normsUpload').size();
+//		        if (countAttrImg <countObject(PRO_ATTR_OBJ)) {
+//		        	toastr.error("请编辑商品规格");
+//		        	return false;
+//		        }
+		        
+    	  },
+	      complete: function () {
+    			$(this).removeAttr("disabled");
+          },
           success: function (returndata) {
           		var imgAry = new Array();
           		imgAry = returndata.img;
@@ -421,7 +460,7 @@ i:hover{cursor:pointer}
 					$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,$proInfo:_proInfo} );
 					
 					}else{
-						toastr.error('图片上传失败');
+						toastr.error('请选择择商品规格图片');
 					}
           },
    	});

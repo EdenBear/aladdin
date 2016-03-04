@@ -117,6 +117,8 @@ function qiniu_private_url($url) {//$info里面的url
  * author: EK_熊
  */
 function qiniu_upload($isPublic = false){
+    if (!$_FILES) return false;
+    
     if ($isPublic) {
         $setting=C('UPLOAD_QINIU_PUBLIC_CONFIG');//公库配置
     }else{

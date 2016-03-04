@@ -9,6 +9,7 @@
 
 namespace Admin\Controller;
 use Admin\Controller\AdminController;
+use Think\Model;
 class GoodsController extends AdminController{
  
     /**
@@ -18,13 +19,21 @@ class GoodsController extends AdminController{
      */
     public function index(){
         if (IS_POST) {
-
+            
         }
+        $REQUEST['r'] = 3;
+        //TODO 到底是显示商品表数据，还是sku数据
+        $model = M('Product','','DB_PRODUCT');
+        $list = $this->lists ($model,$where=array(),$order='createTime DESC',$field=true);
+        //循环拼接供应商supplyname，图片主图{$item.imgmaj},分类categoryname
+//         dump($list);
+
+        $this->assign('_list',$list);
         $this->meta_title = '商品管理';
         $this->display();
     }
     /**
-     * 商品添加：主页面
+     * 商品添加：主页面，商品确认提交
      * date:2016年2月25日
      * author: EK_熊
      */
@@ -33,8 +42,15 @@ class GoodsController extends AdminController{
             $sttr = I('attrCombin');//sku数据
             $attr = I('attrVal');//规格sttr属性数据
             $proInfo = I('$proInfo');
+//             dump($sttr);
+//             dump($attr);
+//             dump($proInfo);
+            if (!$proInfo) $this->error('请完善商品基础信息');
+            if (!$sttr || !$attr) $this->error('请填写商品规格信息');
+            
+            
             do{
-                /*开启事物*/
+                /*开启事务*/
                 $productModel = M('Product','','DB_PRODUCT');
                 $productModel->startTrans();
             
@@ -185,44 +201,44 @@ class GoodsController extends AdminController{
         $this->ajaxReturn($data);
     }
     
-    /**
-     * 
-     * 添加商品触发控制器
-     * date:2016年2月28日
-     * author: EK_熊
-     */
-    public function addProduct(){
-        $sttr = I('attrCombin');//sku数据
-        $attr = I('attrVal');//规格sttr属性数据
-        $proInfo = I('proinfo');
-        dump($proInfo);
+//     /**
+//      * 
+//      * 添加商品触发控制器
+//      * date:2016年2月28日
+//      * author: EK_熊
+//      */
+//     public function addProduct(){
+//         $sttr = I('attrCombin');//sku数据
+//         $attr = I('attrVal');//规格sttr属性数据
+//         $proInfo = I('proinfo');
+//         dump($proInfo);
         
-        do{
-            /*开启事物*/
-            $productModel = M('Product','','DB_PRODUCT');
-            $productModel->startTrans();
+//         do{
+//             /*开启事物*/
+//             $productModel = M('Product','','DB_PRODUCT');
+//             $productModel->startTrans();
             
-            /*保存商品数据*/
-            $addInfo = $this->addInfo($proInfo);
-            if (!$addInfo['status']) {
-                $ret = $addInfo;
-                break;
-            }
-            /* 保存 sku属性数据*/
-            $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
-            if (!$addAttr['status']) {
-                $ret = $addAttr;
-                break;
-            }
-        }while(false);
+//             /*保存商品数据*/
+//             $addInfo = $this->addInfo($proInfo);
+//             if (!$addInfo['status']) {
+//                 $ret = $addInfo;
+//                 break;
+//             }
+//             /* 保存 sku属性数据*/
+//             $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
+//             if (!$addAttr['status']) {
+//                 $ret = $addAttr;
+//                 break;
+//             }
+//         }while(false);
         
-        if (!$ret['status']) {
-            $productModel->rollback();
-        }else{
-            $productModel->commit();
-            $this->success('商品添加成功！');
-        }
-    }
+//         if (!$ret['status']) {
+//             $productModel->rollback();
+//         }else{
+//             $productModel->commit();
+//             $this->success('商品添加成功！');
+//         }
+//     }
 
     
     /**
@@ -252,6 +268,8 @@ class GoodsController extends AdminController{
             $attrValueModel = M('ProductAttrValue','','DB_PRODUCT');
             $skuModel = M('ProductSku','','DB_PRODUCT');
             $skuAttrModel = M('ProductSkuAttr','','DB_PRODUCT');
+            $stockModel = M('ProductStock','','DB_PRODUCT');
+            
             $attrModel->startTrans();
             /*添加attr数据*/
             foreach ($attr as $key => $value){
@@ -303,7 +321,7 @@ class GoodsController extends AdminController{
                 $skuId = $skuModel->add($add_data_sku);
                 $idList_sku[] = $skuId;
                 if (!$skuId) {
-                    $ret['info'] = "商品skus数据添加错误！！";
+                    $ret['info'] = "商品skus数据{$key}添加错误！！";
                     break;
                 }
 
@@ -313,7 +331,24 @@ class GoodsController extends AdminController{
                     $skuValueList[$skuId][$i]['attr'] = $attrKeyValueAry[0];
                     $skuValueList[$skuId][$i]['attr_value'] = $attrKeyValueAry[1];//组合所有sku数据的所有属性值列表,skuid 作为索引值
                 };
+                
+                //编辑sku_stock库存操作记录表
+                $add_data_stock[] = array(
+                    'skuID' => $skuId,
+                    'optType'=>'ADD',
+                    'uid'    =>UID,
+                    'count'  =>$value['quantity'],
+                    'createTime'=>$createTime,
+                );
             }
+            
+            //批量添加库存操作记录
+            $addStock = $stockModel->addAll($add_data_stock);
+            if (!$addStock){
+                $ret['info'] = '批量添加库存记录出错！';
+                break;
+            }
+            
             
             /* 添加skuattr数据*/
             for ($i=0;$i<count($idList_sku);$i++) {   //循环skuid列表,
