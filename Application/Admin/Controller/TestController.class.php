@@ -17,7 +17,12 @@ class TestController extends Controller{
 //         $db2 = M('product','','DB_PRODUCT')->limit(2)->select();
 //         dump($db2);
         
-        dump(weight_format('kg', 12));
+//         dump(weight_format('kg', 12));
+//         dump(mony_format('yuan', 12));
+
+
+//         dump($valueAry);
+$this->success('ok');
     }
     
 }

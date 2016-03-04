@@ -131,15 +131,37 @@ function qiniu_upload($isPublic = false){
     return $info;
 }
 
-//重量转换
-function weight_format($units,$num){
+/**
+ * 重量单位转换，
+ * @param unknown $units  要转换的目标单位，'g','kg'
+ * @param unknown $num    数量值
+ * @return number
+ * date:2016年3月3日
+ * author: EK_熊
+ */
+function weight_format($units='',$num){
     $num = intval($num);
     switch ($units){
         case 'kg': $ret = $num/1000;break;
         case 'g': $ret = $num*1000;break;
+        default : $ret = false;
     }
     return $ret;
 }
-function mony_format(){
-    
+
+/**
+ * 金钱单位换算,元和分之间的换算
+ * @param unknown $units  单位：元 'yuan', 分'ten'
+ * @param unknown $num
+ * date:2016年3月3日
+ * author: EK_熊
+ */
+function mony_format($units='',$num){
+    $num = intval($num);
+    switch ($units){
+        case 'yuan': $ret = $num/100;break;
+        case 'ten': $ret = $num*100;break;
+        default : $ret = false;
+    }
+    return $ret;
 }

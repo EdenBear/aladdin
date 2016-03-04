@@ -54,8 +54,9 @@
 							<input type="file" id="uploadImg_info"  name='qinniu[]'/>
 							<span style='position: absolute;top: 22px;left: 135px;'>默认第一幅图为主图</span>
 							<ul class='picshow list-group'>
-<li class="list-group-item" is-first="true"><img src="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_1d0ca5290e76e384ce76bd127c03355f.jpg?e=1456913421&amp;token=6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4:pm16-GnpZvUrLO1ZC8G_QVcEPw8=" id="pic-1" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-1" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_1d0ca5290e76e384ce76bd127c03355f.jpg"></li>
-<li class="list-group-item" is-first="false"><img src="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_7792ef91fc8c65dd1b339c02f9a250e5.jpg?e=1456913421&amp;token=6EZmwsqQYeHvlaA44_LwiBAePez-rjpOv4jwg4t4:2T-fLO5Q6hQIhv6pSJ5PXiypaMQ=" id="pic-2" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-2" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_7792ef91fc8c65dd1b339c02f9a250e5.jpg"></li>	
+<li class="list-group-item" is-first="true"><img src="http://localhost/aladdin/root/Public/static/kindeditor/plugins/emoticons/images/20.gif" id="pic-1" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-1" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_1d0ca5290e76e384ce76bd127c03355f.jpg"></li>
+<li class="list-group-item" is-first="false"><img src="http://localhost/aladdin/root/Public/static/kindeditor/plugins/emoticons/images/20.gif" id="pic-2" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-2" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_7792ef91fc8c65dd1b339c02f9a250e5.jpg"></li>	
+							
 							</ul>
 						</td>
 					</tr>
@@ -137,19 +138,19 @@
 
 <script>
 
-
-$('#testsubmit').click(function(){
+function getProInfo(){
 	var infoForm = $('#form-pro-info');
 	editor_pro_info_desc.sync();
-	PRO_INGO_OBJ.procode = infoForm.find("input[name='pro_info_code']").val();//自编号
-	PRO_INGO_OBJ.fullname = infoForm.find("input[name='pro_info_fullname']").val();//名称
-	PRO_INGO_OBJ.shortname = infoForm.find("input[name='pro_info_shortname']").val();//简短名称
-	PRO_INGO_OBJ.supplier = infoForm.find("select[name='pro_info_supplier'] option:selected").val();//供应商
-	PRO_INGO_OBJ.desc = editor_pro_info_desc.html();//描述
-	PRO_INGO_OBJ.price = infoForm.find("input[name='pro_info_price']").val();//价格
-	PRO_INGO_OBJ.weight = infoForm.find("input[name='pro_info_weight']").val();//重量
-	PRO_INGO_OBJ.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
-	PRO_INGO_OBJ.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态
+	var PRO_INFO_OBJ = new Object();
+	PRO_INFO_OBJ.procode = infoForm.find("input[name='pro_info_code']").val();//自编号
+	PRO_INFO_OBJ.fullname = infoForm.find("input[name='pro_info_fullname']").val();//名称
+	PRO_INFO_OBJ.shortname = infoForm.find("input[name='pro_info_shortname']").val();//简短名称
+	PRO_INFO_OBJ.supplier = infoForm.find("select[name='pro_info_supplier'] option:selected").val();//供应商
+	PRO_INFO_OBJ.desc = editor_pro_info_desc.html();//描述
+	PRO_INFO_OBJ.price = infoForm.find("input[name='pro_info_price']").val();//价格
+	PRO_INFO_OBJ.weight = infoForm.find("input[name='pro_info_weight']").val();//重量
+	PRO_INFO_OBJ.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
+	PRO_INFO_OBJ.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态
 	
 	/*获取上架平台，拼接字符串，逗号隔开*/
 	var pro_platform = '';
@@ -158,13 +159,17 @@ $('#testsubmit').click(function(){
         });
     if (pro_platform.substr(0,1)==',') pro_platform=pro_platform.substr(1);    
 
-    PRO_INGO_OBJ.platform = pro_platform; //上架平台
-	PRO_INGO_OBJ.img = new Array();//图片
+    PRO_INFO_OBJ.platform = pro_platform; //上架平台
+	PRO_INFO_OBJ.img = new Array();//图片
 	infoForm.find("input[name='pro_info_pic']").each(function(index){
-		PRO_INGO_OBJ.img[index] = $(this).val();
+		PRO_INFO_OBJ.img[index] = $(this).val();
 	})
-	console.log(PRO_INGO_OBJ);
-	$.post("{:U('addProInfo')}",{"proinfo":PRO_INGO_OBJ}); 
+	console.log(PRO_INFO_OBJ);
+	return PRO_INFO_OBJ;
+}
+$('#testsubmit').click(function(){
+	getProInfo();
+
 })
 
 var picNum = 0;//添加预览图的数量

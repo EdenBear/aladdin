@@ -62,7 +62,7 @@ i:hover{cursor:pointer}
 				var product_o2o_flag = false;
 				var user_name = "测试账户";
 				var PRO_ATTR_OBJ= new Object();//提交对象：商品属性变量
-				var PRO_INGO_OBJ = new Object();//提交对象：商品基本信息
+				
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
            
@@ -376,7 +376,7 @@ i:hover{cursor:pointer}
 							</div>
 						</div>
 					</div>
-					
+					</div>
 				</form>
 			</div>
 
@@ -385,14 +385,14 @@ i:hover{cursor:pointer}
 	</div>
 	</div>
 </div>
-
 <script>
-
 
     $('#savebtn').click(function(){
     	//PRO_ATTR_OBJ 获取到的规格数据，obj
     	var tagNum = $('#norms_choose').children(".tag-item-box").length;
     	var attrObj = new Object();
+    	var _proInfo = getProInfo();//获取商品基本信息
+    	
     	for (var i=0; i<tagNum; i++){
     		var singleAttrObj = getAttrObj(i);
 			attrObj[singleAttrObj.name] = singleAttrObj.value;
@@ -416,23 +416,19 @@ i:hover{cursor:pointer}
 						PRO_ATTR_OBJ[_key].skuimg = imgAry[imgNum].url;
 						imgNum ++;
 					};
-					console.log(PRO_ATTR_OBJ);
-					$.post("{:U('addProduct')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj} );
+	
+					
+					$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,$proInfo:_proInfo} );
 					
 					}else{
 						toastr.error('图片上传失败');
 					}
           },
    	});
-    	//     	if (!!PRO_ATTR_OBJ) {
-//         	toastr.error('请选择您要保存的规格');
-//     	}else{
-//     		$.post("{:U('addAttr')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,formdata:$('form').serialize()} );
-//         }
-        	
-    	
-    
+
     })
+
+
     
     //获取单个属性规格的对象
     function getAttrObj($index){

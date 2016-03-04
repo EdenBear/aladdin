@@ -18,23 +18,70 @@ class GoodsController extends AdminController{
      */
     public function index(){
         if (IS_POST) {
-            //dump(R('Qiniu/uploadBatch'));
-//             $setting=C('UPLOAD_SITEIMG_QINIU');
-//             $Upload = new \Think\Upload($setting);
-dump($_FILES);
-            
-            $info = qiniu_upload();
-            dump($info);
+
         }
         $this->meta_title = '商品管理';
         $this->display();
     }
+    /**
+     * 商品添加：主页面
+     * date:2016年2月25日
+     * author: EK_熊
+     */
+    public function add(){
+        if (IS_POST) {
+            $sttr = I('attrCombin');//sku数据
+            $attr = I('attrVal');//规格sttr属性数据
+            $proInfo = I('$proInfo');
+            do{
+                /*开启事物*/
+                $productModel = M('Product','','DB_PRODUCT');
+                $productModel->startTrans();
+            
+                /*保存商品数据*/
+                $addInfo = $this->addInfo($proInfo);
+                if (!$addInfo['status']) {
+                    $ret = $addInfo;
+                    break;
+                }
+                /* 保存 sku属性数据*/
+                $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
+                if (!$addAttr['status']) {
+                    $ret = $addAttr;
+                    break;
+                }
+            }while(false);
+            
+            if (!$ret['status']) {
+                $productModel->rollback($ret['info']);
+                $this->error();
+            }else{
+                $productModel->commit();
+                $this->success('商品添加成功！');
+            }   
+        }
+        $this->meta_title = '添加商品';
+        $this->display();
+    }   
+
+    /**
+     * 商品添加：基本信息展示页
+     *
+     * date:2016年3月2日
+     * author: EK_熊
+     */
+    public function addInfo(){
+        $this->display();
+    }
     
-   //添加商品基本信息
-    public function addProInfo(){
-        $proInfo = I('proinfo');
-        
-        dump($proInfo);
+   /**
+    * 保存商品基本信息控制器
+    * 
+    * date:2016年3月3日
+    * author: EK_熊
+    */
+    public function addProInfo($proInfo){
+
         //TODO 处理运费
         do{
             
@@ -45,9 +92,9 @@ dump($_FILES);
                 'shortName'=>$proInfo['shortname'],
                 'productName'=>$proInfo['fullname'],
                 'supplyID'=>$proInfo['supplier'],
-                'price'=>$proInfo['price'],   //TODO转换单位分
-                'weight'=>$proInfo['weight'],//TODO转换单位克存放
-                'productName'=>$proInfo['fullname'],
+                'price'=>mony_format($proInfo['price']),   //TODO转换单位分
+                'weight'=>weight_format('g', $proInfo['weight']),//TODO转换单位克存放
+                'productName'=> $proInfo['fullname'],
                 'limitCount'=>$proInfo['limitCount'],
                 'status'=>$proInfo['status'],
                 'platform'=>$proInfo['platform'],
@@ -55,7 +102,7 @@ dump($_FILES);
                 'createTime'=>date('Y-m-d H:i:s'),
             );
             $productModel = M('Product','','DB_PRODUCT');
-            $productModel->startTrans();
+            
             $proId = $productModel->add($data_pro_info);
             if (!$proId) {
                 $ret['info'] = '商品基础信息添加错误！';
@@ -96,26 +143,14 @@ dump($_FILES);
             $addProImg = $proImgModel->addAll($data_pro_Img);
             $ret['status'] = true;
             $ret['info'] = '商品添加成功';
+            $ret['proid'] = $proId;
         }while(false);
         
-        if (!$ret['status']) {
-            $productModel->rollback();
-        }else{
-            $productModel->commit();
-        }
+        return $ret;
         dump($ret);
     }
     
-    /**
-     * 添加商品
-     * date:2016年2月25日
-     * author: EK_熊
-     */
-    public function add(){
-        
-        $this->meta_title = '添加商品';
-        $this->display();        
-    }
+
     
     //TODO获取商品规格属性
     public function attr(){
@@ -158,142 +193,154 @@ dump($_FILES);
      */
     public function addProduct(){
         $sttr = I('attrCombin');//sku数据
-        $attr = I('attrVal');
-
-        dump($sttr);
-        dump($attr);
-        exit();
-        //TODO保存商品数据
+        $attr = I('attrVal');//规格sttr属性数据
+        $proInfo = I('proinfo');
+        dump($proInfo);
         
-        /* 保存 sku属性数据*/
-        $addAttr = $this->addAttr($productID=1, $attr, $sttr);
-
+        do{
+            /*开启事物*/
+            $productModel = M('Product','','DB_PRODUCT');
+            $productModel->startTrans();
+            
+            /*保存商品数据*/
+            $addInfo = $this->addInfo($proInfo);
+            if (!$addInfo['status']) {
+                $ret = $addInfo;
+                break;
+            }
+            /* 保存 sku属性数据*/
+            $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
+            if (!$addAttr['status']) {
+                $ret = $addAttr;
+                break;
+            }
+        }while(false);
+        
+        if (!$ret['status']) {
+            $productModel->rollback();
+        }else{
+            $productModel->commit();
+            $this->success('商品添加成功！');
+        }
     }
+
     
     /**
-     * 商品基本信息展示页
-     * 
-     * date:2016年3月2日
+     * 商品规格
+     * @param unknown $productID
+     * @param unknown $attr
+     * @param unknown $sttr
+     * date:2016年3月3日
      * author: EK_熊
      */
-    public function addInfo(){
-        $this->display();
-    }
-    
-     /**
-     * 商品属性入库 
-     * @param int 商品ID
-     * @param array 商品规格
-     * @param array sku数据
-     * @author han <glghan@sina.com>
-     */
 	public function addAttr($productID,$attr,$sttr){
+	    
         $uid = UID;
-    		
-    	if(is_array($sttr)){
-    		foreach($sttr as $k=>$v){
-    			$name = $sttr[$k]['name'];	
-    			$name = explode(',',$name);
-    			foreach ($name as $k1=>$v1){
-    				$attrValue = explode(':',$name[$k1]);
-    				$attrName = $attrValue[0];
-    				$value1 = $attrValue[1];
-    				$newAttr[$attrName] = $value1;
-    			}
-    			$sttr[$k]['name'] = $newAttr;		
-    		}
-    	}else{
-    		return false;
-    	};
-		
-		//导入属性
-		if(is_array($attr)){
-			foreach ($attr as $k=>$v){
-				$productAttrModel = M('Product_attr');
-				
-				//构建数据		
-				$data['attrName'] = $k;
-				$data['productID'] = $productID;
-				$data['sortOrder'] = 0;
-				$data['uid'] = $uid;
-				$data['createTime'] = date('Y-m-d H:i:s',time());
-				
-				$attrID = $productAttrModel->add($data);
-				
-				//导入属性值
-				if($attrID){
-					foreach ($v as $k1=>$v1){
-						$productAttrValueModel = M('Product_attr_value');
-						
-						//构建数据
-						$value['attrValue'] = $v1;
-						$value['attrID'] = $attrID;
-						$value['uid'] = $uid;
-						$value['sortOrder'] = 1;
-						$value['createTime'] = date('Y-m-d H:i:s',time());
-						
-						$attrValueID = $productAttrValueModel->add($value);
-	
-						if(!$attrValueID){
-							return  $productAttrValueModel->getError();
-						}
-					}
-				}else{
-					
-					return  $productAttrModel->getError();
-				}
-			}
-		}else {
-			return false;
-		}
-		
-		//导入sku
-		if(is_array($sttr)){
-			foreach ($sttr as $k=>$v){
-				$productSkuModel = M('Product_sku');
-				
-				//构建数据
-				$skuData['productID'] = $productID;
-				$skuData['uid'] = $uid;
-				$skuData['applyPrice'] = $sttr[$k]['supply_price'];
-				$skuData['skuPrice'] = $sttr[$k]['price'];
-				$skuData['skuStock'] = "90";
-				$skuData['createTime'] = date('Y-m-d H:i:s',time());
-				$skuData['skuImg'] = $sttr[$k]['skuimg'];
-				$skuID = $productSkuModel->add($skuData);
-				
-				//导入sku_attr
-				if($skuID){
-					foreach ($v['name'] as $k1=>$v1){
-						$productSkuAttrModel = M('Product_sku_attr');
-						
-						/*构建数据*/
-						$skuAttr['skuID'] = $skuID;
-						$skuAttr['uid'] = $uid;
-						$skuAttr['sortOrder'] = 3;
-						$skuAttr['createTime'] = date('Y-m-d H:i:s',time());	
-						//获取attrID及attrValueID
-						$attriBute = $productAttrModel->where('productID='.$productID.' and attrName='."'{$k1}'")
-						->select();
-						$skuAttr['attrID'] = $attriBute[0]['id'];
-						 $attriButeValue= $productAttrValueModel->where('attrID='.$skuAttr['attrID'].' and attrValue='."'{$v1}'")
-						->select();
-						 $skuAttr['attrValueID'] = $attriButeValue[0]['id'];
-						 
-						$skuAttrID = $productSkuAttrModel->add($skuAttr);
-						if(!$skuAttrID){
-							return  $productSkuAttrModel->getError();
-						}
-					}
-				}else {
-					return  $productSkuModel->getError();
-				}
-			}
-		}else {
-			return false;
-		}
-		return true;
-	}
+        $ret['status'] = false;
+        $createTime = date('Y-m-d H:i:s');
+        do{
+            if (!is_array($sttr)) {
+                $ret['info'] = 'sku数据参数错误！';
+                break;
+            }
+            if (!is_array($attr)) {
+                $ret['info'] = 'attr数据参数错误！';
+                break;
+            }
+            
+            $attrModel = M('ProductAttr','','DB_PRODUCT');
+            $attrValueModel = M('ProductAttrValue','','DB_PRODUCT');
+            $skuModel = M('ProductSku','','DB_PRODUCT');
+            $skuAttrModel = M('ProductSkuAttr','','DB_PRODUCT');
+            $attrModel->startTrans();
+            /*添加attr数据*/
+            foreach ($attr as $key => $value){
+                
+                $add_data_attr=array(
+                    'attrName'  => $key,
+                    'productID' =>$productID,
+                    'uid'       =>UID,
+                    'createTime'=>$createTime,
+                );
+                $attrId = $attrModel->add($add_data_attr);
+                $idList_attr[$key] = $attrId;//保存attr id对应列表
+                if (!$attrId) {
+                    $ret['info'] = '商品attr数据添加失败!';
+                    break;
+                }
+
+                /* 添加attr_value数据*/
+                for($i=0;$i<count($value);$i++){
+                    $add_data_attrValue = array(
+                        'attrID'    => $attrId,
+                        'attrValue' => $value[$i],
+                        'uid'       =>UID,
+                        'createTime'=>$createTime,
+                    );
+                    $attrValueId = $attrValueModel->add($add_data_attrValue); 
+                    $idList_attrValue[$value[$i]] = $attrValueId;//保存attrValue id对应列表
+                    if (!$attrValueId) {
+                        $ret['info'] = '商品attrvalue添加错误';
+                        break;
+                    }
+                }
+            }
+            $sortOrder = 1;
+            /* 添加suk数据*/
+            foreach ($sttr as $key => $value){
+            
+                $add_data_sku = array(
+                    "uid" => UID,
+                    "productID"=>$productID,
+                    'name'=>$value['name'],
+                    'skuPrice'=>$value['price'],
+                    'applyPrice'=>$value['supply_price'],
+                    'skuImg'=>$value['skuimg'],
+                    'skuStock'=>$value['quantity'],
+                    'createTime'=>$createTime,
+                    'sortOrder'=>$sortOrder++,
+                );
+                $skuId = $skuModel->add($add_data_sku);
+                $idList_sku[] = $skuId;
+                if (!$skuId) {
+                    $ret['info'] = "商品skus数据添加错误！！";
+                    break;
+                }
+
+                $curSkuAttrAry = explode(',',$value['name']);//sku名称第一次切割，
+                for($i=0;$i<count($curSkuAttrAry);$i++){
+                    $attrKeyValueAry = explode(":",$curSkuAttrAry[$i]);//sku名称第二次切割
+                    $skuValueList[$skuId][$i]['attr'] = $attrKeyValueAry[0];
+                    $skuValueList[$skuId][$i]['attr_value'] = $attrKeyValueAry[1];//组合所有sku数据的所有属性值列表,skuid 作为索引值
+                };
+            }
+            
+            /* 添加skuattr数据*/
+            for ($i=0;$i<count($idList_sku);$i++) {   //循环skuid列表,
+                $curSkuAttr = $skuValueList[$idList_sku[$i]];//根据skuid的值，从$skuValueList取对应的属性
+                for ($h=0;$h<count($curSkuAttr);$h++) {
+                    $add_data_sku_attr[] = array(
+                        'skuID'         =>$idList_sku[$i],
+                        'attrID'        =>$idList_attr[$curSkuAttr[$h]['attr']],//从id存储数组$idList_attr获取id值
+                        'attrValueID'   =>$idList_attrValue[$curSkuAttr[$h]['attr_value']],//从id存储数组$idList_attrValue获取id值
+                        'createTime'    =>$createTime,
+                        'uid'           =>UID,
+                    );
+                }
+            }
+            //批量添加skuattr数据
+            $addSkuAttr = $skuAttrModel->addAll($add_data_sku_attr);
+            if (!$addSkuAttr) {
+                $ret['info'] = '批量添加sku_attr出错！';
+                break;
+            }
+            $ret['status'] = true;
+            $ret['info'] = '商品规格添加成功';
+        }while(false);
+        
+        return $ret;
+
+ 	}
     
     
 }
