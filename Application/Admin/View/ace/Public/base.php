@@ -5,6 +5,7 @@
         
         <title>{$meta_title}<notempty name="meta_title">|{:C('WEB_SITE_TITLE')}</notempty></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <!-- basic styles -->
         <link rel="stylesheet" href="__ACE__/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="__ACE__/css/font-awesome.min.css" />

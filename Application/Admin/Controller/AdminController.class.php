@@ -234,6 +234,17 @@ class AdminController extends Controller {
         }
     }
     
+    public function set_status($model,$id,$status){
+        $map['ID'] = $id;
+        $ret = $model->where($map)->setField('status',$status); 
+        if ($ret) {
+            $this->success('状态修改成功！');
+        }else{
+            $this->error('状态修改失败！');
+        }
+    }
+    
+    
     final public function getNav($pid=null){
         static $_nav;
         if(empty($pid)){

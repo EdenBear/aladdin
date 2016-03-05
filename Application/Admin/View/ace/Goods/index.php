@@ -1,15 +1,18 @@
 <extend name="Public/base" />
 
 <block name="body">
-<?php $status = ['UP#'=>'上架','DW#'=>'下架','HOLD'=>'暂不上架'];?>
+<?php 
+    $status = ['UP#'=>'上架','DW#'=>'下架','HOLD'=>'暂不上架'];
+    $curday = date('Y-m-d');
+?>
 <div class="table-responsive">
 	<div class="dataTables_wrapper">
 		<div class="row">
                 <div class="col-sm-12">
                     <form class="search-form">
         	            <label for="">
-						    <input class="span2" size="16" type="text" value="{:date('Y-m-d')}" id='date_stat' class='datepicker'>至
-						    <input class="span2" size="16" type="text" value="{:date('Y-m-d')}"  id='date_end' class='datepicker'>
+						    <input class="span2" size="16" type="text" value="{$_GET['date_stat']|default=''}" name='date_stat' placeholder='{$curday}'  id='date_stat' class='datepicker'>至
+						    <input class="span2" size="16" type="text" value="{$_GET['date_end']|default=''}" name='date_end' placeholder='{$curday}'  id='date_end' class='datepicker'>
         	            </label>
                         <label>供应商
                             <select name="" id="">
@@ -25,14 +28,14 @@
                         </label>
 
                         <label for="">
-                        	<input type="text" class="search-input " name="mobilenum" value="{:I('mobilenum')}" placeholder="商品编号">
-	                        <input type="text" class="search-input day-input" name="edate" value="{:I('edate')}" placeholder="商品自编号">
-	                        <input type="text" class="search-input " name="nick_name" value="{:I('nick_name')}" placeholder="商品名称">
+                        	<input type="text" class="search-input " name="proid" value="{:I('proid')}" placeholder="编号">
+	                        <input type="text" class="search-input day-input" name="procode" value="{:I('procode')}" placeholder="自编号">
+	                        <input type="text" class="search-input " name="proname" value="{:I('proname')}" placeholder="商品名称">
                         </label>
-                        <button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('information')}">
+                        <button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('')}">
                            <i class="icon-search"></i>搜索
                         </button>
-                        
+                        <a href="{:U('')}" class="btn btn-sm btn-primary" class="btn">清空搜索条件</a>                        
                     </form>  
                 </div>
             </div>
@@ -61,11 +64,11 @@
 				<notempty name="_list">
                 <volist name="_list" id="item">
                     <tr>
-                    	<td align="center"><input class="J_check" name="ids[]" value="{$vo.id}" type="checkbox"></td>
+                    	<td align="center"><input class="J_check" name="ids[]" value="{$item.id}" type="checkbox"></td>
                         <td>{$item.id}</td>
                         <td>{$item.productcode}</td>
                         <td>{$item.supplyname}</td>
-                        <td><img src="{$item.imgmaj}" alt="" /></td>
+                        <td><img src="{$item.imgmaj}" alt="" style="width:50px"/></td>
                         <td>{$item.productname}</td>
                         <td>{$item.categoryname}</td>
                         <td>供货价</td>
@@ -74,14 +77,20 @@
                         <td>{$status[$item['status']]}</td>
                         <td>{$item.createtime}</td>
                         <td>
+                            <a href="{:U('')}">编辑</a>
                             <switch name='item.status'>
                                 <case value='DW#'>
-                                    <a href="{}">上架</a>
-                                    <a href="{}">删除</a>
+                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>
+                                   
                                 </case>
                                 <case value='HOLD'>
-                                    <a href="{}">上架</a>
-                                    <a href="{}">删除</a>
+                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>
+                                    
+                                </case>
+                                <case value='UP#'>
+                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'DW#'))}">下架</a>
+                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'HOLD'))}">暂不上架</a>
+                                
                                 </case>
                             </switch>
                         </td>

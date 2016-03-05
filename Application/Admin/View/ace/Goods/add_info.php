@@ -63,6 +63,10 @@
 						</td>
 					</tr>
 					<tr>
+			             <td>卖点说明</td>
+						 <td><input type="text" name="pro_info_sellDesc" value=""  required /></td>
+					</tr>
+					<tr>
 						<td>商品描述</td>
 						<td>
 							<textarea name="pro_info_desc" rows="" cols=""></textarea>
@@ -100,6 +104,24 @@
 							<input class='input-small' type="text" name='pro_info_limitCount' value='' required >
 							<span class='span-remark'>限购为“0”时，代表不限购，否则每个用户最多只能限购设置数量的该商品</span>
 						</td>
+					</tr>
+					<tr>
+					   <td>营销类型</td>
+						<td>
+							<label for="" class='checkbox inline' >
+								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='NOR' required title='请选择上架平台'>普通商品
+							</label>
+							<label for="" class='checkbox inline'>
+								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='YI#'>1元购商品
+							</label>
+							<label for="" class='checkbox inline' >
+								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='KAN'>砍价购商品 
+							</label>
+							<label for="" class='checkbox inline'>
+								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='PIN'>拼团购商品
+							</label>
+							<label for="pro_info_platform" class="error"></label>
+						</td>					   
 					</tr>
 					<tr>
 						<td>上架平台</td>
@@ -178,6 +200,7 @@ function getProInfo(){
 	editor_pro_info_desc.sync();
 	var PRO_INFO_OBJ = new Object();
 	PRO_INFO_OBJ.procode = infoForm.find("input[name='pro_info_code']").val();//自编号
+	PRO_INFO_OBJ.selldesc = infoForm.find("input[name='pro_info_sellDesc']").val();//卖点说明
 	PRO_INFO_OBJ.fullname = infoForm.find("input[name='pro_info_fullname']").val();//名称
 	PRO_INFO_OBJ.shortname = infoForm.find("input[name='pro_info_shortname']").val();//简短名称
 	PRO_INFO_OBJ.supplier = infoForm.find("select[name='pro_info_supplier'] option:selected").val();//供应商
@@ -186,6 +209,8 @@ function getProInfo(){
 	PRO_INFO_OBJ.weight = infoForm.find("input[name='pro_info_weight']").val();//重量
 	PRO_INFO_OBJ.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
 	PRO_INFO_OBJ.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态
+	//TODO营销类型
+	
 	
 	/*获取上架平台，拼接字符串，逗号隔开*/
 	var pro_platform = '';
