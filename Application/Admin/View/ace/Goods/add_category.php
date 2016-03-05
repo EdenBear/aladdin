@@ -1,31 +1,12 @@
-<extend name="Public/base" />
-
-<block name="body">
-	<style>
-		.left{float: left;}
-		.right{float: right;}
-		.zTreeDemoBackground{display: table-cell;vertical-align: top;width: 30%;padding: 5px;border: 1px solid #ddd;}
-	</style>
-	<link rel="stylesheet" href="__STATIC__/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
-    <div class="table-responsive">
-    	<div class="dataTables_wrapper">
-			
-			<div class="zTreeDemoBackground left">
-				<div class='ztree left'>
-					<ul id="treeDemo" class="ztree"></ul>
-				</div>
-				
-				<div class='operate right'>
-					<button class="btn btn-default btn-sm btn-add" id='saveTree'>保存分类</button>
-				</div>
-				
-			</div>
-			
-    		<div></div>	
-
-
-    	</div>
-    </div>
+<layout name="Goods/add_category" />
+<link rel="stylesheet" href="__STATIC__/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+<div class="tab-pane" id="norms">
+	<div class="box norms" id="norms-stocks"">
+    	<div class='ztree left'>
+        	<ul id="treeDemo" class="ztree"></ul>
+        </div>
+	</div>
+</div>
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.core.js"></script>
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.excheck.js"></script>
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.exedit.js"></script>
@@ -37,18 +18,32 @@
     	$.post("{:U('procategory/getCateTree')}",function($data){
     		zNodes = $data;
     	})
+		
+		function getProNode(){
+			return newNodesAry;
+        }
+		function zTreeOnCheck(event, treeId, treeNode){
+			console.log(newNodesAry.length)
+			if (newNodesAry.length !== 0){
+				
+				
+				for (var i=0; i<newNodesAry.length;i++) {
+					
+					var nodeId = newNodesAry[i].id;
+					if (nodeId == treeNode.id && treeNode.checked == false) {
+						newNodesAry.splice(i,1);
+						return false;
+					}
+						
+				}
+			}
+			filterNode(treeNode)
+				
+					
+			console.log(newNodesAry.length)
+			console.log(newNodesAry)
+		}
 
-
-    	//保存树状
-    	$('#saveTree').click(function(){
-	    	$.post("{:U('procategory/addCateNode')}",
-	    		{
-	    			'addNodes':newNodesAry,
-	    		},	
-	    		function($data){
-	    			newNodesAry.length =0;
-    			})
-    	})
     	//过滤处理节点对象
     	function filterNode(node,editTye){
 
@@ -68,9 +63,10 @@
     		}else{
     			newNodes.isadd = false;
     		}
-			console.log(newNodes)
+			
     		
 			newNodesAry.push(newNodes);
+			console.log(newNodesAry)
 
     	}
 		var setting = {
@@ -84,12 +80,12 @@
               url:"{:U('procategory/getCateTree')}"
 		     },
 			view: {
-				addHoverDom: addHoverDom,
-				removeHoverDom: removeHoverDom,
+// 				addHoverDom: addHoverDom,
+// 				removeHoverDom: removeHoverDom,
 				selectedMulti: false
 			},
 			edit: {
-				enable: true,
+				enable: false,
 				editNameSelectAll: true,
 				showRemoveBtn:false
 				
@@ -103,34 +99,11 @@
 				}
 			},
 			callback: {
-				onRename: zTreeOnRename,
+				onCheck: zTreeOnCheck
 
 			}
 		};
-		//修改，即重命名
-		//如果提交集合里面有该对象，就进行修改
-		function zTreeOnRename(event, treeId, treeNode, isCancel){
-				
-			if (newNodesAry.length !== 0){
-				
-				for (var key in newNodesAry) {
-					
-					var nodeId = newNodesAry[key].id;
 
-					if (nodeId == treeNode.id) {
-						newNodesAry[key].name = treeNode.name;
-						return false;
-					}else{
-						newNodesAry[key] = filterNode(treeNode);
-						return false;
-					}
-				}
-			}else{
-				filterNode(treeNode)
-			}
-			
-			console.log(newNodesAry)
-		}
 
 		//处理过滤节点对象
 		function filter(treeId, parentNode, childNodes) {
@@ -231,8 +204,3 @@
 //			$("#selectAll").bind("click", selectAll);
 		});
 </script>
-</block>
-
-<block name="script">
-	
-</block>

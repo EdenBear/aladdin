@@ -1,6 +1,6 @@
 <layout name="Goods/add_info" />
 <style>
-.span-remark{}
+
 .radio{margin-right: 5px;}
 .picshow li img{width: 100%;height100%;cursor: pointer;}
 .picshow li{float: left;position: relative;margin-right: 10px;width: 150px;height: 150px;}

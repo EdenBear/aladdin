@@ -266,5 +266,17 @@ var calculateFunctionValue = function (func, args, defaultValue) {
     });
 });
 
-
+//判断是否空对象，true表示是空
+function isEmptyObject(obj){
+    for(var n in obj){return false} 
+    return true; 
+}
+//统计对象个数
+function countObject(obj){
+    var i = 0;
+    for(var each in record){
+          i++;
+    }
+       return i;
+}
 

@@ -127,6 +127,11 @@ class GoodsController extends AdminController{
         $this->display();
     }
     
+    public function proCate($proid) {
+        
+        $this->display();
+    }
+    
    /**
     * 保存商品基本信息控制器
     * 

@@ -81,7 +81,7 @@ i:hover{cursor:pointer}
                                   <a href="{:U('norms#norms')}" data-toggle="tab">商品规格</a>
                                 </li>
                                 <li class="product-tab-category">
-                                  <a href="new#category" data-toggle="tab">商品类别</a>
+                                  <a href="{:U('norms#category')}" data-toggle="tab">商品类别</a>
                                 </li>
                               <li class="product-tab-labels">
                                 <a href="new#labels" data-toggle="tab">商品标签</a>
@@ -98,7 +98,11 @@ i:hover{cursor:pointer}
                             <include file="Goods:add_info" />
                             
                         </div>
-                        
+                        <div class="tab-pane active" id='category'> 
+                            <!-- 商品分类 -->
+                            <include file="Goods:add_category" />
+                            
+                        </div>                        
                         
                         <!--放置其他标签页 -->  
 						<div class="tab-pane" id="norms">
@@ -186,12 +190,12 @@ i:hover{cursor:pointer}
                                                           </td>
                                                           <td>
                                                               <input type="text" ng-model="stocks[row.key].quantity" ng-readonly="is_o2o_product" ng-disabled="is_o2o_product">
-                                                        </td>
-                                                        <td>
+                                                    	  </td>
+
+                                                           <td>
                                                        
-                                                            <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}"' name='qiniu[]' style='width: 218px;'/>
-                                            
-                                                        </td>
+                                                            <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}" name='qiniu[]' style='width: 218px;'/>
+                                                           </td>
 														
                                                         </tr>
 													</tbody>
@@ -385,6 +389,7 @@ i:hover{cursor:pointer}
 		</div>
 	</div>
 	</div>
+
 </div>
 <script>
 //判断是否空对象，true表示是空
