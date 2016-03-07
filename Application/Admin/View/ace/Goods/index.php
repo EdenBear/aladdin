@@ -71,9 +71,9 @@
                         <td><img src="{$item.imgmaj}" alt="" style="width:50px"/></td>
                         <td>{$item.productname}</td>
                         <td>{$item.categoryname}</td>
-                        <td>供货价</td>
-                        <td>销售价</td>
-                        <td>总销量</td>
+                        <td>{$item.applyprice}</td>
+                        <td>{$item.price}</td>
+                        <td>{$item.sellcount}</td>
                         <td>{$status[$item['status']]}</td>
                         <td>{$item.createtime}</td>
                         <td>

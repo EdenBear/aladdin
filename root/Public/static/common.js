@@ -279,4 +279,26 @@ function countObject(obj){
     }
        return i;
 }
-
+/**
+ * uploadify控件，上传七牛, 单图显示
+ * 需要添加预览容器，img标签，class=uploadify_thumbnail
+ */
+//$(".uploadify").uploadify({
+//	   "height"          : 30,
+//		"swf"             : "./Public/static/uploadify/uploadify.swf",
+//		"fileObjName"     : "qinniu[]",
+//		"buttonText"      : "上传图片",
+//		"uploader"        : "./admin.php/UploadFile/uploadImgQiniuAjax",
+//		"width"           : 120,
+//		'removeTimeout'   : 1,
+//		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+//		"onUploadSuccess" : function(file, data, response){
+//			var data = eval("("+data+")");
+//			$('img.uploadify_thumbnail').attr('src',data.img[0].qiniuPrivateUrl);
+//			$('img.uploadify_thumbnail').attr('data-url',data.img[0].url);
+//			
+//		},
+//		'onFallback' : function() {
+//	        alert('未检测到兼容版本的Flash.');
+//       	    },
+//});

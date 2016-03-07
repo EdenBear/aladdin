@@ -33,31 +33,53 @@ class GoodsController extends AdminController{
         if ($dateStat && $dateEnd) $where['createTime'] = array('between',array($dateStat." 00:00:00",$dateEnd." 23:59:59"));
         $proModel = M('Product','','DB_PRODUCT');;
         $proImgModel = M('ProductImg','','DB_PRODUCT');
-        //TODO 到底是显示商品表数据，还是sku数据
+        
         $list = $this->lists ($proModel,$where,$order='createTime DESC',$field=true);
         
         //循环拼接供应商supplyname，图片主图{$item.imgmaj},分类categoryname
-        if ($list) {
-            foreach ($list as $key => $value) {
-                $proidList[] = $value['id'];
-            }
-            $imgMaj_map['productID'] = array('in',$proidList);
-            $imgMaj_map['imgPos'] = "MAJ";
-            $imgMaj_map['status'] = "OK#";
-            $imgMajList = $proImgModel->where($imgMaj_map)->getField('productID,imgPath'); //获取图片数据
-             
-            foreach ($list as $key => $value ){
-                $imgPath = $imgMajList[$value['id']];
-                $list[$key]['imgmaj'] = $imgPath ? qiniu_private_url($imgPath): '';
-            }
-        }
+        $list = $this->filterProData($list);
 
-//         dump($list);
+
 
         $this->assign('_list',$list);
         $this->meta_title = '商品管理';
         $this->display();
     }
+    
+    /**
+     * 合并商品数据和图片，分类，供应商，数据
+     * @param unknown $list
+     * date:2016年3月6日
+     * author: EK_熊
+     */
+    public function filterProData($list) {
+
+        if (!$list) return false;
+        $proImgModel = M('ProductImg','','DB_PRODUCT');
+        $categoryModel = M('ProductCategory','','DB_PRODUCT');
+        
+        foreach ($list as $key => $value) {
+            $proidList[] = $value['id'];
+            $cateIdList[] =$value['categoryid'];
+        }
+        $imgMaj_map['productID'] = array('in',$proidList);
+        $imgMaj_map['imgPos'] = "MAJ";
+        $imgMajList = $proImgModel->where($imgMaj_map)->getField('productID,imgPath'); //获取图片数据
+        
+        
+        
+        $cate_map['ID'] = array('in',$cateIdList);
+        $cateNameList = $categoryModel->where($cate_map)->getField('ID,className');
+        
+        foreach ($list as $key => $value ){
+            $imgPath = $imgMajList[$value['id']];
+            $list[$key]['imgmaj'] = $imgPath ? qiniu_private_url($imgPath): '';
+            $list[$key]['categoryname'] = $cateNameList[$value['categoryid']];
+        }
+
+        return $list;
+    }
+    
     
     /**
      * 修改状态

@@ -55,6 +55,9 @@
 	    
 	    <link rel="stylesheet" href="__STATIC__/artDialog/skins/simple.css">
 	    <script src="__STATIC__/artDialog/jquery.artDialog.js"></script>
+	    
+	    
+	    
     </head>
     
     <body class="skin-2">
@@ -318,6 +321,9 @@
         <!-- load toastr.js  -->
         <link rel="stylesheet" href="__ACE__/css/toastr.css" />
         <script src="__ACE__/js/toastr.js"></script>
+        
+
+        <link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
         
 	    <script type="text/javascript" src="__JS__/common.js"></script>
 	    <script type="text/javascript" src="__STATIC__/common.js"></script>

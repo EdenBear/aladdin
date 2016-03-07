@@ -22,7 +22,8 @@ class TestController extends Controller{
 
 
 //         dump($valueAry);
-$this->success('ok');
+            $test = D('ProductCategory')->select();
+            dump($test);
     }
     
 }

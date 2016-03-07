@@ -218,3 +218,11 @@ CREATE TABLE `t_product_detail` (
   `createTime` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品详情表，保存商品详情描述的html富文本大字段';
+
+
+
+/*==============================================================*/
+/* 商品表补充字段
+/*==============================================================*/
+ALTER TABLE `t_product`
+ADD COLUMN `applyPrice`  bigint(20) NULL COMMENT '供货价' AFTER `price`

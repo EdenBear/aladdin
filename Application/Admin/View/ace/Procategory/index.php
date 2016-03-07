@@ -4,8 +4,13 @@
 	<style>
 		.left{float: left;}
 		.right{float: right;}
-		.zTreeDemoBackground{display: table-cell;vertical-align: top;width: 30%;padding: 5px;border: 1px solid #ddd;}
+		.zTreeDemoBackground{height: 518px;position: relative;display: table-cell;vertical-align: top;width: 20%;padding: 5px;border: 1px solid #ddd;}
+		.operate{position: absolute;right: 0;top: 0;}
+		.r_box{border: 1px solid #ddd;padding: 3px 9px 3px 9px;}
+		.cateurl{height: 30px;line-height: 30px;border-bottom: 1px solid #ddd;}
+		.cateshowimg{border: 1px solid #ddd;display: inline-block;width: 80px;height: 80px;};
 	</style>
+	
 	<link rel="stylesheet" href="__STATIC__/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <div class="table-responsive">
     	<div class="dataTables_wrapper">
@@ -15,46 +20,154 @@
 					<ul id="treeDemo" class="ztree"></ul>
 				</div>
 				
-				<div class='operate right'>
+				<div class='operate'>
 					<button class="btn btn-default btn-sm btn-add" id='saveTree'>保存分类</button>
 				</div>
 				
 			</div>
-			
-    		<div></div>	
+			<div class='right' style='width: 79%;'>
+    			<div class="r_box">
+    			     <div class='cateurl'>
+    			     	<span>分类连接: </span>
+    			     	<a href=""></a>
+    			     </div>
+     			     <div style='margin-top: 5px;'>
+     			     	<span>分类图标：</span> 
+     			     	<div class='cateshowimg'>
+	    			        <img src="" id='cateImg_th' alt="" style="width: 80px;"/>  
+     			     	</div>
+    			            <input type="file" name='qinniu[]' id='cateImg' /> 
+    			        <!--<button class="btn btn-sm btn-primary" id='upload_btn'>批量操作</button>-->
+     			     </div> 
+    			</div>
+    			<div>
+     			     <!--<div class="search"> 
+     			         <input type="text" placeholder="编号"/> 
+     			         <input type="text" placeholder="自编号"/> 
+     			         <button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('')}"> 
+                            <i class="icon-search"></i>搜索 
+                         </button> 
+     			     </div> -->
+    			<iframe src="{:U('protable')}" id = "pro_table_iframe" frameborder="0" style='width: 100%;height: 560px;'>
+    			
+    			</iframe>
+  			
+			</div>
 
 
     	</div>
     </div>
+
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.core.js"></script>
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.excheck.js"></script>
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.exedit.js"></script>
+    <script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+
     <script>
+
+    
     	var zNodes//异步获取的节点对象
     	var newNodesAry = new Array()//获取新的编辑对象集合
 
 
+    	
+		var curNodeid=null ; //当前节点id
+
     	$.post("{:U('procategory/getCateTree')}",function($data){
     		zNodes = $data;
     	})
+    	
+//  	$('#upload_btn').click(function(){
+//
+//				if (curNodeid == null) {
+//					toastr.error('请勾选左边的节点');
+//					return false;
+//				}else{
+//					
+//				}
+//      	});
 
+    	//图片上传
+       $("#cateImg").uploadify({
+        	   "height"          : 30,
+        	   "auto"             :false,
+        		"swf"             : "./Public/static/uploadify/uploadify.swf",
+        		"fileObjName"     : "qinniu[]",
+        		"buttonText"      : "上传图片",
+        		"uploader"        : "./admin.php/UploadFile/uploadImgQiniuAjax",
+        		"width"           : 100,
+        		'removeTimeout'   : 1,
+        		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+        		"onUploadSuccess" : function(file, data, response){
+        			var data = eval("("+data+")");
+        			
+					$('#cateImg_th').attr("src",data.img[0].qiniuPrivateUrl);
+					$('#cateImg_th').attr("data-url",data.img[0].url);
+					
+					
+        			
+        		},
+        		'onFallback' : function() {
+        	        alert('未检测到兼容版本的Flash.');
+               	},
+        });
 
-    	//保存树状
+    	//保存按钮
     	$('#saveTree').click(function(){
+			
+    		if (newNodesAry.length == 0) {
+    			toastr.error('目前没有编辑节点操作');
+    			return false;
+    		}
+        	
 	    	$.post("{:U('procategory/addCateNode')}",
 	    		{
-	    			'addNodes':newNodesAry,
+	    			'nodes':newNodesAry,
 	    		},	
 	    		function($data){
-	    			newNodesAry.length =0;
+	    			if ($data.status) {
+						newNodesAry.length = 0;//保存后要清空节点的提交集合
+	    				toastr.success('分类保存成功！');
+	    			}else{
+	    				toastr.success('分类保存失败！');
+	    			}
+	    			
     			})
     	})
     	//过滤处理节点对象
     	function filterNode(node,editTye){
-
+    			
     		var newNodes = new Object();
+
+			newNodes.isadd = false;
+			newNodes.isedit = false;
+			newNodes.isdelete = false;
+			
+			if (newNodesAry.length >0) {
+				for (var i=0; i<newNodesAry.length;i++) {
+					if (newNodesAry[i].id == node.id) {
+						switch(editTye){
+								case 'add':
+									newNodesAry[i].isadd = true;
+									break;
+								case 'edit':
+									newNodesAry[i].name = node.name;
+									newNodesAry[i].isedit = true;
+									break;
+								case 'delete':
+									if (newNodesAry[i].isedit && newNodesAry[i].isadd){
+										newNodesAry.splice(i,1);
+									}else{
+										newNodesAry[i].isdelete = true;
+									}
+									
+									break;
+						}
+						return false;
+					}
+				}
+			}
     		var path = node.getPath();
-    		
     		newNodes.name = node.name;
     		newNodes.level = node.level;
     		newNodes.pid = node.pId;
@@ -62,15 +175,19 @@
     		newNodes.rootName = path[0].name;
     		newNodes.rootId = path[0].id;
 			newNodes.id = node.id;
-    		
-    		if (editTye == "add") {
-				newNodes.isadd = true;
-    		}else{
-    			newNodes.isadd = false;
-    		}
-			console.log(newNodes)
-    		
+			switch(editTye){
+					case 'add':
+						newNodes.isadd = true;break;
+					case 'edit':
+						newNodes.isedit = true;break;
+					case 'delete':
+						newNodes.isdelete = true;break;
+			}				
 			newNodesAry.push(newNodes);
+
+			
+			console.log(newNodesAry);
+			
 
     	}
 		var setting = {
@@ -91,11 +208,12 @@
 			edit: {
 				enable: true,
 				editNameSelectAll: true,
-				showRemoveBtn:false
+				showRemoveBtn:true
 				
 			},
 			check: {
-				enable: true
+				enable: false,
+				chkStyle:"checkbox",
 			},
 			data: {
 				simpleData: {
@@ -104,32 +222,35 @@
 			},
 			callback: {
 				onRename: zTreeOnRename,
+				onClick: zTreeOnClick,
+				onRemove: zTreeOnRemove,
 
 			}
 		};
-		//修改，即重命名
-		//如果提交集合里面有该对象，就进行修改
-		function zTreeOnRename(event, treeId, treeNode, isCancel){
-				
-			if (newNodesAry.length !== 0){
-				
-				for (var key in newNodesAry) {
-					
-					var nodeId = newNodesAry[key].id;
+		//点击事件动作
+		function zTreeOnClick(event, treeId, treeNode){
+			curNodeid = treeNode.id;
+			$('.cateurl a').attr('href','http://www/我是分类连接/'+curNodeid);
+			$('.cateurl a').text('http://www/我是分类连接/'+curNodeid);
+			$("#pro_table_iframe").attr('src',"/aladdin/root/admin.php?s=/procategory/protable/cateid/"+curNodeid)
 
-					if (nodeId == treeNode.id) {
-						newNodesAry[key].name = treeNode.name;
-						return false;
-					}else{
-						newNodesAry[key] = filterNode(treeNode);
-						return false;
-					}
-				}
-			}else{
-				filterNode(treeNode)
-			}
-			
-			console.log(newNodesAry)
+		}
+
+		
+
+
+
+		//删除节点动作
+		function zTreeOnRemove(event, treeId, treeNode){
+			filterNode(treeNode,'delete')
+
+		}
+
+		
+		//修改事件，即重命名
+		function zTreeOnRename(event, treeId, treeNode, isCancel){
+			filterNode(treeNode,'edit')
+
 		}
 
 		//处理过滤节点对象
@@ -201,18 +322,18 @@
 
 		var newCount = 1;
 		function addHoverDom(treeId, treeNode) {
+			
 			var sObj = $("#" + treeNode.tId + "_span");
-			if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+			if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0 || treeNode.level>1) return;
 			var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
 				+ "' title='add node' onfocus='this.blur();'></span>";
 			sObj.after(addStr);
 			var btn = $("#addBtn_"+treeNode.tId);
 			if (btn) btn.bind("click", function(){
 				var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-				var newNodesObj = zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:"new node" + (newCount++)});
-				
-				
-				filterNode(newNodesObj[0],'add');
+				var addNewNode = zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:"new node" + (newCount++)});
+
+				filterNode(addNewNode[0],'add');
 				return false;
 			});
 		};
