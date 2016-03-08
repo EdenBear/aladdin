@@ -25,7 +25,7 @@
 					<tr>
 						<td>自编号</td>
 						<td>
-						   <input type="text" name='pro_info_code' class='input-large' value=''  minlength="2" required>
+						   <input type="text" name='pro_info_code' class='input-large' value='{$product.productcode}'  minlength="2" required>
 						</td>
 					</tr>
 					<tr>
@@ -41,13 +41,13 @@
 					<tr>
 						<td>商品名称</td>
 						<td>
-					        <input type="text" value="" class='input-xxlarge' name='pro_info_fullname' maxlength="30" title="内容不超过30个字" required />
+					        <input type="text" value="{$product.productname}" class='input-xxlarge' name='pro_info_fullname' maxlength="30" title="内容不超过30个字" required />
 						</td>
 					</tr>
 					<tr>
 						<td>商品简称</td>
 						<td>
-					        <input type="text" value="" class='input-large' name='pro_info_shortname' maxlength="15" title="内容不超过15个字" required/>
+					        <input type="text" value="{$product.shortname}" class='input-large' name='pro_info_shortname' maxlength="15" title="内容不超过15个字" required/>
 						</td>
 					</tr>
 					<tr>
@@ -64,13 +64,13 @@
 					</tr>
 					<tr>
 			             <td>卖点说明</td>
-						 <td><input type="text" name="pro_info_sellDesc" value=""  required /></td>
+						 <td><input type="text" name="pro_info_sellDesc" value="{$product.selldesc}"  required /></td>
 					</tr>
 					<tr>
 						<td>商品描述</td>
 						<td>
-							<textarea name="pro_info_desc" rows="" cols=""></textarea>
-							{:hook('adminArticleEdit',array('name'=>'pro_info_desc'))}
+							<textarea name="pro_info_desc" rows="" cols="">{$product['detail']}</textarea>
+							{:hook('adminArticleEdit',array('name'=>'pro_info_desc','value'=>$product['detail']))}
 						</td>
 					</tr>
 					<tr>
@@ -86,58 +86,54 @@
 						</td>
 					</tr>
 					<tr>
-						<td>价格(元)</td>
+						<td>销售价格(元)</td>
 						<td>
-							<input class='input-small' type="text" name="pro_info_price" value='' required>
+							<input class='input-small' type="text" name="pro_info_price" value='{$product.price}' required>
+						</td>
+					</tr>
+					<tr>
+						<td>供货价格(元)</td>
+						<td>
+							<input class='input-small' type="text" name="pro_info_applyprice" value='{$product.applyprice}' required>
 						</td>
 					</tr>
 					<tr>
 						<td>重量(kg)</td>
 						<td>
-							<input class='input-small' type="text" name="pro_info_weight" value='' required>
+							<input class='input-small' type="text" name="pro_info_weight" value='{$product.weight}' required>
 							<span class=''>系统按照重量自动计算运费</span>
 						</td>
 					</tr>
 					<tr>
 						<td>限购数量</td>
 						<td>
-							<input class='input-small' type="text" name='pro_info_limitCount' value='' required >
+							<input class='input-small' type="text" name='pro_info_limitCount' value='{$product.limitcount}' required >
 							<span class='span-remark'>限购为“0”时，代表不限购，否则每个用户最多只能限购设置数量的该商品</span>
 						</td>
 					</tr>
-					<tr>
-					   <td>营销类型</td>
-						<td>
-							<label for="" class='checkbox inline' >
-								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='NOR' required title='请选择上架平台'>普通商品
-							</label>
-							<label for="" class='checkbox inline'>
-								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='YI#'>1元购商品
-							</label>
-							<label for="" class='checkbox inline' >
-								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='KAN'>砍价购商品 
-							</label>
-							<label for="" class='checkbox inline'>
-								<input type="checkbox" name='pro_info_sellType' class="checkbox" value='PIN'>拼团购商品
-							</label>
-							<label for="pro_info_platform" class="error"></label>
-						</td>					   
-					</tr>
+
 					<tr>
 						<td>上架平台</td>
 						<td>
-							<label for="" class='checkbox inline' >
-								<input type="checkbox" name='pro_info_platform' class="checkbox" value='APP' required title='请选择上架平台'>APP
-							</label>
-							<label for="" class='checkbox inline'>
-								<input type="checkbox" name='pro_info_platform' class="checkbox" value='WX#'>微信
-							</label>
-							<label for="" class='checkbox inline' >
-								<input type="checkbox" name='pro_info_platform' class="checkbox" value='FB#'>facebook 
-							</label>
-							<label for="" class='checkbox inline'>
-								<input type="checkbox" name='pro_info_platform' class="checkbox" value='PC#'>PC
-							</label>
+
+    							<label for="" class='checkbox inline' >
+    								<input type="checkbox" name='pro_info_platform' class="checkbox" value='APP' required title='请选择上架平台'
+    								<notempty  name="product.platform.APP">checked</notempty  >>APP
+    							</label>
+    							<label for="" class='checkbox inline'>
+    								<input type="checkbox" name='pro_info_platform' class="checkbox" value='WX#'
+    								<notempty  name="product.platform.WX#">checked</notempty >>微信
+    							</label>
+    							<label for="" class='checkbox inline' >
+    								<input type="checkbox" name='pro_info_platform' class="checkbox" value='FB#'
+    								<notempty  name="product.platform.FB#">checked</notempty >>facebook 
+    							</label>
+    							<label for="" class='checkbox inline'>
+    								<input type="checkbox" name='pro_info_platform' class="checkbox" value='PC#'
+    								<notempty  name="product.platform.PC#">checked</notempty >>PC
+    							</label>						    
+
+
 							<label for="pro_info_platform" class="error"></label>
 						</td>
 					</tr>
@@ -145,10 +141,12 @@
 						<td>上架设置</td>
 						<td>
 							<label for="" class='radio' >
-								<input type="radio" name='pro_info_status' value='HOLD' required title='请选择上架设置'>暂不上架，保存到商品库 
+								<input type="radio" name='pro_info_status' value='HOLD' required title='请选择上架设置'
+								<eq name="product.status" value="HOLD">checked</eq>>暂不上架，保存到商品库 
 							</label>
 							<label for="" class='radio'>
-								<input type="radio" name='pro_info_status' value='UP#'>立即出售(上架后类目不可修改，请确认无误)
+								<input type="radio" name='pro_info_status' value='UP#'
+								<eq name="product.status" value="UP#">checked</eq>>立即出售(上架后类目不可修改，请确认无误)
 							</label>
 							<label for="pro_info_status" class='error'></label>
 						</td>
@@ -206,6 +204,7 @@ function getProInfo(){
 	PRO_INFO_OBJ.supplier = infoForm.find("select[name='pro_info_supplier'] option:selected").val();//供应商
 	PRO_INFO_OBJ.desc = editor_pro_info_desc.html();//描述
 	PRO_INFO_OBJ.price = infoForm.find("input[name='pro_info_price']").val();//价格
+	PRO_INFO_OBJ.applyprice = infoForm.find("input[name='pro_info_applyprice']").val();// 供货价格
 	PRO_INFO_OBJ.weight = infoForm.find("input[name='pro_info_weight']").val();//重量
 	PRO_INFO_OBJ.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
 	PRO_INFO_OBJ.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态

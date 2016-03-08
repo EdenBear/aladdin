@@ -11,13 +11,8 @@
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.excheck.js"></script>
     <script type="text/javascript" src="__STATIC__/zTree/js/jquery.ztree.exedit.js"></script>
     <script>
-    	var zNodes//异步获取的节点对象
+
     	var newNodesAry = new Array()//获取新的编辑对象集合
-
-
-    	$.post("{:U('procategory/getCateTree')}",function($data){
-    		zNodes = $data;
-    	})
 		
 		function getProNode(){
 			return newNodesAry;
@@ -74,7 +69,7 @@
               enable:true ,
               autoParam:["id","name","pid","open"],
               dataFilter:null, 
-              otherParam:[], 
+              otherParam:['checkid',"{$product['category']['id']}"], 
               dataType: "json",
               type:"post",
               url:"{:U('procategory/getCateTree')}"

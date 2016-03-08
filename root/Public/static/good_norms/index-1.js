@@ -3629,7 +3629,8 @@ function() {
 			values: []
 		}), t.items = [], t.origin_items = [], t.stocks = {}, t.origin_stocks = {}, u = "admin.php?s=/goods/attr", o.get(u).success(function(e, i, o, n) {
 			return t.templates = e
-		}), new_product || (u = "/admin/products/" + product_id + "/stocks", o.get(u).success(function(e, i, o, n) {
+//		}), new_product || (u = "/admin/products/" + product_id + "/stocks", o.get(u).success(function(e, i, o, n) {
+		}),  (u = "admin.php?s=/goods/getSku/proid/" + PRODUCT_ID, o.get(u).success(function(e, i, o, n) {
 			var r, a, s, l, d;
 			for (t.items = e.tags, t.origin_items = angular.copy(t.items), d = {}, s = e.stocks, r = 0, a = s.length; a > r; r++) l = s[r], d[l.key] = l;
 			return t.stocks = d, t.origin_stocks = angular.copy(t.stocks)

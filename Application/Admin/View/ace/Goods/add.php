@@ -63,7 +63,7 @@ i:hover{cursor:pointer}
 				var product_o2o_flag = false;
 				var user_name = "测试账户";
 				var PRO_ATTR_OBJ;//提交对象：商品属性变量
-				
+				var PRODUCT_ID = "{$_GET['proid']}";
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
            
@@ -98,11 +98,7 @@ i:hover{cursor:pointer}
                             <include file="Goods:add_info" />
                             
                         </div>
-                        <div class="tab-pane active" id='category'> 
-                            <!-- 商品分类 -->
-                            <include file="Goods:add_category" />
-                            
-                        </div>                        
+                 
                         
                         <!--放置其他标签页 -->  
 						<div class="tab-pane" id="norms">
@@ -380,6 +376,12 @@ i:hover{cursor:pointer}
 								</div>
 							</div>
 						</div>
+						<!-- 商品规格结束 -->
+                        <div class="tab-pane" id='category'> 
+                            <!-- 商品分类 -->
+                            <include file="Goods:add_category" />
+                            
+                        </div>       
 					</div>
 					</div>
 				</form>

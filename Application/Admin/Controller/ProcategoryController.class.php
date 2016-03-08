@@ -19,6 +19,9 @@ class ProcategoryController extends AdminController{
     
     //获取目录树的节点数据
     public function getCateTree(){
+        
+        $checkId = I('checkid');
+
         $proCateModel = M('ProductCategory','','DB_PRODUCT');
         $map['status'] = 'OK#';
         $allData = $proCateModel->where($map)->select();
@@ -30,6 +33,9 @@ class ProcategoryController extends AdminController{
                 'pId'=>$value['parentid'],
                 'open'=>true      //展开节点
             );
+            if ($checkId && $checkId == $value['id']){
+                $data[$key]['checked'] = true;
+            }
             
         }
 

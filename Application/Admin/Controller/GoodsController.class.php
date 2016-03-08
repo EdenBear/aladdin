@@ -18,9 +18,7 @@ class GoodsController extends AdminController{
      * author: EK_熊
      */
     public function index(){
-        if (IS_POST) {
-            
-        }
+
         $id = I('proid');
         $dateStat = I('date_stat');
         $dateEnd = I('date_end');
@@ -90,6 +88,82 @@ class GoodsController extends AdminController{
         $this->set_status($model, $id, $status);
     }
     
+    public function getSku(){
+        $data['stocks']=array(
+            '0'=>array(
+                "created_at" => "2016-03-08T16:00:06.000+08:00",
+                "id"=> "353670",
+                "key"=>"1-3",
+                "name" => "颜色:红,尺寸:12",
+                "price" => "0.01",
+                "product_id" => 56250,
+                "quantity" =>50,
+                "site_id" => 1,
+                "supply_price" => "3.01",
+                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
+            ),
+            '1'=>array(
+                "created_at" => "2016-03-08T16:00:06.000+08:00",
+                "id"=> "353671",
+                "key"=>"1-4",
+                "name" => "颜色:红,尺寸:12",
+                "price" => 0.01,
+                "product_id" => 56250,
+                "quantity" =>50,
+                "site_id" => 1,
+                "supply_price" => 3.01,
+                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
+            ),
+            '2'=>array(
+                "created_at" => "2016-03-08T16:00:06.000+08:00",
+                "id"=> "353672",
+                "key"=>"2-4",
+                "name" => "颜色:红,尺寸:12",
+                "price" => "0.01",
+                "product_id" => 56250,
+                "quantity" =>50,
+                "site_id" => 1,
+                "supply_price" => "3.01",
+                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
+            ),
+            '3'=>array(
+                "created_at" => "2016-03-08T16:00:06.000+08:00",
+                "id"=> "353673",
+                "key"=>"2-3",
+                "name" => "颜色:红,尺寸:12",
+                "price" => "0.01",
+                "product_id" => 56250,
+                "quantity" =>50,
+                "site_id" => 1,
+                "supply_price" => "3.01",
+                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
+            ),
+
+        );
+        $data['tags']=array(
+            '0'=>array(
+                "id"=>"",
+                "name"=>"颜色",
+                "value"=>"",
+                "values"=>array(
+                    '0'=>array("checked"=>"true","id"=>"1","name"=>"红"),
+                    '1'=>array("checked"=>"true","id"=>"2","name"=>"白"),
+                ),
+             ),
+            '1'=>array(
+                "id"=>"",
+                "name"=>"尺寸",
+                "value"=>"",
+                "values"=>array(
+                    '0'=>array("checked"=>"true","id"=>"1","name"=>"11"),
+                    '1'=>array("checked"=>"true","id"=>"2","name"=>"21"),
+                ),
+
+            ),
+            
+        );
+        $this->ajaxReturn($data);
+    }
     
     /**
      * 商品添加：主页面，商品确认提交
@@ -97,6 +171,14 @@ class GoodsController extends AdminController{
      * author: EK_熊
      */
     public function add(){
+        $proid = I('proid');
+            
+        if ($proid){
+            $product = D('Product')->getOneProByid($proid);
+            $this->assign('product',$product);
+        }
+
+        
         if (IS_POST) {
             $sttr = I('attrCombin');//sku数据
             $attr = I('attrVal');//规格sttr属性数据
@@ -139,6 +221,8 @@ class GoodsController extends AdminController{
         $this->display();
     }   
 
+
+    
     /**
      * 商品添加：基本信息展示页
      *
@@ -146,6 +230,8 @@ class GoodsController extends AdminController{
      * author: EK_熊
      */
     public function addInfo(){
+//         $proid = I('proid');
+
         $this->display();
     }
     
@@ -168,19 +254,21 @@ class GoodsController extends AdminController{
             $ret['status'] = false;
             //添加商品基础信息
             $data_pro_info = array(
-                'productCode'=>$proInfo['procode'],
-                'sellDesc'=>$proInfo['selldesc'],
-                'shortName'=>$proInfo['shortname'],
-                'productName'=>$proInfo['fullname'],
-                'supplyID'=>$proInfo['supplier'],
-                'price'=>mony_format($proInfo['price']),   //TODO转换单位分
-                'weight'=>weight_format('g', $proInfo['weight']),//TODO转换单位克存放
-                'productName'=> $proInfo['fullname'],
-                'limitCount'=>$proInfo['limitCount'],
-                'status'=>$proInfo['status'],
-                'platform'=>$proInfo['platform'],
-                'uid'=>UID,
-                'createTime'=>date('Y-m-d H:i:s'),
+                'productCode'   =>$proInfo['procode'],
+                'sellDesc'      =>$proInfo['selldesc'],
+                'shortName'     =>$proInfo['shortname'],
+                'productName'   =>$proInfo['fullname'],
+                'supplyID'      =>$proInfo['supplier'],
+                'price'         =>mony_format($proInfo['price']),   //TODO转换单位分
+                'applyPrice'    =>mony_format($proInfo['applyprice']),   //TODO转换单位分
+                'weight'        =>weight_format('g', $proInfo['weight']),//TODO转换单位克存放
+                'productName'   => $proInfo['fullname'],
+                'limitCount'    =>$proInfo['limitCount'],
+                'status'        =>$proInfo['status'],
+                'platform'      =>$proInfo['platform'],
+                'uid'           =>UID,
+                'createTime'    =>date('Y-m-d H:i:s'),
+                'sellType'      =>'NOR',
             );
             $productModel = M('Product','','DB_PRODUCT');
             
