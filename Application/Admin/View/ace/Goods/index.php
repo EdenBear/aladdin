@@ -77,7 +77,7 @@
                         <td>{$status[$item['status']]}</td>
                         <td>{$item.createtime}</td>
                         <td>
-                            <a href="./admin.php?s=/goods/add/proid/{$item.id}">编辑</a>
+                            <a href="./admin.php?s=/goods/add/proid/{$item.id}" target='_blank'>编辑</a>
                             <switch name='item.status'>
                                 <case value='DW#'>
                                     <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>

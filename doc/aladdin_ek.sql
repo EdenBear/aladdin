@@ -226,3 +226,6 @@ CREATE TABLE `t_product_detail` (
 /*==============================================================*/
 ALTER TABLE `t_product`
 ADD COLUMN `applyPrice`  bigint(20) NULL COMMENT '供货价' AFTER `price`
+/*商品sku补充字段*/
+ALTER TABLE `t_product_sku`
+ADD COLUMN `key`  varchar(20) NULL COMMENT '页面表格对应的key' AFTER `uid`

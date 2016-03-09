@@ -18,9 +18,10 @@ class ProductModel extends Model{
             /*获取图片*/
             $map_img['productID'] = $proid;
             $map_img['status'] = 'OK#';
-            $product['img'] = M('ProductImg','','DB_PRODUCT')->where($map_img)->field('imgPos,imgPath')->select();
+            $product['img'] = M('ProductImg','','DB_PRODUCT')->where($map_img)->field('ID,imgPos,imgPath')->select();
             foreach ($product['img'] as $key=>$val){
-                $product['img'][$key]['imgpath'] = qiniu_private_url($val['imgpath']);
+                $product['img'][$key]['qiniurul'] = qiniu_private_url($val['imgpath']);
+                
             }
             /*获取供应商*/
             //TODO

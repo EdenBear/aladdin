@@ -64,6 +64,8 @@ i:hover{cursor:pointer}
 				var user_name = "测试账户";
 				var PRO_ATTR_OBJ;//提交对象：商品属性变量
 				var PRODUCT_ID = "{$_GET['proid']}";
+				var PRODUCT_CATE_ID = "";//勾选的分类id
+				var imgnum_attr = 0;
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
            
@@ -173,6 +175,7 @@ i:hover{cursor:pointer}
 														<tr class="ui-row norms_add" ng-repeat="row in matrix track by $index" data-item-key="{{row.key}}">
                                                           <td ng-repeat="cell in row track by $index" rowspan="{{cell.parent.rows}}">{{cell.name}}</td>
                                                             <td>
+                                                            
                                                                 <input class="stock-supply" type="text" ng-model="stocks[row.key].supply_price" ng-disabled="uniform_price" >
                                                             </td>
                                                           <td class="price">
@@ -192,7 +195,7 @@ i:hover{cursor:pointer}
                                                        
                                                             <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}" name='qiniu[]' style='width: 218px;'/>
                                                            </td>
-														
+															
                                                         </tr>
 													</tbody>
 												</table>
@@ -265,7 +268,7 @@ i:hover{cursor:pointer}
 											<div class="col-sm-3">
 												<input class="numeric decimal required form-control"
 													id="p_supply_price" min="0.01" type="number" step="any"
-													value="0.0" name="product[supply_price]">
+													value="0.01"  name="product[supply_price]">
 
 											</div>
 											<span
@@ -393,7 +396,43 @@ i:hover{cursor:pointer}
 	</div>
 
 </div>
+
+
 <script>
+
+
+//上传控件
+   var uploadsetting = {
+	   "height"          : 30,
+  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+  		"fileObjName"     : "qinniu[]",
+  		"buttonText"      : "上传图片",
+  		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
+  		"width"           : 120,
+  		'removeTimeout'   : 1,
+  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+  		"onUploadSuccess" : function(file, data, response){
+  			picNum++;
+			var data = eval("("+data+")");
+  			var imgPreview = '';
+  			var li_size = $('.proinfo .picshow li').size();
+  			var _isFirst = false;
+  			if (li_size <=0) _isFirst = true;
+			imgPreview ='<li class="list-group-item"  is-first="'+_isFirst+'">'
+						+'<img src='+data.img[0].qiniuPrivateUrl+' id="pic-'+picNum+'" onclick="setfirst(this.id)" alt=""   />'
+						+'<i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-'+picNum+'" onclick="rmovePic(this.id)"></i>'
+						+'<input type="hidden" name="pro_info_pic" value="'+data.img[0].url+'" />'
+					+'</li>';
+
+			$('.proinfo .picshow').append(imgPreview);
+  		},
+  		'onFallback' : function() {
+  	        alert('未检测到兼容版本的Flash.');
+          	    },
+   };
+
+
+
 //判断是否空对象，true表示是空
 function isEmptyObject(obj){
 	for(var n in obj){return false} 
@@ -408,6 +447,67 @@ function countObject(obj){
 }	
 /* 保存提交按钮*/
     $('#savebtn').click(function(){
+		proSubmitData();
+    	
+    	
+    	
+    	
+    	
+//  	var formData = new FormData($( "#product_form" )[0]);//获取文件流
+
+
+
+//  	$.ajax({
+// 	     url : "{:U('UploadFile/uploadImgQiniuAjax')}",
+// 	     type : "POST",
+//    	  data: formData,
+//        async: false,
+//        cache: false,
+//        contentType: false,
+//        processData: false,
+//        beforeSend: function () {
+//		        // 禁用按钮防止重复提交
+//		        $(this).attr({ disabled: "disabled" });
+//		        //商品基础信息的验证方法，并获取商品基础信息
+//		     	_proInfo = proInfoValid();
+//		        if (isEmptyObject(_proInfo)) {
+//		        	toastr.error("请先完善商品基础信息");
+//		        	return false;
+//		        }
+//		        if (isEmptyObject(PRO_ATTR_OBJ)) {
+//		        	toastr.error("请编辑商品规格");
+//		        	return false;
+//		        }
+//		         
+//		         //TODO 规格图片数量验证匹配
+//
+//		        
+//  	  },
+//	      complete: function () {
+//  			$(this).removeAttr("disabled");
+//        },
+//        success: function (returndata) {
+//        		var imgAry = new Array();
+//        		imgAry = returndata.img;
+//				if (returndata.status) {
+//					var imgNum = 0;
+//					for (var _key in PRO_ATTR_OBJ) {
+//						PRO_ATTR_OBJ[_key].skuimg = imgAry[imgNum].url;
+//						imgNum ++;
+//					};
+//	
+//					
+//					$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,proInfo:_proInfo,procateid:PRODUCT_CATE_ID} );
+//					
+//					}else{
+//						toastr.error('请选择择商品规格图片');
+//					}
+//        },
+// 	});
+
+    })
+
+	function proSubmitData() {
     	//PRO_ATTR_OBJ 获取到的规格数据，obj
     	var tagNum = $('#norms_choose').children(".tag-item-box").length;
     	var attrObj = new Object();
@@ -417,64 +517,22 @@ function countObject(obj){
     		var singleAttrObj = getAttrObj(i);
 			attrObj[singleAttrObj.name] = singleAttrObj.value;
     	}
-    	var formData = new FormData($( "#product_form" )[0]);//获取文件流
-
-    	$.ajax({
-   	     url : "{:U('UploadFile/uploadImgQiniuAjax')}",
-   	     type : "POST",
-      	  data: formData,
-          async: false,
-          cache: false,
-          contentType: false,
-          processData: false,
-          beforeSend: function () {
-		        // 禁用按钮防止重复提交
-		        $(this).attr({ disabled: "disabled" });
-		        //商品基础信息的验证方法，并获取商品基础信息
-		        
-		     	_proInfo = proInfoValid();
-		        if (isEmptyObject(_proInfo)) {
-		        	toastr.error("请先完善商品基础信息");
-		        	return false;
-		        }
-		        if (isEmptyObject(PRO_ATTR_OBJ)) {
-		        	toastr.error("请编辑商品规格");
-		        	return false;
-		        }
-		         
-		         //TODO 规格图片数量验证匹配
-//		        var countAttrImg = $('.normsUpload').size();
-//		        if (countAttrImg <countObject(PRO_ATTR_OBJ)) {
-//		        	toastr.error("请编辑商品规格");
-//		        	return false;
-//		        }
-		        
-    	  },
-	      complete: function () {
-    			$(this).removeAttr("disabled");
-          },
-          success: function (returndata) {
-          		var imgAry = new Array();
-          		imgAry = returndata.img;
-				if (returndata.status) {
-					var imgNum = 0;
-					for (var _key in PRO_ATTR_OBJ) {
-						PRO_ATTR_OBJ[_key].skuimg = imgAry[imgNum].url;
-						imgNum ++;
-					};
-	
-					
-					$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,$proInfo:_proInfo} );
-					
-					}else{
-						toastr.error('请选择择商品规格图片');
-					}
-          },
-   	});
-
-    })
-
-
+        //商品基础信息的验证方法，并获取商品基础信息
+     	_proInfo = proInfoValid();
+        if (isEmptyObject(_proInfo)) {
+        	toastr.error("请先完善商品基础信息");
+        	return false;
+        }
+        if (isEmptyObject(PRO_ATTR_OBJ)) {
+        	toastr.error("请编辑商品规格");
+        	return false;
+        }
+        if (PRODUCT_CATE_ID == ""){
+         	toastr.error("请编辑商品分类");
+        	return false;       	
+        }
+		$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,proInfo:_proInfo,procateid:PRODUCT_CATE_ID} );
+	}
     
     //获取单个属性规格的对象
     function getAttrObj($index){

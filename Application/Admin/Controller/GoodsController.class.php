@@ -78,6 +78,22 @@ class GoodsController extends AdminController{
         return $list;
     }
     
+    /**
+     * 删除商品图片
+     * 
+     * date:2016年3月9日
+     * author: EK_熊
+     */
+    public function deleteProImg(){
+        $imgid = I('imgid');
+        $map['ID'] = $imgid; 
+        $deleteImg = M('ProductImg','','DB_PRODUCT')->where($map)->setField('status','DEL');
+        if ($deleteImg){
+            $this->success('图片删除成功');
+        }else{
+            $this->error('图片删除失败！');
+        }
+    }
     
     /**
      * 修改状态
@@ -88,12 +104,76 @@ class GoodsController extends AdminController{
         $this->set_status($model, $id, $status);
     }
     
+    
     public function getSku(){
-        $data['stocks']=array(
+        $proid = I('proid');
+        $sku_map['productID'] = $proid;
+        $sku_field = array(
+            "createTime"=>"created_at" ,
+            "ID" => "id",
+            "name",
+            "skuPrice"=>"price",
+            "productID"=> "product_id",
+            "skuStock" =>"quantity",
+            "applyPrice" =>"supply_price",
+        );
+        $data['stocks'] = M('ProductSku','','DB_PRODUCT')->where($sku_map)->field($sku_field)->select();
+        /* 取出skuid,进行合成页面显示表格对应关系的key值 */
+        foreach ($data['stocks'] as $key=>$val) {
+            $skuattr_map['skuID'] = $val['id'];
+            $skuattrData = M('ProductSkuAttr','','DB_PRODUCT')->where($skuattr_map)->field('attrValueID')->select();//skuattr关联数据
+            foreach ($skuattrData as $k=>$value){
+                $keyList[$val['id']] .= $value['attrvalueid']."-";
+            }
+            
+            $data['stocks'][$key]['key'] = substr($keyList[$val['id']],0,-1);
+
+        }
+
+        $attr_map['productID'] = $proid;
+        $attr_field = array('attrName'=>'name','id');
+        
+        $attr = M('ProductAttr','','DB_PRODUCT')->where($attr_map)->field($attr_field)->select();
+        foreach ($attr as $key=>$val){
+            $attrIdList[] = $val['id'];
+        }
+
+        $attrval_map['attrID'] = array('in',$attrIdList);
+        $attrval_field = array('ID'=>'id','attrValue'=>'name','attrID');
+        $attrValue = M('ProductAttrValue','','DB_PRODUCT')->where($attrval_map)->field($attrval_field)->select();
+
+        
+        foreach ($attrValue as $key => $value){
+                $newvalue = $value;
+                $newvalue['checked'] = true;
+                unset($newvalue['attrid']);
+                $tags[$value['attrid']][] = $newvalue;
+
+        }
+
+        foreach ($attr as $key=>$value){
+            $attr[$key]['values'] = $tags[$value['id']];
+            
+        }
+        $data['tags'] = $attr;
+//         dump($data['tags'][0]);exit();
+        $da['stocks']=array(
             '0'=>array(
                 "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> "353670",
-                "key"=>"1-3",
+                "id"=> 353670,
+                "key"=>"11-31",
+                "name" => "颜色:红,尺寸:12",
+                "price" => "0.01",
+                "product_id" => 56250,
+                "quantity" =>5000,
+                "site_id" => 1,
+                "supply_price" => "3.01",
+                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
+            ),
+            '1'=>array(
+                "created_at" => "2016-03-08T16:00:06.000+08:00",
+                "id"=> 353671,
+                "key"=>"11-41",
                 "name" => "颜色:红,尺寸:12",
                 "price" => "0.01",
                 "product_id" => 56250,
@@ -102,22 +182,10 @@ class GoodsController extends AdminController{
                 "supply_price" => "3.01",
                 "updated_at" => "2016-03-08T16:00:06.000+08:00",                
             ),
-            '1'=>array(
-                "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> "353671",
-                "key"=>"1-4",
-                "name" => "颜色:红,尺寸:12",
-                "price" => 0.01,
-                "product_id" => 56250,
-                "quantity" =>50,
-                "site_id" => 1,
-                "supply_price" => 3.01,
-                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
-            ),
             '2'=>array(
                 "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> "353672",
-                "key"=>"2-4",
+                "id"=> 353672,
+                "key"=>"21-41",
                 "name" => "颜色:红,尺寸:12",
                 "price" => "0.01",
                 "product_id" => 56250,
@@ -128,8 +196,8 @@ class GoodsController extends AdminController{
             ),
             '3'=>array(
                 "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> "353673",
-                "key"=>"2-3",
+                "id"=> 353673,
+                "key"=>"21-31",
                 "name" => "颜色:红,尺寸:12",
                 "price" => "0.01",
                 "product_id" => 56250,
@@ -140,23 +208,21 @@ class GoodsController extends AdminController{
             ),
 
         );
-        $data['tags']=array(
+        $d['tags']=array(
             '0'=>array(
-                "id"=>"",
+                "id"=>"21",
                 "name"=>"颜色",
-                "value"=>"",
                 "values"=>array(
-                    '0'=>array("checked"=>"true","id"=>"1","name"=>"红"),
-                    '1'=>array("checked"=>"true","id"=>"2","name"=>"白"),
+                    '0'=>array("checked"=>true,"id"=>"11","name"=>"红"),
+                    '1'=>array("checked"=>true,"id"=>"21","name"=>"白"),
                 ),
              ),
             '1'=>array(
-                "id"=>"",
+                "id"=>"12",
                 "name"=>"尺寸",
-                "value"=>"",
                 "values"=>array(
-                    '0'=>array("checked"=>"true","id"=>"1","name"=>"11"),
-                    '1'=>array("checked"=>"true","id"=>"2","name"=>"21"),
+                    '0'=>array("checked"=>true,"id"=>"31","name"=>"11"),
+                    '1'=>array("checked"=>true,"id"=>"41","name"=>"21"),
                 ),
 
             ),
@@ -470,6 +536,7 @@ class GoodsController extends AdminController{
                     'skuStock'=>$value['quantity'],
                     'createTime'=>$createTime,
                     'sortOrder'=>$sortOrder++,
+                    'key'=>$value['key'],
                 );
                 $skuId = $skuModel->add($add_data_sku);
                 $idList_sku[] = $skuId;

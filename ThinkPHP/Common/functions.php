@@ -789,6 +789,7 @@ function dump($var, $echo=true, $label=null, $strict=true) {
         }
     }
     if ($echo) {
+        header("Content-Type: text/html; charset=utf-8");
         echo($output);
         return null;
     }else

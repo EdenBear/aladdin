@@ -56,9 +56,14 @@
 							<input type="file" id="uploadImg_info"  name='qinniu[]' class="required" accept="image/*" title='请选择商品图片'/>
 							<span style='position: absolute;top: 22px;left: 135px;'>默认第一幅图为主图</span>
 							<ul class='picshow list-group'>
-<!--<li class="list-group-item" is-first="true"><img src="http://localhost/aladdin/root/Public/static/kindeditor/plugins/emoticons/images/20.gif" id="pic-1" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-1" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_1d0ca5290e76e384ce76bd127c03355f.jpg"></li>
-<li class="list-group-item" is-first="false"><img src="http://localhost/aladdin/root/Public/static/kindeditor/plugins/emoticons/images/20.gif" id="pic-2" onclick="setfirst(this.id)" alt=""><i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-2" onclick="rmovePic(this.id)"></i><input type="hidden" name="pro_info_pic" value="http://7xrade.com2.z0.glb.qiniucdn.com/2016-03-01_7792ef91fc8c65dd1b339c02f9a250e5.jpg"></li>	
-							-->
+							     <volist name='product.img' id='vo'> 
+							         <li class="list-group-item" imgpos='{$vo.imgpos}'>
+							             <img src="{$vo.qiniurul}" id="pic-{$vo.id}" onclick="setfirst(this.id)" alt="">
+							             <i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-{$vo.id}" onclick="rmovePic(this.id)"></i>
+							             <input type="hidden" name="pro_info_pic" value="{$product.imgpath}">
+							         </li>
+							     </volist>
+
 							</ul>
 						</td>
 					</tr>
@@ -158,7 +163,7 @@
 	</div>
 </div>
 
-<div id='testsubmit'>测试提交</div>
+
 <script src="__STATIC__/validate/jquery.validate.min.js"></script>
 <script src="__STATIC__/validate/messages_zh.js"></script>
 <script>
@@ -167,11 +172,7 @@
 /*ajax方式提交表单，进行验证*/
 $("#form-pro-info").validate();
  
-$('#testsubmit').click(function(){
-	proInfoValid();
- 
 
-})
 
 /*ajax提交商品基础信息，先执行验证执行动作，再获取商品信息*/
 function proInfoValid(){
@@ -219,9 +220,11 @@ function getProInfo(){
     if (pro_platform.substr(0,1)==',') pro_platform=pro_platform.substr(1);    
 
     PRO_INFO_OBJ.platform = pro_platform; //上架平台
+    
 	PRO_INFO_OBJ.img = new Array();//图片
 	infoForm.find("input[name='pro_info_pic']").each(function(index){
 		PRO_INFO_OBJ.img[index] = $(this).val();
+		
 	})
 	console.log(PRO_INFO_OBJ);
 	return PRO_INFO_OBJ;
@@ -235,16 +238,16 @@ var picNum = 0;//添加预览图的数量
  */
 function setfirst(e){
 	var thisImgLi = $("#"+e).parent('li');
-	var curIsFirst = thisImgLi.attr('is-first');
-	if (curIsFirst == 'true') return false;
+	var curIsFirst = thisImgLi.attr('imgpos');
+	if (curIsFirst == 'MAJ') return false;
 	$.dialog({
 		    title: '提示',
 		    content: '是否设置为主图',
 		    okValue: '确定',
 		    ok: function () {
-		    	$('.picshow li').attr('is-first','false');
+		    	$('.picshow li').attr('is-first','SEC');
 		    	thisImgLi.insertBefore('.picshow li:eq(0)');
-		    	thisImgLi.attr("is-first",'true')
+		    	thisImgLi.attr("is-first",'MAJ')
 		    },
 		    cancelValue: '取消',
 		    cancel: function () {}
@@ -254,7 +257,27 @@ function setfirst(e){
  * 移除预览图
  */
 function rmovePic(e){
-	$("#"+e).parent('li').remove();
+	var imgid = e.replace("pic-remove-","")
+	$.dialog({
+	    title: '提示',
+	    content: '是否删除该图片？',
+	    okValue: '确定',
+	    ok: function () {
+		    if (PRODUCT_ID) {
+		    	$.post("{:U('goods/deleteProImg')}",{'imgid':imgid},function(returndata){
+		    		if (returndata) {
+		    			$("#"+e).parent('li').remove();
+			    		}
+		    	});
+			    }else{
+			    	$("#"+e).parent('li').remove();
+			    }
+
+	    },
+	    cancelValue: '取消',
+	    cancel: function () {}
+	});
+	
 }
 
 

@@ -3622,7 +3622,7 @@ function() {
 		}, e
 	}(), t = function(t, o) {
 		var n, r, a, s, l, d, c, u;
-		return new_product && (t.is_show_box = !0, t.editor = {
+		return new_product && (t.is_show_box = 0, t.editor = {
 			id: "",
 			name: "",
 			value: "",
@@ -3630,7 +3630,7 @@ function() {
 		}), t.items = [], t.origin_items = [], t.stocks = {}, t.origin_stocks = {}, u = "admin.php?s=/goods/attr", o.get(u).success(function(e, i, o, n) {
 			return t.templates = e
 //		}), new_product || (u = "/admin/products/" + product_id + "/stocks", o.get(u).success(function(e, i, o, n) {
-		}),  (u = "admin.php?s=/goods/getSku/proid/" + PRODUCT_ID, o.get(u).success(function(e, i, o, n) {
+		}), PRODUCT_ID == '' || (u = "admin.php?s=/goods/getSku/proid/" + PRODUCT_ID, o.get(u).success(function(e, i, o, n) {
 			var r, a, s, l, d;
 			for (t.items = e.tags, t.origin_items = angular.copy(t.items), d = {}, s = e.stocks, r = 0, a = s.length; a > r; r++) l = s[r], d[l.key] = l;
 			return t.stocks = d, t.origin_stocks = angular.copy(t.stocks)
@@ -3697,7 +3697,7 @@ function() {
 			}), i.length > 0 ? !0 : !1
 		}, t.add_item = function() {
 			var e, i;
-			return i = t.editor, e = i.edit_index, void 0 === i.name || "" === i.name.trim() ? void toastr.error("规格名称不能为空，请输入规格名称！") : i.values.length < 1 ? void toastr.error("至少要有一个规格值！") : void 0 === e ? n(t.editor.name) ? void toastr.error("存在重复规格名称！") : (t.items.push(angular.copy(i)), t.is_show_box = !1) : i.old_name !== i.name && n(t.editor.name) ? void toastr.error("存在重复规格名称！") : (delete i.value, delete i.old_name, t.items[e] = i, t.editor.edit_index = void 0, t.open_show_box_scope.is_show_box = !1)
+			return i = t.editor, e = i.edit_index, void 0 === i.name || "" === i.name.trim() ? void toastr.error("规格名称不能为空，请输入规格名称！") : i.values.length < 1 ? void toastr.error("至少要有一个规格值！") : void 0 === e ? n(t.editor.name) ? void toastr.error("存在重复规格名称！") : (t.items.push(angular.copy(i)), t.is_show_box = !1) : i.old_name !== i.name && n(t.editor.name) ? void toastr.error("存在重复规格名称！") : (delete i.value, delete i.old_name, t.items[e] = i, t.editor.edit_index = void 0, t.open_show_box_scope.is_show_box = !1),this.$parent.$parent.is_show_box = !1
 		}, t.new_tag = function() {
 			var e;
 			return t.open_show_box_scope && (t.open_show_box_scope.is_show_box = !1), t.open_show_box_scope = this, this.is_show_box = !0, e = s(t.items) + 1, t.editor = {
@@ -3707,7 +3707,7 @@ function() {
 				values: []
 			}
 		},t.edit_item2=function(e){
-			return t.editor = angular.copy(t.items[e]),t.editor.value = "", t.editor.old_name = t.editor.name, t.editor.edit_index = e,t.this.is_show_box = 1
+			return t.editor = angular.copy(t.items[e]),t.editor.value = "", t.editor.old_name = t.editor.name, t.editor.edit_index = e,t.this.is_show_box = 1,t.open_show_box_scope && (t.open_show_box_scope.is_show_box = !1), t.open_show_box_scope = this
 		},
 		t.edit_item = function(e) {
 			return t.editor = angular.copy(t.items[e]), t.editor.value = "", t.editor.old_name = t.editor.name, t.editor.edit_index = e, t.open_show_box_scope && (t.open_show_box_scope.is_show_box = !1), t.open_show_box_scope = this, this.is_show_box = !0
