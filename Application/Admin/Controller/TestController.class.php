@@ -22,8 +22,16 @@ class TestController extends Controller{
 
 
 //         dump($valueAry);
-            $test = D('ProductCategory')->select();
-            dump($test);
+            $a = array(
+                '2',
+                '1'=>array('2','222'),
+                
+
+                
+            );
+            
+            dump(CURTIME);
+            dump(array_level($a));
     }
     
 }

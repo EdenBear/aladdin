@@ -58,8 +58,12 @@
 		};
 
 		
-		$(document).ready(function(){
-			$.fn.zTree.init($("#treeDemo"), setting);
 
-		});
+		var treeObj = $.fn.zTree.init($("#treeDemo"), setting);
+		
+		function getCateNode(){
+			var nodes = treeObj.getCheckedNodes(true);
+			return nodes[0].id;
+		}
+
 </script>

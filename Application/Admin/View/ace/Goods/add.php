@@ -64,7 +64,7 @@ i:hover{cursor:pointer}
 				var user_name = "测试账户";
 				var PRO_ATTR_OBJ;//提交对象：商品属性变量
 				var PRODUCT_ID = "{$_GET['proid']}";
-				var PRODUCT_CATE_ID = "";//勾选的分类id
+
 				var imgnum_attr = 0;
 			</script>
 			<div id="product-editor" data-new-record="true" data-product-id="" class="outside">
@@ -512,6 +512,7 @@ function countObject(obj){
     	var tagNum = $('#norms_choose').children(".tag-item-box").length;
     	var attrObj = new Object();
     	var _proInfo = new Object();//获取商品基本信息
+    	var _proCateId = getCateNode();//获取分类树的选中id
     	
     	for (var i=0; i<tagNum; i++){
     		var singleAttrObj = getAttrObj(i);
@@ -519,19 +520,21 @@ function countObject(obj){
     	}
         //商品基础信息的验证方法，并获取商品基础信息
      	_proInfo = proInfoValid();
+     	_proInfo.cateid = _proCateId;
+     	
         if (isEmptyObject(_proInfo)) {
         	toastr.error("请先完善商品基础信息");
         	return false;
         }
-        if (isEmptyObject(PRO_ATTR_OBJ)) {
-        	toastr.error("请编辑商品规格");
-        	return false;
-        }
-        if (PRODUCT_CATE_ID == ""){
-         	toastr.error("请编辑商品分类");
-        	return false;       	
-        }
-		$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,proInfo:_proInfo,procateid:PRODUCT_CATE_ID} );
+//         if (isEmptyObject(PRO_ATTR_OBJ)) {
+//         	toastr.error("请编辑商品规格");
+//         	return false;
+//         }
+//         if (_proCateId == ""){
+//          	toastr.error("请编辑商品分类");
+//         	return false;       	
+//         }
+		$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,proInfo:_proInfo} );
 	}
     
     //获取单个属性规格的对象

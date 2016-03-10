@@ -13,7 +13,7 @@ use Think\Model;
 class GoodsController extends AdminController{
  
     /**
-     * 商品列表页
+     * 【商品列表页】
      * date:2016年2月25日
      * author: EK_熊
      */
@@ -45,6 +45,7 @@ class GoodsController extends AdminController{
     }
     
     /**
+     * 【商品基础信息】获取商品基础信息，时需要进行数据整合
      * 合并商品数据和图片，分类，供应商，数据
      * @param unknown $list
      * date:2016年3月6日
@@ -79,7 +80,7 @@ class GoodsController extends AdminController{
     }
     
     /**
-     * 删除商品图片
+     * 【商品基础信息】删除商品图片
      * 
      * date:2016年3月9日
      * author: EK_熊
@@ -96,7 +97,7 @@ class GoodsController extends AdminController{
     }
     
     /**
-     * 修改状态
+     * 【商品基础信息】修改状态
      * 
      */
     public function setStatus($id,$status){
@@ -104,7 +105,12 @@ class GoodsController extends AdminController{
         $this->set_status($model, $id, $status);
     }
     
-    
+    /**
+     * 【商品规格】获取数据
+     * ajax方式获取
+     * date:2016年3月9日
+     * author: EK_熊
+     */
     public function getSku(){
         $proid = I('proid');
         $sku_map['productID'] = $proid;
@@ -237,50 +243,79 @@ class GoodsController extends AdminController{
      * author: EK_熊
      */
     public function add(){
+        
         $proid = I('proid');
             
         if ($proid){
             $product = D('Product')->getOneProByid($proid);
             $this->assign('product',$product);
+ 
         }
 
         
         if (IS_POST) {
             $sttr = I('attrCombin');//sku数据
             $attr = I('attrVal');//规格sttr属性数据
-            $proInfo = I('$proInfo');
-//             dump($sttr);
-//             dump($attr);
-//             dump($proInfo);
-            if (!$proInfo) $this->error('请完善商品基础信息');
-            if (!$sttr || !$attr) $this->error('请填写商品规格信息');
-            
+            $proInfo = I('proInfo');//商品基础信息数据
+            $proid = $proInfo['id'];
+            dump($sttr);
+            dump($attr);
+            exit();
+
+//             if (!$proInfo) $this->error('请完善商品基础信息');
+//             if (!$sttr || !$attr) $this->error('请填写商品规格信息');
+            $ret['status'] = true;
             
             do{
-                /*开启事务*/
-                $productModel = M('Product','','DB_PRODUCT');
+                /* 开启事务 */
+                $productModel = D('Product');
+                
                 $productModel->startTrans();
-            
-                /*保存商品数据*/
-                $addInfo = $this->addInfo($proInfo);
-                if (!$addInfo['status']) {
-                    $ret = $addInfo;
-                    break;
+               
+                if (empty($proid)) {
+                    $ret['info'] = '商品添加成功！';
+                    /* 保存商品基础信息 */
+                    $addInfo = $this->addProInfo($proInfo);
+                    if (!$addInfo['status']) {
+                        $ret = $addInfo;
+                        break;
+                    }
+                    /* 保存 sku属性数据 */
+                    $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
+                    if (!$addAttr['status']) {
+                        $ret = $addAttr;
+                        break;
+                    }     
+                    
+                    
+                }else{ 
+                    $ret['info'] = '商品更新成功！';
+                    /* 编辑更新商品基础信息 */
+                    $updateInfo = $productModel->updateProInfo($proInfo);
+                    if (!$updateInfo['status']) {
+                        $ret = $updateInfo;
+                        break;
+                    }
+                   
+                    /* 编辑更新商品规格 */
+                    $updateAttr = $productModel->updateProAttr($attr,$sttr,$proId);
+                    if (!$updateAttr['status']) {
+                        $ret = $updateAttr;
+                        break;
+                    }                    
                 }
-                /* 保存 sku属性数据*/
-                $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
-                if (!$addAttr['status']) {
-                    $ret = $addAttr;
-                    break;
-                }
+
+                
+                
+                
             }while(false);
             
             if (!$ret['status']) {
-                $productModel->rollback($ret['info']);
-                $this->error();
+                $productModel->rollback();
+                $this->error($ret['info']);
             }else{
                 $productModel->commit();
-                $this->success('商品添加成功！');
+                $this->success($ret['info']);
             }   
         }
         $this->meta_title = '添加商品';
@@ -296,11 +331,15 @@ class GoodsController extends AdminController{
      * author: EK_熊
      */
     public function addInfo(){
-//         $proid = I('proid');
 
         $this->display();
     }
-    
+    /**
+     * 商品分类，展示页
+     * @param unknown $proid
+     * date:2016年3月9日
+     * author: EK_熊
+     */
     public function proCate($proid) {
         
         $this->display();
@@ -314,6 +353,7 @@ class GoodsController extends AdminController{
     */
     public function addProInfo($proInfo){
 
+        
         //TODO 处理运费
         do{
             
@@ -327,14 +367,14 @@ class GoodsController extends AdminController{
                 'supplyID'      =>$proInfo['supplier'],
                 'price'         =>mony_format($proInfo['price']),   //TODO转换单位分
                 'applyPrice'    =>mony_format($proInfo['applyprice']),   //TODO转换单位分
-                'weight'        =>weight_format('g', $proInfo['weight']),//TODO转换单位克存放
-                'productName'   => $proInfo['fullname'],
+                'weight'        =>weight_format($proInfo['weight'],'g'),//TODO转换单位克存放
                 'limitCount'    =>$proInfo['limitCount'],
                 'status'        =>$proInfo['status'],
                 'platform'      =>$proInfo['platform'],
                 'uid'           =>UID,
                 'createTime'    =>date('Y-m-d H:i:s'),
                 'sellType'      =>'NOR',
+                'categoryID'    =>$proInfo['cateid'],
             );
             $productModel = M('Product','','DB_PRODUCT');
             
@@ -359,32 +399,21 @@ class GoodsController extends AdminController{
             }
             
             //保存图片
-            $proImgModel = M('ProductImg','','DB_PRODUCT');
-            foreach ($proInfo['img'] as $k => $v){
-                $data_pro_Img[$k] = array(
-                    'productID'=>$proId,
-                    'imgPath'  =>$v,
-                    'uid'      =>UID,
-                    'createTime'=>date('Y-m-d H:i:s'),
-                    'status'    =>'OK#'
-                );
-                if ($k == 0) {
-                    $data_pro_Img[$k]['imgPos'] = 'MAJ';
-                }else{
-                    $data_pro_Img[$k]['imgPos'] = 'SEC';
-                }
+            $proImgModel = D('ProductImg')->batcAddProImg($proInfo['img'],$proId);
+            if (!$proImgModel) {
+                $ret['info'] = '商品图片详情添加异常！';
+                break;
             }
-           
-            $addProImg = $proImgModel->addAll($data_pro_Img);
             $ret['status'] = true;
             $ret['info'] = '商品添加成功';
             $ret['proid'] = $proId;
         }while(false);
         
         return $ret;
-        dump($ret);
+
     }
-    
+
+
 
     
     //TODO获取商品规格属性
@@ -420,48 +449,10 @@ class GoodsController extends AdminController{
         $this->ajaxReturn($data);
     }
     
-//     /**
-//      * 
-//      * 添加商品触发控制器
-//      * date:2016年2月28日
-//      * author: EK_熊
-//      */
-//     public function addProduct(){
-//         $sttr = I('attrCombin');//sku数据
-//         $attr = I('attrVal');//规格sttr属性数据
-//         $proInfo = I('proinfo');
-//         dump($proInfo);
-        
-//         do{
-//             /*开启事物*/
-//             $productModel = M('Product','','DB_PRODUCT');
-//             $productModel->startTrans();
-            
-//             /*保存商品数据*/
-//             $addInfo = $this->addInfo($proInfo);
-//             if (!$addInfo['status']) {
-//                 $ret = $addInfo;
-//                 break;
-//             }
-//             /* 保存 sku属性数据*/
-//             $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
-//             if (!$addAttr['status']) {
-//                 $ret = $addAttr;
-//                 break;
-//             }
-//         }while(false);
-        
-//         if (!$ret['status']) {
-//             $productModel->rollback();
-//         }else{
-//             $productModel->commit();
-//             $this->success('商品添加成功！');
-//         }
-//     }
 
     
     /**
-     * 商品规格
+     * 【商品规格】添加，编辑操作
      * @param unknown $productID
      * @param unknown $attr
      * @param unknown $sttr

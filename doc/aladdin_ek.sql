@@ -1,4 +1,4 @@
-
+﻿
 /*==============================================================*/
 /* Table: t_cart_product_sku  业务配置记录表
 /* Date:  2016-2-24
@@ -226,6 +226,15 @@ CREATE TABLE `t_product_detail` (
 /*==============================================================*/
 ALTER TABLE `t_product`
 ADD COLUMN `applyPrice`  bigint(20) NULL COMMENT '供货价' AFTER `price`
-/*商品sku补充字段*/
+ALTER TABLE `t_product_detail`
+ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `createTime`
+ALTER TABLE `t_product_img`
+ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `createTime`
+ALTER TABLE `t_product_sku_attr`
+ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `uid`
+ALTER TABLE `t_product_attr`
+ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `createTime`
+ALTER TABLE `t_product_attr_value`
+ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `createTime`
 ALTER TABLE `t_product_sku`
-ADD COLUMN `key`  varchar(20) NULL COMMENT '页面表格对应的key' AFTER `uid`
+ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `sortOrder`

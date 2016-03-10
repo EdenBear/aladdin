@@ -141,7 +141,7 @@ function qiniu_upload($isPublic = false){
  * date:2016年3月3日
  * author: EK_熊
  */
-function weight_format($units='',$num){
+function weight_format($num,$units=''){
     $num = intval($num);
     switch ($units){
         case 'kg': $ret = $num/1000;break;
@@ -158,12 +158,76 @@ function weight_format($units='',$num){
  * date:2016年3月3日
  * author: EK_熊
  */
-function mony_format($units='',$num){
+function mony_format($num,$units='ten'){
     $num = intval($num);
     switch ($units){
         case 'yuan': $ret = $num/100;break;
         case 'ten': $ret = $num*100;break;
         default : $ret = false;
     }
+    return $ret;
+}
+
+
+/**
+ * 计算数组的维度，返回维度
+ * @param unknown $arr
+ * date:2016年3月10日
+ * author: EK_熊
+ */
+function array_level($arr){
+    $al = array(0);
+    function aL($arr,&$al,$level=0){
+        if(is_array($arr)){
+            $level++;
+            $al[] = $level;
+            foreach($arr as $v){
+                aL($v,$al,$level);
+            }
+        }
+    }
+    aL($arr,$al);
+    return max($al);
+}
+
+/**
+ * 数据批量更新处理,包含批量更新
+ * @param unknown $model
+ * @param unknown $map
+ * @param unknown $saveData
+ * @param string $tableName
+ * date:2016年3月10日
+ * author: EK_熊
+ */
+function update_all($model,$map=array(),$saveData=array(),$tableName=''){
+    $ret['status'] = null;
+    $dataLevel = array_level($saveData);
+    $ret['info'] = "{$tableName}表批量更新成功！";
+    $ret['status'] = true;
+
+    if ($dataLevel == 1) {
+        $update = $model->where($map)->save($saveData);
+        if (!$update) {
+            $ret['info'] = "{$tableName}表更新出错！";
+            $ret['status'] = false;
+        }
+    }else if($dataLevel == 2){
+        $model->startTrans();
+        foreach ($saveData as $key => $val){
+            $update = $model->where($map)->save($val);
+            if (!$update) {
+                $ret['info'] = "{$tableName}表批量更新出错！";
+                $ret['status'] = false;
+                break;
+            }
+        }
+
+        if ($ret['status']){
+            $model->commit();
+        }else{
+            $model->rollback();
+        }
+    }
+
     return $ret;
 }

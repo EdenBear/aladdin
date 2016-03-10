@@ -60,7 +60,7 @@
 							         <li class="list-group-item" imgpos='{$vo.imgpos}'>
 							             <img src="{$vo.qiniurul}" id="pic-{$vo.id}" onclick="setfirst(this.id)" alt="">
 							             <i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-{$vo.id}" onclick="rmovePic(this.id)"></i>
-							             <input type="hidden" name="pro_info_pic" value="{$product.imgpath}">
+							             <input type="hidden" name="pro_info_pic" value="{$vo.imgpath}" imgid='{$vo.id}'>
 							         </li>
 							     </volist>
 
@@ -209,7 +209,7 @@ function getProInfo(){
 	PRO_INFO_OBJ.weight = infoForm.find("input[name='pro_info_weight']").val();//重量
 	PRO_INFO_OBJ.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
 	PRO_INFO_OBJ.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态
-	//TODO营销类型
+	PRO_INFO_OBJ.id = PRODUCT_ID;
 	
 	
 	/*获取上架平台，拼接字符串，逗号隔开*/
@@ -223,10 +223,13 @@ function getProInfo(){
     
 	PRO_INFO_OBJ.img = new Array();//图片
 	infoForm.find("input[name='pro_info_pic']").each(function(index){
-		PRO_INFO_OBJ.img[index] = $(this).val();
+		PRO_INFO_OBJ.img[index] = new Object();
+		PRO_INFO_OBJ.img[index].imgpath = $(this).val();
+		PRO_INFO_OBJ.img[index].id = $(this).attr('imgid');
+		PRO_INFO_OBJ.img[index].imgpos = $(this).parent('li.list-group-item').attr('imgpos');
 		
 	})
-	console.log(PRO_INFO_OBJ);
+
 	return PRO_INFO_OBJ;
 }
 
@@ -297,12 +300,13 @@ function rmovePic(e){
 			var data = eval("("+data+")");
   			var imgPreview = '';
   			var li_size = $('.proinfo .picshow li').size();
-  			var _isFirst = false;
-  			if (li_size <=0) _isFirst = true;
-			imgPreview ='<li class="list-group-item"  is-first="'+_isFirst+'">'
+  			var imgpos = li_size <=0 ? 'MAJ' :'SEC';
+  			 
+  	  			
+			imgPreview ='<li class="list-group-item" imgpos='+imgpos+'>'
 						+'<img src='+data.img[0].qiniuPrivateUrl+' id="pic-'+picNum+'" onclick="setfirst(this.id)" alt=""   />'
 						+'<i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-'+picNum+'" onclick="rmovePic(this.id)"></i>'
-						+'<input type="hidden" name="pro_info_pic" value="'+data.img[0].url+'" />'
+						+'<input type="hidden" name="pro_info_pic" imgid="" value="'+data.img[0].url+'" />'
 					+'</li>';
 
 			$('.proinfo .picshow').append(imgPreview);
