@@ -42,8 +42,8 @@
                 <td>{$item.categoryname}</td>
                 <td>
                 	<ul>
-                		<li>供货价：{$item.applyprice}</li>
-                		<li>销售价：{$item.price}</li>
+                		<li>供货价：{:mony_format($item['applyprice'],'yuan')}</li>
+                		<li>销售价：{:mony_format($item['price'],'yuan')}</li>
                 	</ul>
                 </td>
                 <td>{$item.sellcount}</td>

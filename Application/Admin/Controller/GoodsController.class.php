@@ -257,10 +257,10 @@ class GoodsController extends AdminController{
             $sttr = I('attrCombin');//sku数据
             $attr = I('attrVal');//规格sttr属性数据
             $proInfo = I('proInfo');//商品基础信息数据
-            $proid = $proInfo['id'];
-            dump($sttr);
-            dump($attr);
-            exit();
+            $proId = $proInfo['id'];
+//             dump($sttr);
+//             dump($attr);
+//             exit();
 
 //             if (!$proInfo) $this->error('请完善商品基础信息');
 //             if (!$sttr || !$attr) $this->error('请填写商品规格信息');
@@ -272,16 +272,18 @@ class GoodsController extends AdminController{
                 
                 $productModel->startTrans();
                
-                if (empty($proid)) {
+                if (empty($proId)) {
                     $ret['info'] = '商品添加成功！';
                     /* 保存商品基础信息 */
                     $addInfo = $this->addProInfo($proInfo);
+                    
                     if (!$addInfo['status']) {
                         $ret = $addInfo;
                         break;
                     }
                     /* 保存 sku属性数据 */
                     $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
+                    
                     if (!$addAttr['status']) {
                         $ret = $addAttr;
                         break;
@@ -291,11 +293,11 @@ class GoodsController extends AdminController{
                 }else{ 
                     $ret['info'] = '商品更新成功！';
                     /* 编辑更新商品基础信息 */
-                    $updateInfo = $productModel->updateProInfo($proInfo);
-                    if (!$updateInfo['status']) {
-                        $ret = $updateInfo;
-                        break;
-                    }
+//                     $updateInfo = $productModel->updateProInfo($proInfo);
+//                     if (!$updateInfo['status']) {
+//                         $ret = $updateInfo;
+//                         break;
+//                     }
                    
                     /* 编辑更新商品规格 */
                     $updateAttr = $productModel->updateProAttr($attr,$sttr,$proId);
@@ -319,6 +321,8 @@ class GoodsController extends AdminController{
             }   
         }
         $this->meta_title = '添加商品';
+        
+        $this->assign('attr',$attr);
         $this->display();
     }   
 
@@ -527,7 +531,6 @@ class GoodsController extends AdminController{
                     'skuStock'=>$value['quantity'],
                     'createTime'=>$createTime,
                     'sortOrder'=>$sortOrder++,
-                    'key'=>$value['key'],
                 );
                 $skuId = $skuModel->add($add_data_sku);
                 $idList_sku[] = $skuId;
@@ -559,12 +562,14 @@ class GoodsController extends AdminController{
                 $ret['info'] = '批量添加库存记录出错！';
                 break;
             }
-            
+           
             
             /* 添加skuattr数据*/
             for ($i=0;$i<count($idList_sku);$i++) {   //循环skuid列表,
                 $curSkuAttr = $skuValueList[$idList_sku[$i]];//根据skuid的值，从$skuValueList取对应的属性
+                
                 for ($h=0;$h<count($curSkuAttr);$h++) {
+
                     $add_data_sku_attr[] = array(
                         'skuID'         =>$idList_sku[$i],
                         'attrID'        =>$idList_attr[$curSkuAttr[$h]['attr']],//从id存储数组$idList_attr获取id值
@@ -573,9 +578,25 @@ class GoodsController extends AdminController{
                         'uid'           =>UID,
                     );
                 }
+                
             }
+
             //批量添加skuattr数据
             $addSkuAttr = $skuAttrModel->addAll($add_data_sku_attr);
+            
+            //更新sku表的key值
+            for ($i=0;$i<count($idList_sku);$i++) {
+                $skuKey = '';
+                $sku_AttrValueID_ary = $skuAttrModel->where("skuID={$idList_sku[$i]}")->field('attrValueID')->select();
+                for ($h=0;$h<count($sku_AttrValueID_ary);$h++) {
+                    $skuKey .= $sku_AttrValueID_ary[$h]['attrvalueid']."-";
+                }
+        
+                $skuKey = rtrim($skuKey, "-");
+                $sku_setKey = $skuModel->where("ID={$idList_sku[$i]}")->setField('key',$skuKey);
+                
+            }
+            
             if (!$addSkuAttr) {
                 $ret['info'] = '批量添加sku_attr出错！';
                 break;

@@ -116,49 +116,39 @@ class ProductModel extends Model{
             $attrModel = D('ProductAttr');
             $attrValueModel = M('ProductAttrValue','','DB_PRODUCT');
             
-            $ret['status'] = false;
-            dump($attr);
-            dump($sku);
-            do{
-                /* 更新attr表*/
-                
-                foreach ($attr as $key => $value){
-                    //先检查属性名称是否存在，如果不存在要新增
-                    $attrName = trim($key);
-                    $attr_id = $attrModel->where(array('productID'=>$proId,'attrName'=>$attrName))->getField('ID');
-                    if ($attr_id) {
-                        $attrModel->updateAttr($attr_id,$attrName);
-                    }else{
-                        $attrModel->addAttr();
-                    }
-                }
-                
-                /* 更新attr value表*/
-                
-                /* 更新sku表*/
-                foreach ($sku as $key => $value){
-                    $map_sku['ID'] = $value['id'];
-                    $save_sku = array(
-                        'name' => $value['name'],
-                        'skuPrice'=>$value['price'],
-                        'applyPrice'=>$value['supply_price'],
-                        'skuStock'=>$value['quantity'],
-                        'updateTime'=>CURTIME,
-                    );
-                    $updateSku = $attrValueModel->where($map_sku)->save($save_sku);
-                    
-                    $attrValueIdAry = explode('-',$key);//attrValue id数组
-                    
-                    
+            $ret['status'] = true;
+//             dump($attr);
+//             dump($sku);
 
+
+            /* 过滤整理来源sku数据*/
+            foreach ($sku as $key => $value) {
+                $sku_map['key'] = $key;
+                $skuIsExist = $skuModel->where($sku_map)->find();
+                if (!$skuIsExist) {
+                    //新增key值没有的sku数据
+                    $createAttr = $attrModel->createAttr($value,$proId);
+                    if (!$createAttr) {
+                        $ret = $createAttr;
+                        break;
+                    }
+                    dump($createAttr);
+                }else{
+                    //TODO更新
                 }
-                
-                
-                /* 更新stock表 库存表*/
-            }while(false);
+            }
+
+               
+
+
             return $ret;
         }
         
+        function getAttrFromSku($sku){
+            foreach ($sku as $key=>$val){
+                
+            }
+        }
    
         
     }

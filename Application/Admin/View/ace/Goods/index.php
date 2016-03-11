@@ -71,8 +71,8 @@
                         <td><img src="{$item.imgmaj}" alt="" style="width:50px"/></td>
                         <td>{$item.productname}</td>
                         <td>{$item.categoryname}</td>
-                        <td>{$item.applyprice}</td>
-                        <td>{$item.price}</td>
+                        <td>{:mony_format($item['applyprice'],'yuan')}</td>
+                        <td>{:mony_format($item['price'],'yuan')}</td>
                         <td>{$item.sellcount}</td>
                         <td>{$status[$item['status']]}</td>
                         <td>{$item.createtime}</td>
