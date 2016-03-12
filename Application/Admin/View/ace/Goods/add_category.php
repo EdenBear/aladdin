@@ -63,7 +63,12 @@
 		
 		function getCateNode(){
 			var nodes = treeObj.getCheckedNodes(true);
-			return nodes[0].id;
+			if (nodes.length == 0) {
+				return false;
+			}else{
+				return nodes[0].id;
+			}
+			
 		}
 
 </script>

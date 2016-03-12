@@ -3643,14 +3643,15 @@ function() {
 				return e.values.length > 0
 			}), h = new e(n), t.matrix = h.get_matrix(), p = $("#p_market_price").val() || 0, b = $("#p_supply_price").val() || 0, _ = {}, console.debug(t.stocks), f = t.stocks || {};
 			for (s in f)
-				for (y = f[s], console.debug(i), g = t.matrix, a = 0, c = g.length; c > a; a++) v = g[a], v.key === s && (_[v.key] = y);
+				for (y = f[s], g = t.matrix, a = 0, c = g.length; c > a; a++) v = g[a], v.key === s && (_[v.key] = y);
 			for (console.debug(_), m = t.matrix, l = 0, u = m.length; u > l; l++) v = m[l], void 0 === _[v.key] ? _[v.key] = {
 				key: v.key,
 				name: v.name,
 				price: p,
 				supply_price: b,
 				quantity: 50
-			} : null === _[v.key].name && (_[v.key].name = v.name);
+			} : null === _[v.key].name || (_[v.key].name = v.name);
+//		} : null === _[v.key].name && (_[v.key].name = v.name);
 			return t.stocks = _, t.headers = h.getHeader(),PRO_ATTR_OBJ = t.stocks;
 		}, !0), c = 0, t.$watch("templates", function() {
 			var e;

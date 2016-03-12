@@ -122,17 +122,14 @@ class GoodsController extends AdminController{
             "productID"=> "product_id",
             "skuStock" =>"quantity",
             "applyPrice" =>"supply_price",
+            'key',
         );
         $data['stocks'] = M('ProductSku','','DB_PRODUCT')->where($sku_map)->field($sku_field)->select();
+
         /* 取出skuid,进行合成页面显示表格对应关系的key值 */
         foreach ($data['stocks'] as $key=>$val) {
-            $skuattr_map['skuID'] = $val['id'];
-            $skuattrData = M('ProductSkuAttr','','DB_PRODUCT')->where($skuattr_map)->field('attrValueID')->select();//skuattr关联数据
-            foreach ($skuattrData as $k=>$value){
-                $keyList[$val['id']] .= $value['attrvalueid']."-";
-            }
-            
-            $data['stocks'][$key]['key'] = substr($keyList[$val['id']],0,-1);
+            $data['stocks'][$key]['supply_price'] = mony_format($val['supply_price'],'yuan');
+            $data['stocks'][$key]['price'] = mony_format($val['price'],'yuan');
 
         }
 
@@ -162,78 +159,33 @@ class GoodsController extends AdminController{
             
         }
         $data['tags'] = $attr;
-//         dump($data['tags'][0]);exit();
-        $da['stocks']=array(
-            '0'=>array(
-                "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> 353670,
-                "key"=>"11-31",
-                "name" => "颜色:红,尺寸:12",
-                "price" => "0.01",
-                "product_id" => 56250,
-                "quantity" =>5000,
-                "site_id" => 1,
-                "supply_price" => "3.01",
-                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
-            ),
-            '1'=>array(
-                "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> 353671,
-                "key"=>"11-41",
-                "name" => "颜色:红,尺寸:12",
-                "price" => "0.01",
-                "product_id" => 56250,
-                "quantity" =>50,
-                "site_id" => 1,
-                "supply_price" => "3.01",
-                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
-            ),
-            '2'=>array(
-                "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> 353672,
-                "key"=>"21-41",
-                "name" => "颜色:红,尺寸:12",
-                "price" => "0.01",
-                "product_id" => 56250,
-                "quantity" =>50,
-                "site_id" => 1,
-                "supply_price" => "3.01",
-                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
-            ),
-            '3'=>array(
-                "created_at" => "2016-03-08T16:00:06.000+08:00",
-                "id"=> 353673,
-                "key"=>"21-31",
-                "name" => "颜色:红,尺寸:12",
-                "price" => "0.01",
-                "product_id" => 56250,
-                "quantity" =>50,
-                "site_id" => 1,
-                "supply_price" => "3.01",
-                "updated_at" => "2016-03-08T16:00:06.000+08:00",                
-            ),
 
-        );
-        $d['tags']=array(
-            '0'=>array(
-                "id"=>"21",
-                "name"=>"颜色",
-                "values"=>array(
-                    '0'=>array("checked"=>true,"id"=>"11","name"=>"红"),
-                    '1'=>array("checked"=>true,"id"=>"21","name"=>"白"),
-                ),
-             ),
-            '1'=>array(
-                "id"=>"12",
-                "name"=>"尺寸",
-                "values"=>array(
-                    '0'=>array("checked"=>true,"id"=>"31","name"=>"11"),
-                    '1'=>array("checked"=>true,"id"=>"41","name"=>"21"),
-                ),
+//         $da['stocks']=array(
+//             '0'=>array(
+//                 "created_at" => "2016-03-08T16:00:06.000+08:00",
+//                 "id"=> 353670,
+//                 "key"=>"11-31",
+//                 "name" => "颜色:红,尺寸:12",
+//                 "price" => "0.01",
+//                 "product_id" => 56250,
+//                 "quantity" =>5000,
+//                 "site_id" => 1,
+//                 "supply_price" => "3.01",
+//                 "updated_at" => "2016-03-08T16:00:06.000+08:00",                
+//             ),
 
-            ),
+//         );
+//         $d['tags']=array(
+//             '0'=>array(
+//                 "id"=>"21",
+//                 "name"=>"颜色",
+//                 "values"=>array(
+//                     '0'=>array("checked"=>true,"id"=>"11","name"=>"红"),
+//                     '1'=>array("checked"=>true,"id"=>"21","name"=>"白"),
+//                 ),
+//              ),
             
-        );
+//         );
         $this->ajaxReturn($data);
     }
     
@@ -258,12 +210,10 @@ class GoodsController extends AdminController{
             $attr = I('attrVal');//规格sttr属性数据
             $proInfo = I('proInfo');//商品基础信息数据
             $proId = $proInfo['id'];
-//             dump($sttr);
-//             dump($attr);
-//             exit();
 
-//             if (!$proInfo) $this->error('请完善商品基础信息');
-//             if (!$sttr || !$attr) $this->error('请填写商品规格信息');
+
+            if (!$proInfo) $this->error('请完善商品基础信息');
+            if (!$sttr || !$attr) $this->error('请填写商品规格信息');
             $ret['status'] = true;
             
             do{
@@ -293,11 +243,11 @@ class GoodsController extends AdminController{
                 }else{ 
                     $ret['info'] = '商品更新成功！';
                     /* 编辑更新商品基础信息 */
-//                     $updateInfo = $productModel->updateProInfo($proInfo);
-//                     if (!$updateInfo['status']) {
-//                         $ret = $updateInfo;
-//                         break;
-//                     }
+                    $updateInfo = $productModel->updateProInfo($proInfo);
+                    if (!$updateInfo['status']) {
+                        $ret = $updateInfo;
+                        break;
+                    }
                    
                     /* 编辑更新商品规格 */
                     $updateAttr = $productModel->updateProAttr($attr,$sttr,$proId);
@@ -307,8 +257,6 @@ class GoodsController extends AdminController{
                     }                    
                 }
 
-                
-                
                 
             }while(false);
             
@@ -456,7 +404,7 @@ class GoodsController extends AdminController{
 
     
     /**
-     * 【商品规格】添加，编辑操作
+     * 【商品规格】添加操作
      * @param unknown $productID
      * @param unknown $attr
      * @param unknown $sttr

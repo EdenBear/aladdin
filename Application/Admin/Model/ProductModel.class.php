@@ -6,12 +6,19 @@ use Think\Model;
 // +----------------------------------------------------------------------
 // | Author: EK_熊<1439527494@qq.com>
 // +----------------------------------------------------------------------
-// | Description: 此文件作用于****
+// | Description: 此文件作用于商品模型，相关的逻辑处理
 // +----------------------------------------------------------------------
 class ProductModel extends Model{
     protected $connection = 'DB_PRODUCT';
 
-    //获取商品基础信息，单条记录
+
+    /**
+     * 获取商品基础信息，单条记录
+     * @param unknown $proid
+     * @return Ambigous <boolean, mixed, NULL, string, unknown, multitype:, object>
+     * date:2016年3月12日
+     * author: EK_熊
+     */
     function getOneProByid($proid){
         
             $map_pro['ID'] = $proid;
@@ -45,7 +52,13 @@ class ProductModel extends Model{
             return $product;
         } 
         
-        //更新商品信息
+        /**
+         * 更新商品基础信息
+         * @param unknown $proInfo
+         * @return boolean
+         * date:2016年3月12日
+         * author: EK_熊
+         */
         function updateProInfo($proInfo){
             
             $proCateModel = M('ProductCategory','','DB_PRODUCT');
@@ -109,46 +122,48 @@ class ProductModel extends Model{
             return $ret;
         }
         
-        //更新商品属性
+        /**
+         * 更新商品属性，操作过滤器，区分哪些是需要创建，哪些是需要更新字段
+         * @param unknown $attr
+         * @param unknown $sku
+         * @param unknown $proId
+         * @return boolean
+         * date:2016年3月12日
+         * author: EK_熊
+         */
         function updateProAttr($attr,$sku,$proId){
             $skuModel = M('ProductSku','','DB_PRODUCT');
-            $skuAttrModel = M('ProductSkuAttr','','DB_PRODUCT');
             $attrModel = D('ProductAttr');
-            $attrValueModel = M('ProductAttrValue','','DB_PRODUCT');
-            
+            unset($_SESSION['updateProAttr']);
             $ret['status'] = true;
-//             dump($attr);
-//             dump($sku);
-
 
             /* 过滤整理来源sku数据*/
             foreach ($sku as $key => $value) {
                 $sku_map['key'] = $key;
                 $skuIsExist = $skuModel->where($sku_map)->find();
                 if (!$skuIsExist) {
-                    //新增key值没有的sku数据
-                    $createAttr = $attrModel->createAttr($value,$proId);
-                    if (!$createAttr) {
-                        $ret = $createAttr;
+                    
+                    $createAttr = $attrModel->createProAttr($value,$proId);
+                    if (!$createAttr['status']) {//新增key值没有的sku数据
+                        $ret['info'] = '【更新商品属性】创建attr数据出错：'.$createAttr['info'];
+                        $ret['status'] = false;
                         break;
                     }
-                    dump($createAttr);
-                }else{
-                    //TODO更新
+
+                }else{//页面传进来的key对应的数据都存在，即进入更新字段环节
+                    $updateProAttr = $attrModel->updateProAttr($key,$proId,$value);
+                    if (!$updateProAttr['status']) {//新增key值没有的sku数据
+                        $ret['info'] ='【更新商品属性】字段更新出错：' .$updateProAttr['info'];
+                        $ret['status'] = false;
+                        break;
+                    }                    
                 }
             }
-
-               
-
 
             return $ret;
         }
         
-        function getAttrFromSku($sku){
-            foreach ($sku as $key=>$val){
-                
-            }
-        }
+
    
         
     }

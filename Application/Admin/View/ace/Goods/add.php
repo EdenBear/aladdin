@@ -176,10 +176,10 @@ i:hover{cursor:pointer}
                                                           <td ng-repeat="cell in row track by $index" rowspan="{{cell.parent.rows}}">{{cell.name}}</td>
                                                             <td>
                                                             
-                                                                <input class="stock-supply" type="text" ng-model="stocks[row.key].supply_price" ng-disabled="uniform_price" >
+                                                                <input class="stock-supply" type="text" ng-model="stocks[row.key].supply_price" ng-disabled="" >
                                                             </td>
                                                           <td class="price">
-                                                              <input class="stock-price" type="text" ng-model="stocks[row.key].price" ng-disabled="uniform_price">
+                                                              <input class="stock-price" type="text" ng-model="stocks[row.key].price" ng-disabled="">
                                                             <div class="prompt">
                                                               <p class="discount-price">折后价：￥</p>
                                                                 <p class="agent-commission">金牌用户总积分：￥</p>
@@ -193,7 +193,7 @@ i:hover{cursor:pointer}
 
                                                            <td>
                                                        
-                                                            <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}" name='qiniu[]' style='width: 218px;'/>
+                                                            <!-- <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}" name='qiniu[]' style='width: 218px;'/>  -->
                                                            </td>
 															
                                                         </tr>
@@ -521,20 +521,26 @@ function countObject(obj){
         //商品基础信息的验证方法，并获取商品基础信息
      	_proInfo = proInfoValid();
      	_proInfo.cateid = _proCateId;
-     	
+     	console.log();
         if (isEmptyObject(_proInfo)) {
         	toastr.error("请先完善商品基础信息");
         	return false;
         }
-//         if (isEmptyObject(PRO_ATTR_OBJ)) {
-//         	toastr.error("请编辑商品规格");
-//         	return false;
-//         }
-//         if (_proCateId == ""){
-//          	toastr.error("请编辑商品分类");
-//         	return false;       	
-//         }
-		$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,proInfo:_proInfo} );
+        if (isEmptyObject(PRO_ATTR_OBJ)) {
+        	toastr.error("请编辑商品规格");
+        	return false;
+        }
+        if (_proCateId == false){
+         	toastr.error("请编辑商品分类");
+        	return false;       	
+        }
+		$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,proInfo:_proInfo}, function(returndata){
+			console.log(returndata)
+				if (returndata.status == 1) {
+		         	toastr.success("保存成功！");
+		        	return false;  
+				}
+			});
 	}
     
     //获取单个属性规格的对象

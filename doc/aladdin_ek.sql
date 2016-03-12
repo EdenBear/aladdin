@@ -237,8 +237,14 @@ ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `createTime`
 ALTER TABLE `t_product_attr_value`
 ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `createTime`
 ALTER TABLE `t_product_sku`
+ADD COLUMN `sortOrder`  int(11) NULL COMMENT '排序' AFTER `createTime`
 ADD COLUMN `updateTime`  datetime NULL COMMENT '更新时间' AFTER `sortOrder`
+
 ALTER TABLE `t_product_sku`
 ADD COLUMN `key`  varchar(80) NULL COMMENT 'sku数据的标记，也是attrvalue的id配对' AFTER `uid`
+
+ALTER TABLE `t_product_sku`
+ADD COLUMN `name`  varchar(200) NULL COMMENT 'sku数据的标记的名称' AFTER `key`
+
 ALTER TABLE `t_product_stock`
 MODIFY COLUMN `ID`  int(11) NOT NULL AUTO_INCREMENT FIRST

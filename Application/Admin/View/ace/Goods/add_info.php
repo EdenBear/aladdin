@@ -31,11 +31,11 @@
 					<tr>
 						<td>供应商</td>
 						<td>
-							<select name="pro_info_supplier" id="" class='span12' title="请选择供应商!" required>
-			                       <option value="">请选择供应商</option>
-			                       <option value="1">阿迪达斯</option>
-			                       <option value="2">耐克</option>
-							</select>
+<!-- 							<select name="pro_info_supplier" id="" class='span12' title="请选择供应商!" required> -->
+<!-- 			                       <option value="">请选择供应商</option> -->
+<!-- 			                       <option value="1">阿迪达斯</option> -->
+<!-- 			                       <option value="2">耐克</option> -->
+<!-- 							</select> -->
 						</td>
 					</tr>
 					<tr>
@@ -80,32 +80,32 @@
 					</tr>
 					<tr>
 						<td>运费</td>
-						<td>
-							<label for="" class='radio'>
-								<input type="radio" name='pro_info_freight' value='1' required title='请选择运费方式'>买家承担
-							</label>
-							<label for="" class='radio'>
-								<input type="radio" name='pro_info_freight' value='2'>包邮
-							</label>
-							<label for="pro_info_freight" class="error"></label>
-						</td>
+<!-- 						<td> -->
+<!-- 							<label for="" class='radio'> -->
+<!-- 								<input type="radio" name='pro_info_freight' value='1' required title='请选择运费方式'>买家承担 -->
+<!-- 							</label> -->
+<!-- 							<label for="" class='radio'> -->
+<!-- 								<input type="radio" name='pro_info_freight' value='2'>包邮 -->
+<!-- 							</label> -->
+<!-- 							<label for="pro_info_freight" class="error"></label> -->
+<!-- 						</td> -->
 					</tr>
 					<tr>
 						<td>销售价格(元)</td>
 						<td>
-							<input class='input-small' type="text" name="pro_info_price" value='{$product.price}' required>
+							<input class='input-small' type="text" name="pro_info_price" value='{:mony_format($product["price"],"yuan")}' required>
 						</td>
 					</tr>
 					<tr>
 						<td>供货价格(元)</td>
 						<td>
-							<input class='input-small' type="text" name="pro_info_applyprice" value='{$product.applyprice}' required>
+							<input class='input-small' type="text" name="pro_info_applyprice" value='{:mony_format($product["applyprice"],"yuan")}' required>
 						</td>
 					</tr>
 					<tr>
 						<td>重量(kg)</td>
 						<td>
-							<input class='input-small' type="text" name="pro_info_weight" value='{$product.weight}' required>
+							<input class='input-small' type="text" name="pro_info_weight" value="{:weight_format($product['weight'],'kg')}" required>
 							<span class=''>系统按照重量自动计算运费</span>
 						</td>
 					</tr>
@@ -147,7 +147,7 @@
 						<td>
 							<label for="" class='radio' >
 								<input type="radio" name='pro_info_status' value='HOLD' required title='请选择上架设置'
-								<eq name="product.status" value="HOLD">checked</eq>>暂不上架，保存到商品库 
+								<eq name="product.status" value="HOL">checked</eq>>暂不上架，保存到商品库 
 							</label>
 							<label for="" class='radio'>
 								<input type="radio" name='pro_info_status' value='UP#'
@@ -187,6 +187,8 @@ function proInfoValid(){
 		}	
 		//获取商品信息，并输出
 		return getProInfo();		
+	}else{
+		return false;
 	}
 	
 

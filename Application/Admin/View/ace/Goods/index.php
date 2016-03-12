@@ -73,7 +73,7 @@
                         <td>{$item.categoryname}</td>
                         <td>{:mony_format($item['applyprice'],'yuan')}</td>
                         <td>{:mony_format($item['price'],'yuan')}</td>
-                        <td>{$item.sellcount}</td>
+                        <td>{$item.sellcount|default=0}</td>
                         <td>{$status[$item['status']]}</td>
                         <td>{$item.createtime}</td>
                         <td>

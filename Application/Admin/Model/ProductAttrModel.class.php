@@ -11,15 +11,7 @@ use Think\Model;
 class ProductAttrModel extends Model{
     protected $connection = 'DB_PRODUCT';
     
-    function addAttr($attrName,$proId){
-        $add = array(
-            'attrName'  => $attrName,
-            'productID' =>$proId,
-            'uid'       =>UID,
-            'createTime'=>$createTime,
-         );
-        return $ret = $this->add($add);
-    }
+
     
     /**
      * 获取attr数据，根据proid和attrValId
@@ -38,44 +30,176 @@ class ProductAttrModel extends Model{
      * date:2016年3月11日
      * author: EK_熊
      */
-    function getAttrByValId($proId,$attrValId){
-        if (is_array($attrValId)) {
-            $attrValId = implode(',',$attrValId);
+//     function getAttrByValId($proId,$attrValId){
+//         if (is_array($attrValId)) {
+//             $attrValId = implode(',',$attrValId);
+//         }
+//         $ret = null;
+//         $sql = "SELECT
+//                     attr.productID,
+//                     attr.attrName,
+//                     attrValue.attrValue,
+//                     attrValue.attrID,
+//                     attrValue.ID as attrValueID,
+//                     skuAttr.skuID
+//                     FROM
+//                     aladdin_product_sku_user.t_product_attr_value as attrValue
+//                     LEFT JOIN aladdin_product_sku_user.t_product_attr as attr ON attr.ID = attrValue.attrID
+//                     LEFT JOIN aladdin_product_sku_user.t_product_sku_attr as skuAttr ON attrValue.ID = skuAttr.attrValueID
+//                     WHERE attrValue.ID IN ({$attrValId}) AND attr.productID = {$proId}
+//                 ";
+
+//         $ret = M('')->query($sql);
+//         foreach ($ret as $key => $value) {
+//             $data[$value['attrvalueid']] = $value;
+//         }
+//         return $data;
+//     }
+    
+    
+
+    
+    /**
+     *  sku数据存在数据库时的更新操作
+     * @param unknown $key
+     * @param unknown $proId
+     * @param unknown $sku
+     * @return boolean
+     * date:2016年3月12日
+     * author: EK_熊
+     */
+    function updateProAttr($key,$proId,$sku=array()){
+//         $key = '145-148-168';
+//           $sku = array(
+//               "name"=>"高度111:15cm,重量:23kg,颜色:红色",
+//              "price"=>" 0",
+//               "product_id"=>"32",
+//               "quantity"=>"50",
+//               "supply_price"=>"2",
+//           );
+        
+        $skuModel = M('ProductSku','','DB_PRODUCT');
+        $sku_map['key'] = $key;
+        $sku_map['productID'] = $proId;
+        $stockInDB = $skuModel->where($sku_map)->find();
+        /* 更新attr属性的attrName,通过sku的key值来获取attr的id*/
+
+        $nameAry_1 = explode(',',$sku['name']);
+        for($i=0;$i<count($nameAry_1);$i++){
+            $nameAry_2 = explode(':',$nameAry_1[$i]);//属性名称的第二次切割
+
+            $attrName = $nameAry_2[0];//属性名称(有可能是需要更新的新字段)
+            $attrValueName = $nameAry_2[1];//属性名称(有可能是需要更新的新字段)
+            $attrDataInDB = $this->getAttrByskukey($key, $attrValueName);//获取在库的属性名称
+
+            if ($attrDataInDB['attrname'] !== $attrName && !in_array($attrName,$_SESSION['updateProAttr']['attrName']) ) {//名称和在库的名称不同，进行更新操作
+                $updateAttr = $this->updateAttr($attrDataInDB['attrid'], $proId, $attrName);
+//                 dump("---进入更新的attr-{$key}-----");
+
+                if (!$updateAttr){
+                    
+                    $ret['info'] = 'attr字段更新出错'.$key;
+                    $ret['status'] = false;
+                    return $ret;
+                }else{
+                    
+                    $_SESSION['updateProAttr']['attrName'][]= $attrName;
+                }
+
+                
+            }
         }
-        $ret = null;
+        
+        
+        
+        /* stock库存，进来的数据quantity值和在库的skustock值不相等时进行记录数据添加 */
+        if (intval($stockInDB['skuStock']) !== intval($sku['quantity'])) {
+            $addStock = $this->addStock($stockInDB['ID'], $sku['quantity'],$optType='UPDA');
+            if (!$addStock) {
+                $ret['info'] = '添加库存记录'.$key;
+                $ret['status'] = false;
+                return $ret;
+            }
+        }
+        
+        /* 更新sku表字段信息*/
+
+        $updateSku = $this->updateSku($sku,$proId,$key);
+        if (!$updateSku) {
+            $ret['info'] = 'sku更新数据出错！'.$key;
+            $ret['status'] = false;
+            return $ret;
+        }else{
+            $ret['info'] = 'sku更新数据完成！'.$key;
+//             dump("sku更新数据完成！{$key}");
+        }
+        $ret['status'] = true;
+        return $ret;
+    }
+    
+    /**
+     * 根据sku的key值和attr属性的值，获取属性的名称的id（attrID）
+     * 比如：传入key='122-121'和'红色'，返回'颜色'的id(attrID)
+     * 
+     * 返回格式 array (size=2){
+              'attrid' => string '81' (length=2)
+              'attrname' => string '高度' (length=6)
+              }
+     * date:2016年3月12日
+     * author: EK_熊
+     */
+    function getAttrByskukey($key,$attrValue){
         $sql = "SELECT
-                    attr.productID,
-                    attr.attrName,
-                    attrValue.attrValue,
-                    attrValue.attrID,
-                    attrValue.ID as attrValueID,
-                    skuAttr.skuID
-                    FROM
-                    aladdin_product_sku_user.t_product_attr_value as attrValue
-                    LEFT JOIN aladdin_product_sku_user.t_product_attr as attr ON attr.ID = attrValue.attrID
-                    LEFT JOIN aladdin_product_sku_user.t_product_sku_attr as skuAttr ON attrValue.ID = skuAttr.attrValueID
-                    WHERE attrValue.ID IN ({$attrValId}) AND attr.productID = {$proId}
-                ";
-
+                skuAttr.attrID,
+                attr.attrName
+                FROM
+                aladdin_product_sku_user.t_product_sku as sku
+                LEFT JOIN aladdin_product_sku_user.t_product_sku_attr as skuAttr ON skuAttr.skuID = sku.ID
+                LEFT JOIN aladdin_product_sku_user.t_product_attr_value as attrValue ON attrValue.ID = skuAttr.attrValueID
+                LEFT JOIN aladdin_product_sku_user.t_product_attr as attr ON attr.ID = skuAttr.attrID
+                WHERE sku.key ='{$key}' AND attrValue.attrValue='{$attrValue}'
+                LIMIT 0,1
+        "; 
         $ret = M('')->query($sql);
-        foreach ($ret as $key => $value) {
-            $data[$value['attrvalueid']] = $value;
-        }
-        return $data;
+        return $ret[0];
     }
     
-    
-
-    
-    //需要attrid
-    function updateAttr($attrId,$attrName){
-        $save['attrName'] = $attrName;
-        $save['updateTime'] = CURTIME;
+    //更新attr表的字段
+    function updateAttr($attrId,$proId,$attrName){
+        $save = array(
+            'attrName'=> $attrName,
+            'updateTime'=>date('Y-m-d H:i:s'),
+            'uid'    => UID,
+        );
+        $where['productID'] = $proId;
         $where['ID'] = $attrId;
-        return $ret = $this->where($where)->save($save);        
+        
+        $ret =  M('ProductAttr','','DB_PRODUCT')->where($where)->save($save);
+
+        return $ret;
     }
     
-    //更新操作时的数据创建
+    
+    //更新sku数据表的字段
+    function updateSku($sku,$proId,$key){
+        $where['productID'] = $proId;
+        $where['key'] = $key;
+        $sku_save = array(
+            'uid'  => UID,
+            'name' => $sku['name'],
+            'skuPrice'=>mony_format($sku['supply_price'],'ten'),
+            'applyPrice'=>mony_format($sku['price'],'ten'),
+            'skuImg'=>$sku['skuimg'] ? $sku['skuimg'] : '',
+            'updateTime'=>CURTIME,
+            'skuStock'=>$sku['quantity'],
+        );
+
+         $updateSku = M('ProductSku','','DB_PRODUCT')->where($where)->save($sku_save);      
+         
+
+         return $updateSku;
+    }
+
     /**
      * 创建属性数据，包括attr数据和sku数据
      * 进来的数据
@@ -90,7 +214,7 @@ class ProductAttrModel extends Model{
      * date:2016年3月11日
      * author: EK_熊
      */
-    function createAttr($sku,$proId){
+    function createProAttr($sku,$proId){
        $attrValueModel = M('ProductAttrValue','','DB_PRODUCT');
 //        $sku = array(
 //            'key' => "1481-147",
@@ -119,7 +243,7 @@ class ProductAttrModel extends Model{
                    $ret['status'] = false;
                    return $ret;
                }
-           }//TODO更新attr名称可以写在else里面
+           }
            
            /*检查是否需要创建 attrValue数据*/
            $checkAttrValInDB_map['attrID'] = $attrValueList[$i]['attrId'];
@@ -170,6 +294,16 @@ class ProductAttrModel extends Model{
 
     }
     
+    //创建attr数据
+    function addAttr($attrName,$proId){
+        $add = array(
+            'attrName'  => $attrName,
+            'productID' =>$proId,
+            'uid'       =>UID,
+            'createTime'=>$createTime,
+        );
+        return $ret = $this->add($add);
+    }    
     //创建attrValue数据
     function addAttrValue($attrId,$attrValue){
         $add = array(
@@ -221,7 +355,7 @@ class ProductAttrModel extends Model{
         return M('ProductSkuAttr','','DB_PRODUCT')->add($add);
     }
     //添加库存stock
-    function addStock($skuId,$count){
+    function addStock($skuId,$count,$optType='ADD'){
         $add = array(
             'skuID' => $skuId,
             'optType' =>'ADD',

@@ -160,7 +160,7 @@ function weight_format($num,$units=''){
  */
 function mony_format($num,$units='ten'){
     $num = intval($num);
-    
+
     switch ($units){
         case 'yuan': $ret = $num/100;break;
         case 'ten': $ret = $num*100;break;
