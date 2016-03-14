@@ -5144,12 +5144,15 @@ function() {
 				"click .msg-box li": function() {
 					return log.info("click icon")
 				}
-			}, i.prototype.update_counter = function() {
-				return o.get("/admin/counter", function(t) {
+			}, 
+			i.prototype.update_counter = function() {
+//				return o.get("/admin/counter", function(t) { 
+				return o.get("", function(t) { 
 					var e, i;
 					return i = o(".right-message-counter"), e = o(".notification-counter"), t.right > 0 ? (i.text(t.right), i.show()) : i.hide(), t.notification > 0 ? (e.text(t.notification), e.show(), t.async_notities > 0 ? toastr.success("\u62a5\u8868\u5df2\u5b8c\u6210\u5bfc\u51fa\uff0c\u8bf7\u5230\u6d88\u606f\u7ba1\u7406\u9875\u67e5\u770b\u548c\u4e0b\u8f7d\u3002") : void 0) : e.hide()
 				})
-			}, i.prototype.initialize = function() {
+			}, 
+			i.prototype.initialize = function() {
 				return this.update_counter()
 			}, i
 		}(s.ItemView), l = function(e) {

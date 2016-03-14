@@ -62,6 +62,7 @@ class ProductImgModel extends Model{
                     'imgPos'    =>$value['imgpos'],
                     'updateTime'=>$curtime,
                 );
+
                 $update_map['ID'] = $value['id'];
                 $update_map['productID'] = $proId;
                 $ret = $this->where($update_map)->save($update_Img);

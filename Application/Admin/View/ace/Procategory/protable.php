@@ -51,7 +51,7 @@
                 <td>{$item.createtime}</td>
                 <td class='operate'>
                 		
-                    <a href="{:U('')}">编辑</a>
+                    <a href="{:U('goods/add',array('proid'=>$item['id']))}" target='_blank'>编辑</a>
                     <switch name='item.status'>
                         <case value='DW#'>
                             <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>

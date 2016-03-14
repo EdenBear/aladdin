@@ -56,7 +56,7 @@ return array(
     'LOAD_EXT_FILE'=>'function_ek',
     
     /* 加载拓展配置 */
-    'LOAD_EXT_CONFIG'=>'status',
+    'LOAD_EXT_CONFIG'=>array('status'),
     /* 七牛驱动配置*/
 //     'UPLOAD_SITEIMG_QINIU' => array (
 //         'maxSize' => '',//文件大小

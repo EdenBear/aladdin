@@ -26,7 +26,7 @@ class ProcategoryController extends AdminController{
         $map['status'] = 'OK#';
         $allData = $proCateModel->where($map)->select();
         foreach ($allData as $key=>$value){
-
+            $cateID[] = $value['id'];
             $data[$key]=array(
                 'id'=>$value['id'],
                 'name'=>$value['classname'],
@@ -38,7 +38,14 @@ class ProcategoryController extends AdminController{
             }
             
         }
-
+        
+        $img_map['categoryID'] = array('in',$cateID);
+       //获取节点的图片信息
+       $cateImg = M('ProductCategoryImg','','DB_PRODUCT')->where($img_map)->getField('categoryID,attrValueImg'); 
+       foreach ($data as $key=>$val){
+           $curNodeImg = $cateImg[$val['id']];
+           $data[$key]['imgurl'] = $curNodeImg ? qiniu_private_url($curNodeImg) : '';
+       } 
         $this->ajaxReturn($data);
     }
 
@@ -52,6 +59,24 @@ class ProcategoryController extends AdminController{
     }
     
     
+    public function updateNodeImg(){
+        $nodeId = I('nodeid');
+        $imgUrl = I('imgurl');
+         
+        $updateNodeImg = D('ProductCategory')->updateNodeImg($nodeId,$imgUrl);
+        if ($updateNodeImg) {
+            $this->success('图片保存成功！');
+        }else{
+            $this->error('图片保存失败！！');
+        }
+    }
+    
+    /**
+     * 根据分类，展示数据表格
+     * 
+     * date:2016年3月14日
+     * author: EK_熊
+     */
     public function protable(){
         $cateid = I('cateid');
         if ($cateid) {

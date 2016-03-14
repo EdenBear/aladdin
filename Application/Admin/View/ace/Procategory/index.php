@@ -8,7 +8,7 @@
 		.operate{position: absolute;right: 0;top: 0;}
 		.r_box{border: 1px solid #ddd;padding: 3px 9px 3px 9px;}
 		.cateurl{height: 30px;line-height: 30px;border-bottom: 1px solid #ddd;}
-		.cateshowimg{border: 1px solid #ddd;display: inline-block;width: 80px;height: 80px;};
+		.cateshowimg{border: 1px solid #ddd;display: inline-block;width: 80px;height:80px;};
 	</style>
 	
 	<link rel="stylesheet" href="__STATIC__/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
@@ -36,8 +36,8 @@
      			     	<div class='cateshowimg'>
 	    			        <img src="" id='cateImg_th' alt="" style="width: 80px;"/>  
      			     	</div>
-    			            <input type="file" name='qinniu[]' id='cateImg' /> 
-    			        <!--<button class="btn btn-sm btn-primary" id='upload_btn'>批量操作</button>-->
+			            <button class='btn btn-primary btn-sm' id='imgUploadBtn'>上传图片</button>
+    			       
      			     </div> 
     			</div>
     			<div>
@@ -68,49 +68,86 @@
     
     	var zNodes//异步获取的节点对象
     	var newNodesAry = new Array()//获取新的编辑对象集合
-
-
-    	
 		var curNodeid=null ; //当前节点id
 
     	$.post("{:U('procategory/getCateTree')}",function($data){
     		zNodes = $data;
     	})
     	
-//  	$('#upload_btn').click(function(){
-//
-//				if (curNodeid == null) {
-//					toastr.error('请勾选左边的节点');
-//					return false;
-//				}else{
-//					
-//				}
-//      	});
+    	$('#imgUploadBtn').click(function(){
+    			var curNodeObj = treeObj.getSelectedNodes()[0];
 
-    	//图片上传
-       $("#cateImg").uploadify({
-        	   "height"          : 30,
-        	   "auto"             :false,
-        		"swf"             : "./Public/static/uploadify/uploadify.swf",
-        		"fileObjName"     : "qinniu[]",
-        		"buttonText"      : "上传图片",
-        		"uploader"        : "./admin.php/UploadFile/uploadImgQiniuAjax",
-        		"width"           : 100,
-        		'removeTimeout'   : 1,
-        		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-        		"onUploadSuccess" : function(file, data, response){
-        			var data = eval("("+data+")");
-        			
-					$('#cateImg_th').attr("src",data.img[0].qiniuPrivateUrl);
-					$('#cateImg_th').attr("data-url",data.img[0].url);
-					
-					
-        			
-        		},
-        		'onFallback' : function() {
-        	        alert('未检测到兼容版本的Flash.');
-               	},
-        });
+				if (curNodeObj == null) {
+					toastr.error('请选择左边的节点');
+					return false;
+				}else{
+					curNodeid = curNodeObj.id;
+					var curNodeLvl = curNodeObj.level;
+					if (curNodeLvl <= 1) {
+						toastr.error('请选择正确的上传类目节点');
+						return false;
+					}
+					imgUploadDialog();
+				}
+        	});
+        	
+        	function imgUploadDialog(){
+        		var dataUrl = '';   //入库保存的url
+        		var privateUrl = '';   //入库保存的url
+        		var uploadifySetting = {
+						   "height"          : 30,
+					  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+					  		"fileObjName"     : "qinniu[]",
+					  		"buttonText"      : "上传图片",
+					  		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
+					  		"width"           : 120,
+					  		'removeTimeout'   : 1,
+					  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+			        		"onUploadSuccess" : function(file, data, response){
+			        			var data = eval("("+data+")");
+			        			dataUrl = data.img[0].url;
+			        			privateUrl = data.img[0].qiniuPrivateUrl;
+			        			$('#imgPreview').css('display','block');
+								$('#imgPreview').attr("src",data.img[0].qiniuPrivateUrl);
+								$('#imgPreview').attr("data-url",data.img[0].url);
+			        		},
+			        		'onFallback' : function() {
+			        	        alert('未检测到兼容版本的Flash.');
+			               	},
+			        };
+			        
+        			$.dialog({
+					    title: '上传图片',
+					    content: '<input type="file" name="qinniu[]" id="cateImg" /><img src="" id="imgPreview" alt="" style="width: 120px;display: none;"/>',
+					    okVal: '确定',
+					    ok:function(){
+					    	
+					    		if (dataUrl == '') {
+					    			toastr.error('请上传图片');
+					    			return false;
+					    		}else{
+					    			$.post("{:U('Procategory/updateNodeImg')}",{"imgurl":dataUrl,"nodeid":curNodeid},function(returndata){
+					    				if (returndata.status){
+					    					toastr.success('图片保存成功！');
+						        			$('#cateImg_th').css('display','block');
+											$('#cateImg_th').attr("src",privateUrl);
+											$('#cateImg_th').attr("data-url",dataUrl);
+					    					return false;
+					    				}else{
+					    					toastr.error('图片保存失败！');
+					    					return false;
+					    				}
+					    			});
+					    		}
+					    },
+					    cancelVal: '取消',
+					    cancel: function () {}
+					});
+					    	//图片上传
+			       $("#cateImg").uploadify(uploadifySetting);
+        	}
+
+
 
     	//保存按钮
     	$('#saveTree').click(function(){
@@ -230,10 +267,11 @@
 		//点击事件动作
 		function zTreeOnClick(event, treeId, treeNode){
 			curNodeid = treeNode.id;
-			$('.cateurl a').attr('href','http://www/我是分类连接/'+curNodeid);
-			$('.cateurl a').text('http://www/我是分类连接/'+curNodeid);
+			var _link = "http://www/我是分类连接/"+curNodeid;
+			$('.cateurl a').attr('href',_link);
+			$('.cateurl a').text(_link);
 			$("#pro_table_iframe").attr('src',"/aladdin/root/admin.php?s=/procategory/protable/cateid/"+curNodeid)
-
+			$('#cateImg_th').attr('src',treeNode.imgurl);
 		}
 
 		
@@ -346,11 +384,10 @@
 			zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
 		}
 		
-		$(document).ready(function(){
-			// $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-			$.fn.zTree.init($("#treeDemo"), setting);
-//			$("#selectAll").bind("click", selectAll);
-		});
+
+
+			var treeObj = $.fn.zTree.init($("#treeDemo"), setting);
+
 </script>
 </block>
 

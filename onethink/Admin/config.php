@@ -9,6 +9,7 @@
 
 define('CURTIME',date('Y-m-d H:i:s'));
 
+
 /**
  * 前台配置文件
  * 所有除开系统级别的前台配置

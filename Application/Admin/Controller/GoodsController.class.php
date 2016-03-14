@@ -123,6 +123,7 @@ class GoodsController extends AdminController{
             "skuStock" =>"quantity",
             "applyPrice" =>"supply_price",
             'key',
+            'skuImg'
         );
         $data['stocks'] = M('ProductSku','','DB_PRODUCT')->where($sku_map)->field($sku_field)->select();
 
@@ -130,6 +131,8 @@ class GoodsController extends AdminController{
         foreach ($data['stocks'] as $key=>$val) {
             $data['stocks'][$key]['supply_price'] = mony_format($val['supply_price'],'yuan');
             $data['stocks'][$key]['price'] = mony_format($val['price'],'yuan');
+            $data['stocks'][$key]['skuimg_private'] = qiniu_private_url($data['stocks'][$key]['skuimg']); 
+            
 
         }
 
@@ -186,6 +189,7 @@ class GoodsController extends AdminController{
 //              ),
             
 //         );
+
         $this->ajaxReturn($data);
     }
     
@@ -224,14 +228,14 @@ class GoodsController extends AdminController{
                
                 if (empty($proId)) {
                     $ret['info'] = '商品添加成功！';
-                    /* 保存商品基础信息 */
+                    /* 新增商品基础信息 */
                     $addInfo = $this->addProInfo($proInfo);
                     
                     if (!$addInfo['status']) {
                         $ret = $addInfo;
                         break;
                     }
-                    /* 保存 sku属性数据 */
+                    /* 新增 sku属性数据 */
                     $addAttr = $this->addAttr($addInfo['proid'], $attr, $sttr);
                     
                     if (!$addAttr['status']) {

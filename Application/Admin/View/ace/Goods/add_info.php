@@ -61,6 +61,9 @@
 							             <img src="{$vo.qiniurul}" id="pic-{$vo.id}" onclick="setfirst(this.id)" alt="">
 							             <i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-{$vo.id}" onclick="rmovePic(this.id)"></i>
 							             <input type="hidden" name="pro_info_pic" value="{$vo.imgpath}" imgid='{$vo.id}'>
+							         	<div id='imgpos'>
+							         		<eq name='vo["imgpos"]' value='MAJ'>主图</eq>
+							         	</div>
 							         </li>
 							     </volist>
 
@@ -222,7 +225,7 @@ function getProInfo(){
     if (pro_platform.substr(0,1)==',') pro_platform=pro_platform.substr(1);    
 
     PRO_INFO_OBJ.platform = pro_platform; //上架平台
-    
+    /* 获取图片信息*/
 	PRO_INFO_OBJ.img = new Array();//图片
 	infoForm.find("input[name='pro_info_pic']").each(function(index){
 		PRO_INFO_OBJ.img[index] = new Object();
@@ -250,9 +253,11 @@ function setfirst(e){
 		    content: '是否设置为主图',
 		    okValue: '确定',
 		    ok: function () {
-		    	$('.picshow li').attr('is-first','SEC');
+		    	$('.picshow li').attr('imgpos','SEC');
+		    	$('.picshow li').attr('imgpos','SEC');
 		    	thisImgLi.insertBefore('.picshow li:eq(0)');
-		    	thisImgLi.attr("is-first",'MAJ')
+		    	thisImgLi.attr("imgpos",'MAJ');
+		    	thisImgLi.find('div#imgpos').text('主图')
 		    },
 		    cancelValue: '取消',
 		    cancel: function () {}

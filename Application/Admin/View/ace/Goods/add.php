@@ -193,7 +193,13 @@ i:hover{cursor:pointer}
 
                                                            <td>
                                                        
-                                                            <!-- <input type="file" class='normsUpload' id="uploadFileImg{{stocks[row.key].key}}" name='qiniu[]' style='width: 218px;'/>  -->
+                                                             <!--{{stocks[row.key]}}--> 
+                                                             <div class='' id="imgSkuPreview_{{stocks[row.key].key}}">
+                                                             	<img src="{{stocks[row.key].skuimg_private}}"  alt="" style='margin-bottom: 3px;' width='80px'/>
+                                                             	<button type='button' class='btn btn-primary btn-sm imgUploadBtn' id='imgUploadBtn_{{stocks[row.key].key}}'  onClick="imgUploadDialog(this.id)">上传图片</button>
+                                                             </div>
+                                                             
+                                                             
                                                            </td>
 															
                                                         </tr>
@@ -402,34 +408,58 @@ i:hover{cursor:pointer}
 
 
 //上传控件
-   var uploadsetting = {
-	   "height"          : 30,
-  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
-  		"fileObjName"     : "qinniu[]",
-  		"buttonText"      : "上传图片",
-  		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
-  		"width"           : 120,
-  		'removeTimeout'   : 1,
-  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
-  		"onUploadSuccess" : function(file, data, response){
-  			picNum++;
-			var data = eval("("+data+")");
-  			var imgPreview = '';
-  			var li_size = $('.proinfo .picshow li').size();
-  			var _isFirst = false;
-  			if (li_size <=0) _isFirst = true;
-			imgPreview ='<li class="list-group-item"  is-first="'+_isFirst+'">'
-						+'<img src='+data.img[0].qiniuPrivateUrl+' id="pic-'+picNum+'" onclick="setfirst(this.id)" alt=""   />'
-						+'<i class="glyphicon glyphicon-remove pic-review-remove" id="pic-remove-'+picNum+'" onclick="rmovePic(this.id)"></i>'
-						+'<input type="hidden" name="pro_info_pic" value="'+data.img[0].url+'" />'
-					+'</li>';
+        	
+function imgUploadDialog(buttonId){
 
-			$('.proinfo .picshow').append(imgPreview);
-  		},
-  		'onFallback' : function() {
-  	        alert('未检测到兼容版本的Flash.');
-          	    },
-   };
+	var key = buttonId.substr(13,(buttonId.length-12));//sku的key值
+	
+	var dataUrl = '';   //入库保存的url
+	var privateUrl = '';   //七牛加密的图像url，用于显示使用
+	var uploadifySetting = {
+			   "height"          : 30,
+		  		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+		  		"fileObjName"     : "qinniu[]",
+		  		"buttonText"      : "上传图片",
+		  		"uploader"        : "{:U('UploadFile/uploadImgQiniuAjax')}",
+		  		"width"           : 120,
+		  		'removeTimeout'   : 1,
+		  		'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+        		"onUploadSuccess" : function(file, data, response){
+        			var data = eval("("+data+")");
+        			dataUrl = data.img[0].url;
+        			privateUrl = data.img[0].qiniuPrivateUrl;
+        			$('#imgPreview').css('display','block');
+					$('#imgPreview').attr("src",data.img[0].qiniuPrivateUrl);
+					$('#imgPreview').attr("data-url",data.img[0].url);
+        		},
+        		'onFallback' : function() {
+        	        alert('未检测到兼容版本的Flash.');
+               	},
+        };
+        
+		$.dialog({
+		    title: '上传图片',
+		    content: '<input type="file" name="qinniu[]" id="cateImg" /><img src="" id="imgPreview" alt="" style="width: 120px;display: none;"/>',
+		    okVal: '确定',
+		    ok:function(){
+
+				if (dataUrl == "") {
+					toastr.error('请上传图片');
+					return false;
+				}else{
+					PRO_ATTR_OBJ[key].skuimg = dataUrl;//入库记录
+					$('#imgSkuPreview_'+key).find('img').attr("src",privateUrl);//预览显示
+					
+				}
+				
+
+		    },
+		    cancelVal: '取消',
+		    cancel: function () {}
+		});
+		    	//图片上传
+       $("#cateImg").uploadify(uploadifySetting);
+}
 
 
 
@@ -449,61 +479,6 @@ function countObject(obj){
     $('#savebtn').click(function(){
 		proSubmitData();
     	
-    	
-    	
-    	
-    	
-//  	var formData = new FormData($( "#product_form" )[0]);//获取文件流
-
-
-
-//  	$.ajax({
-// 	     url : "{:U('UploadFile/uploadImgQiniuAjax')}",
-// 	     type : "POST",
-//    	  data: formData,
-//        async: false,
-//        cache: false,
-//        contentType: false,
-//        processData: false,
-//        beforeSend: function () {
-//		        // 禁用按钮防止重复提交
-//		        $(this).attr({ disabled: "disabled" });
-//		        //商品基础信息的验证方法，并获取商品基础信息
-//		     	_proInfo = proInfoValid();
-//		        if (isEmptyObject(_proInfo)) {
-//		        	toastr.error("请先完善商品基础信息");
-//		        	return false;
-//		        }
-//		        if (isEmptyObject(PRO_ATTR_OBJ)) {
-//		        	toastr.error("请编辑商品规格");
-//		        	return false;
-//		        }
-//		         
-//		         //TODO 规格图片数量验证匹配
-//
-//		        
-//  	  },
-//	      complete: function () {
-//  			$(this).removeAttr("disabled");
-//        },
-//        success: function (returndata) {
-//        		var imgAry = new Array();
-//        		imgAry = returndata.img;
-//				if (returndata.status) {
-//					var imgNum = 0;
-//					for (var _key in PRO_ATTR_OBJ) {
-//						PRO_ATTR_OBJ[_key].skuimg = imgAry[imgNum].url;
-//						imgNum ++;
-//					};
-//	
-//					
-//					$.post("{:U('add')}", { attrCombin: PRO_ATTR_OBJ, attrVal:attrObj,proInfo:_proInfo,procateid:PRODUCT_CATE_ID} );
-//					
-//					}else{
-//						toastr.error('请选择择商品规格图片');
-//					}
-//        },
-// 	});
 
     })
 
@@ -521,7 +496,7 @@ function countObject(obj){
         //商品基础信息的验证方法，并获取商品基础信息
      	_proInfo = proInfoValid();
      	_proInfo.cateid = _proCateId;
-     	console.log();
+     	
         if (isEmptyObject(_proInfo)) {
         	toastr.error("请先完善商品基础信息");
         	return false;

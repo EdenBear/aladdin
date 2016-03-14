@@ -83,7 +83,7 @@
                                     <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>
                                    
                                 </case>
-                                <case value='HOLD'>
+                                <case value='HOL'>
                                     <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>
                                     
                                 </case>

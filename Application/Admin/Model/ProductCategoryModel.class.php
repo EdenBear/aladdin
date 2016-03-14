@@ -13,6 +13,7 @@ class ProductCategoryModel extends Model{
      
     protected $connection = 'DB_PRODUCT';
     
+    //保存分类树数据
     function updateNode($data){
         $curTime =date('Y-m-d H:i:s'); 
         $ret['status'] = true;
@@ -73,28 +74,30 @@ class ProductCategoryModel extends Model{
              return $ret;
          }
 
-      
+    }
+    
+    //更新节点的图片,需要检查是否存在，存在即更新字段，不存在即新增数据
+    function updateNodeImg($categoryId,$img) {
 
-        
+        $where['categoryID'] = $categoryId;
+        $cateImgModel = M('ProductCategoryImg','','DB_PRODUCT');
+        $nodeImgData = $cateImgModel->where($where)->find();
+        if ($nodeImgData) {
+            $save['attrValueImg'] = $img;
+            $ret = $cateImgModel->where($where)->save($save);
+        }else{
+            $add = array(
+                'categoryID' => $categoryId,
+                'imgType'  => 'MAJ',
+                'status'=> 'OK#',
+                'uid' => UID,
+                'createTime'=>CURTIME,
+                'attrValueImg' => $img,
+            );
+            $ret = $cateImgModel->add($add);
+        }
+        return $ret;
+    }
+    
 
-    }
-    
-    //添加单独的节点
-    function addNode($data){
-        
-    }
-    
-    function saveNode(){
-        
-    }
-    
-    function deleteNode(){
-        
-    }
-    
-    //检查是否存在该数据
-    function isExistNode($id){
-        $map['ID'] = $id;
-        return $ret = $this->where($map)->find();
-    }
 }

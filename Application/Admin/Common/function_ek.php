@@ -99,6 +99,8 @@ function Qiniu_Encode($str) // URLSafeBase64Encode
  * author: EK_熊
  */
 function qiniu_private_url($url) {//$info里面的url
+    if (!$url) return '';
+    
     $setting = C ( 'UPLOAD_QINIU_CONFIG' );
     $duetime = NOW_TIME + 86400;//下载凭证有效时间
     $DownloadUrl = $url . '?e=' . $duetime;
@@ -191,44 +193,4 @@ function array_level($arr){
     return max($al);
 }
 
-/**
- * 数据批量更新处理,包含批量更新
- * @param unknown $model
- * @param unknown $map
- * @param unknown $saveData
- * @param string $tableName
- * date:2016年3月10日
- * author: EK_熊
- */
-function update_all($model,$map=array(),$saveData=array(),$tableName=''){
-    $ret['status'] = null;
-    $dataLevel = array_level($saveData);
-    $ret['info'] = "{$tableName}表批量更新成功！";
-    $ret['status'] = true;
 
-    if ($dataLevel == 1) {
-        $update = $model->where($map)->save($saveData);
-        if (!$update) {
-            $ret['info'] = "{$tableName}表更新出错！";
-            $ret['status'] = false;
-        }
-    }else if($dataLevel == 2){
-        $model->startTrans();
-        foreach ($saveData as $key => $val){
-            $update = $model->where($map)->save($val);
-            if (!$update) {
-                $ret['info'] = "{$tableName}表批量更新出错！";
-                $ret['status'] = false;
-                break;
-            }
-        }
-
-        if ($ret['status']){
-            $model->commit();
-        }else{
-            $model->rollback();
-        }
-    }
-
-    return $ret;
-}
