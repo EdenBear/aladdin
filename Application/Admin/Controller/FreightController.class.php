@@ -91,6 +91,9 @@ class FreightController extends AdminController{
             	$data['secFreight'] = $data['secFreight']*100;
             	$data['fullSum'] = $data['fullSum']*100;
             	$data['updateTime'] = date('Y-m-d H:i:s',time());
+            	if(!$data['fullStatus']){
+            		$data['fullStatus'] = 'FOR';
+            	}
             	$result = $freight->save($data);
                 if($result){
                     session('ADMIN_MENU_LIST',null);
@@ -223,6 +226,9 @@ class FreightController extends AdminController{
             	$data['secFreight'] = $data['secFreight']*100;
             	$data['fullSum'] = $data['fullSum']*100;
             	$data['updateTime'] = date('Y-m-d H:i:s',time());
+            	if(!$data['fullStatus']){
+            		$data['fullStatus'] = 'FOR';
+            	}
             	$result = $areaModel->save($data);
                 if($result){
                     session('ADMIN_MENU_LIST',null);
