@@ -46,6 +46,11 @@ return array(
 //     'DB_PORT'   => '3306', // 端口
 //     'DB_PREFIX' => 't_', // 数据库表前缀
 
+//数据库配置
+//'DB_CONFIG2' => 'mysql://root:maiquan@localhost:3306/aladdin_product_sku_user',
+//'DB_CONFIG3' => 'mysql://root:maiquan@localhost:3306/aladdin_other',
+//'DB_CONFIG4' => 'mysql://root:maiquan@localhost:3306/aladdin_supplier',
+
     /* 文档模型配置 (文档模型核心配置，请勿更改) */
     'DOCUMENT_MODEL_TYPE' => array(2 => '主题', 1 => '目录', 3 => '段落'),
 
