@@ -61,7 +61,7 @@ class ProductModel extends Model{
          */
         function updateProInfo($proInfo){
             
-            $proCateModel = M('ProductCategory','','DB_PRODUCT');
+            $proCateModel = M('ProductCategory','','DB_PRODUCT_CATEGORY');
             $proImgModel = D('ProductImg');
             $proDetailModel = M('ProductDetail','','DB_PRODUCT');
 

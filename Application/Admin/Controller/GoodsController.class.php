@@ -55,7 +55,7 @@ class GoodsController extends AdminController{
 
         if (!$list) return false;
         $proImgModel = M('ProductImg','','DB_PRODUCT');
-        $categoryModel = M('ProductCategory','','DB_PRODUCT');
+        $categoryModel = M('ProductCategory','','DB_PRODUCT_CATEGORY');
         
         foreach ($list as $key => $value) {
             $proidList[] = $value['id'];
