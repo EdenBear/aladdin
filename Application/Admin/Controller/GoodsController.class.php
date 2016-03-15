@@ -25,10 +25,12 @@ class GoodsController extends AdminController{
         $procode = I('procode');
         $proname = I('proname');
         $where = array();
+        $where['status'] = array('neq','DEL');
         if ($id)      $where['ID'] = $id;
         if ($procode) $where['productCode'] = $procode;
         if ($proname) $where['productName'] = array('like',"%$proname%");
         if ($dateStat && $dateEnd) $where['createTime'] = array('between',array($dateStat." 00:00:00",$dateEnd." 23:59:59"));
+        
         $proModel = M('Product','','DB_PRODUCT');;
         $proImgModel = M('ProductImg','','DB_PRODUCT');
         

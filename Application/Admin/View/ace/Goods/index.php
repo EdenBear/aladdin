@@ -2,7 +2,7 @@
 
 <block name="body">
 <?php 
-    $status = ['UP#'=>'上架','DW#'=>'下架','HOL'=>'暂不上架'];
+    $status = ['UP#'=>'上架','DW#'=>'下架','HOL'=>'暂不上架','DEL'=>'删除'];
     $curday = date('Y-m-d');
 ?>
 <div class="table-responsive">
@@ -77,20 +77,21 @@
                         <td>{$status[$item['status']]}</td>
                         <td>{$item.createtime}</td>
                         <td>
-                            <a href="./admin.php?s=/goods/add/proid/{$item.id}" target='_blank'>编辑</a>
+                            
                             <switch name='item.status'>
                                 <case value='DW#'>
+                                    <a href="{:U('goods/add',array('proid'=>$item['id']))}" target='_blank'>编辑</a>
                                     <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>
-                                   
+                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'DEL'))}">删除</a>
                                 </case>
                                 <case value='HOL'>
+                                    <a href="{:U('goods/add',array('proid'=>$item['id']))}" target='_blank'>编辑</a>
                                     <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'UP#'))}">上架</a>
+                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'DEL'))}">删除</a>
                                     
                                 </case>
                                 <case value='UP#'>
                                     <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'DW#'))}">下架</a>
-                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'HOL'))}">暂不上架</a>
-                                
                                 </case>
                             </switch>
                         </td>

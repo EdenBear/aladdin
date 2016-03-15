@@ -31,6 +31,7 @@
 </script>
 <style>
 i:hover{cursor:pointer}
+.grid{margin-top: 76px;}
 </style>
 <div class="table-responsive">
 

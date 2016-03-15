@@ -152,7 +152,7 @@ class ProductAttrModel extends Model{
         }
         
         $save = array(
-            'status' => 'DEL#',
+            'status' => 'DEL',
             'updateTime'=>CURTIME,
         );
         $where['productID'] = $proId;

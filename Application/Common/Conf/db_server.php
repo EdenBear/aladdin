@@ -27,5 +27,12 @@ return array(
     'DB_PRODUCT_USER'     =>"mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_product_sku_user",  //用户信息
     'DB_PRODUCT_USER_ADDRESS'=>"mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_product_sku_user", //用户地址
     
+    /* 供应商库*/
+    'DB_SUPPLIER'=>"mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_supplier", 
+    
+    
+    'DB_CONFIG2' => 'mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_product_sku_user',
+    'DB_CONFIG3' => 'mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_other',
+    'DB_CONFIG4' => 'mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_supplier',
     
 );
