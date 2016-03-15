@@ -149,7 +149,7 @@
 						<td>上架设置</td>
 						<td>
 							<label for="" class='radio' >
-								<input type="radio" name='pro_info_status' value='HOLD' required title='请选择上架设置'
+								<input type="radio" name='pro_info_status' value='HOL' required title='请选择上架设置'
 								<eq name="product.status" value="HOL">checked</eq>>暂不上架，保存到商品库 
 							</label>
 							<label for="" class='radio'>

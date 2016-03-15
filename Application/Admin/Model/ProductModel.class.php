@@ -134,31 +134,36 @@ class ProductModel extends Model{
         function updateProAttr($attr,$sku,$proId){
             $skuModel = M('ProductSku','','DB_PRODUCT');
             $attrModel = D('ProductAttr');
-            unset($_SESSION['updateProAttr']);
-            $ret['status'] = true;
+            unset($_SESSION['updateProAttr']);//由于开启了事务，一些已经操作过的attr的数据没能及时入库，必须借用session来存放
 
+            $ret['status'] = true;
+            $attrModel->deleteSku($proId);//屏蔽过期的sku数据操作
             /* 过滤整理来源sku数据*/
             foreach ($sku as $key => $value) {
+                
                 $sku_map['key'] = $key;
                 $skuIsExist = $skuModel->where($sku_map)->find();
                 if (!$skuIsExist) {
                     
                     $createAttr = $attrModel->createProAttr($value,$proId);
-                    if (!$createAttr['status']) {//新增key值没有的sku数据
+                    if (!$createAttr['status']) {//不存在该key值，进行新增sku数据
                         $ret['info'] = '【更新商品属性】创建attr数据出错：'.$createAttr['info'];
                         $ret['status'] = false;
                         break;
                     }
-
+                    $skuIdList_new[] = $key;
                 }else{//页面传进来的key对应的数据都存在，即进入更新字段环节
                     $updateProAttr = $attrModel->updateProAttr($key,$proId,$value);
-                    if (!$updateProAttr['status']) {//新增key值没有的sku数据
+                    if (!$updateProAttr['status']) {//存在该key，进行更新sku数据
                         $ret['info'] ='【更新商品属性】字段更新出错：' .$updateProAttr['info'];
                         $ret['status'] = false;
                         break;
                     }                    
                 }
             }
+            
+            
+
 
             return $ret;
         }

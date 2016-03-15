@@ -195,7 +195,7 @@ i:hover{cursor:pointer}
                                                        
                                                              <!--{{stocks[row.key]}}--> 
                                                              <div class='' id="imgSkuPreview_{{stocks[row.key].key}}">
-                                                             	<img src="{{stocks[row.key].skuimg_private}}"  alt="" style='margin-bottom: 3px;' width='80px'/>
+                                                             	<img ng-src="{{stocks[row.key].skuimg_private}}"    alt="" style='margin-bottom: 3px;' width='80px'/>
                                                              	<button type='button' class='btn btn-primary btn-sm imgUploadBtn' id='imgUploadBtn_{{stocks[row.key].key}}'  onClick="imgUploadDialog(this.id)">上传图片</button>
                                                              </div>
                                                              
