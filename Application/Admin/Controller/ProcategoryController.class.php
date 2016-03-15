@@ -22,7 +22,7 @@ class ProcategoryController extends AdminController{
         
         $checkId = I('checkid');
 
-        $proCateModel = M('ProductCategory','','DB_PRODUCT');
+        $proCateModel = M('ProductCategory','','DB_PRODUCT_CATEGORY');
         $map['status'] = 'OK#';
         $allData = $proCateModel->where($map)->select();
         foreach ($allData as $key=>$value){

@@ -45,12 +45,9 @@ class TestController extends AdminController{
 //             $skuKey .= $sku_AttrValueID_ary[$h]['attrvalueid']."-";
 //         }
 
-//         $skuKey = rtrim($skuKey, "-");
-//         dump($skuKey);
-
-//             $m = D('ProductAttr')->getAttrIdByskukey('150-148-168','红色');
-//             dump($m);
-dump(qiniu_private_url());
+        $a1 = array('1','2','3');
+        $a2 = array('2','3');
+        dump(array_diff($a1,$a2));
 
     }
     

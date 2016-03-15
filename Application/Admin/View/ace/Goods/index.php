@@ -2,7 +2,7 @@
 
 <block name="body">
 <?php 
-    $status = ['UP#'=>'上架','DW#'=>'下架','HOLD'=>'暂不上架'];
+    $status = ['UP#'=>'上架','DW#'=>'下架','HOL'=>'暂不上架'];
     $curday = date('Y-m-d');
 ?>
 <div class="table-responsive">
@@ -89,7 +89,7 @@
                                 </case>
                                 <case value='UP#'>
                                     <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'DW#'))}">下架</a>
-                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'HOLD'))}">暂不上架</a>
+                                    <a href="{:U('setStatus',array('id'=>$item['id'],'status'=>'HOL'))}">暂不上架</a>
                                 
                                 </case>
                             </switch>

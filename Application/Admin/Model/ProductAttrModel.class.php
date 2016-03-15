@@ -138,6 +138,32 @@ class ProductAttrModel extends Model{
     }
     
     /**
+     * 
+     * 删除旧的sku数据，即更改状态，避免获取过的数据
+     * 具体做法，执行更新操作，就把全部的sku数据进行屏蔽'DEL'，之后再循环逐条更新状态为‘OK#’
+     * @param unknown $key
+     * @return boolean
+     * date:2016年3月14日
+     * author: EK_熊
+     */
+    function deleteSku($proId){
+        if ($_SESSION['deleteSku'][$proId] == true) {
+            return true;
+        }
+        
+        $save = array(
+            'status' => 'DEL#',
+            'updateTime'=>CURTIME,
+        );
+        $where['productID'] = $proId;
+        $delete = M('ProductSku','','DB_PRODUCT')->where($where)->save($save);
+        if ($delete) {
+            $_SESSION['deleteSku'][$proId] = true;
+        }
+        return $delete;
+    }
+    
+    /**
      * 根据sku的key值和attr属性的值，获取属性的名称的id（attrID）
      * 比如：传入key='122-121'和'红色'，返回'颜色'的id(attrID)
      * 
@@ -192,6 +218,7 @@ class ProductAttrModel extends Model{
             'skuImg'=>$sku['skuimg'] ? $sku['skuimg'] : '',
             'updateTime'=>CURTIME,
             'skuStock'=>$sku['quantity'],
+            'status'=>'OK#'
         );
 
          $updateSku = M('ProductSku','','DB_PRODUCT')->where($where)->save($sku_save);      
@@ -339,6 +366,7 @@ class ProductAttrModel extends Model{
             'createTime' => CURTIME,
             'sortOrder' => $total + 1,
             'key'=>$key,
+            'status'=>'OK#'
         );
         return $skuModel->add($add);
     }
@@ -351,6 +379,7 @@ class ProductAttrModel extends Model{
             'attrValueID'=>$attrValueId,
             'uid' => UID,
             'createTime'=>CURTIME,
+            'status'=>'OK#'
         );
         return M('ProductSkuAttr','','DB_PRODUCT')->add($add);
     }

@@ -248,3 +248,6 @@ ADD COLUMN `name`  varchar(200) NULL COMMENT 'sku数据的标记的名称' AFTER
 
 ALTER TABLE `t_product_stock`
 MODIFY COLUMN `ID`  int(11) NOT NULL AUTO_INCREMENT FIRST
+
+ALTER TABLE `t_product_sku`
+ADD COLUMN `status`  varchar(3) NULL COMMENT '状态' AFTER `updateTime`

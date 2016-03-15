@@ -27,7 +27,7 @@ class GoodsController extends AdminController{
         $where = array();
         if ($id)      $where['ID'] = $id;
         if ($procode) $where['productCode'] = $procode;
-        if ($proname) $where['productNme'] = array('like',"%$proname%");
+        if ($proname) $where['productName'] = array('like',"%$proname%");
         if ($dateStat && $dateEnd) $where['createTime'] = array('between',array($dateStat." 00:00:00",$dateEnd." 23:59:59"));
         $proModel = M('Product','','DB_PRODUCT');;
         $proImgModel = M('ProductImg','','DB_PRODUCT');
@@ -55,7 +55,7 @@ class GoodsController extends AdminController{
 
         if (!$list) return false;
         $proImgModel = M('ProductImg','','DB_PRODUCT');
-        $categoryModel = M('ProductCategory','','DB_PRODUCT');
+        $categoryModel = M('ProductCategory','','DB_PRODUCT_CATEGORY');
         
         foreach ($list as $key => $value) {
             $proidList[] = $value['id'];
@@ -114,6 +114,7 @@ class GoodsController extends AdminController{
     public function getSku(){
         $proid = I('proid');
         $sku_map['productID'] = $proid;
+        $sku_map['status'] = 'OK#';
         $sku_field = array(
             "createTime"=>"created_at" ,
             "ID" => "id",
@@ -272,7 +273,7 @@ class GoodsController extends AdminController{
                 $this->success($ret['info']);
             }   
         }
-        $this->meta_title = '添加商品';
+        $this->meta_title = '编辑商品';
         
         $this->assign('attr',$attr);
         $this->display();
@@ -483,6 +484,7 @@ class GoodsController extends AdminController{
                     'skuStock'=>$value['quantity'],
                     'createTime'=>$createTime,
                     'sortOrder'=>$sortOrder++,
+                    'status'=>'OK#',
                 );
                 $skuId = $skuModel->add($add_data_sku);
                 $idList_sku[] = $skuId;
