@@ -43,7 +43,7 @@
 			                    <div class="col-xs-12 col-sm-6">
 			                        <select name="freightType" id="value">
 			                        	
-			                            <option value="NOT" <if condition=" $info.freighttype eq 'NOT'" >selected="selected"</if> >包邮</option>
+			                            
 			                            <option value="NOE" <if condition=" $info.freighttype eq 'NOE'" >selected="selected"</if> >包邮（指定地区除外）</option>
 			                            <option value="BUY" <if condition=" $info.freighttype eq 'BUY'" >selected="selected"</if> >运费到付</option>
 			                            <option value="NAT" <if condition=" $info.freighttype eq 'NAT'" >selected="selected"</if> >全国统一价</option>

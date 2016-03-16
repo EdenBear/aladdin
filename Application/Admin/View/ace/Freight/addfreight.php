@@ -52,8 +52,7 @@
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right">类型</label>
 			                    <div class="col-xs-12 col-sm-6">
 			                        <select name="freightType" id="value">
-			                            <option value="NOT" selected="">包邮</option>
-			                            <option value="NOE">包邮（指定地区除外）</option>
+			                            <option value="NOE" selected="">包邮（指定地区除外）</option>
 			                            <option value="BUY">运费到付</option>
 			                            <option value="NAT" id="nat">全国统一价</option>
 			                            <option value="NAE" id="nae">全国统一价（指定地区除外）</option>

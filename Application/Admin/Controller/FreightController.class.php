@@ -20,7 +20,7 @@ class FreightController extends AdminController{
 	 */
 	public function freightList(){
 		$this->meta_title = '运费模板列表';
-		$list       =   M('freight_tpl','','DB_CONFIG3')->where('status="OK#"')->select();
+		$list       =   M('freight_tpl','','DB_CONFIG3')->where('status="OK#" and freightType!="NOT"')->select();
 		$request    =   (array)I('request.');
         $total      =   $list? count($list) : 1 ;
         $listRows   =   C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
