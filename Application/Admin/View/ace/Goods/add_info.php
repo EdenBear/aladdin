@@ -90,7 +90,7 @@
 						<td>运费</td>
 						<td>
 							<label for="freight_by" class='radio' >
-								<input type="radio" name='pro_info_freight' value='NOT' id='freight_by' required title='请选择运费方式'
+								<input type="radio" name='pro_info_freight' value='' id='freight_by' required title='请选择运费方式'
 								<eq name='product.freight' value='NOT'>checked</eq>>包邮
 							</label>
 							<label for="freight_mjcd" class='radio'>
@@ -201,19 +201,24 @@ $('#freight_mjcd').click(function(){
 		return false;
 	}
 	var freight_mjcd_dom = $(this);
+	
 	var tpl_http_url = "./admin.php?s=goods/freightTpl/supplierid/"+supplierId;
 	var myDialog = art.dialog({
 	    title: '选择运费模板',
 	    okVal: '确定',
 	    ok:function(){
-		    var freightBaoyou_Val = $(".freaighttpl input[name='freightid']:checked").val();
-		    freight_mjcd_dom.val(freightBaoyou_Val); 
+	    	var checkVal = checkFreight();
+
+		    freight_mjcd_dom.val(checkVal); 
+		    
 	    },
 	    width:375,
 	    height:253,
 	    padding:'10px 10px;',
 	    cancelVal: '取消',
-	    cancel: function () {}
+	    cancel: function () {
+	    	checkFreight();
+		    }
 	});
 	
 	jQuery.ajax({
@@ -224,6 +229,17 @@ $('#freight_mjcd').click(function(){
 	});
 	
 })
+//关闭运费模板弹窗，要做是否选中处理
+function checkFreight(){
+	var freight_check_val = $(".freaighttpl input[name='freightid']:checked").val();
+	//未选择
+	if (freight_check_val == undefined){
+		$('#freight_mjcd').attr('checked',false);
+		return false;
+	}else{
+		return freight_check_val;
+		}
+}
 
 /*ajax提交商品基础信息，先执行验证执行动作，再获取商品信息*/
 function proInfoValid(){

@@ -11,53 +11,6 @@ use Think\Model;
 class ProductAttrModel extends Model{
     protected $connection = 'DB_PRODUCT';
     
-
-    
-    /**
-     * 获取attr数据，根据proid和attrValId
-     * 返回 array(120 => 
-            array (size=6)
-              'productid' => string '1' (length=1)
-              'attrname' => string '尺寸' (length=6)
-              'attrvalue' => string '22' (length=2)
-              'attrid' => string '64' (length=2)
-              'attrvalueid' => string '120' (length=3)
-              'skuid' => string '100' (length=3)
-              )
-     * @param unknown $proId
-     * @param unknown $attrValId
-     * @return mixed
-     * date:2016年3月11日
-     * author: EK_熊
-     */
-//     function getAttrByValId($proId,$attrValId){
-//         if (is_array($attrValId)) {
-//             $attrValId = implode(',',$attrValId);
-//         }
-//         $ret = null;
-//         $sql = "SELECT
-//                     attr.productID,
-//                     attr.attrName,
-//                     attrValue.attrValue,
-//                     attrValue.attrID,
-//                     attrValue.ID as attrValueID,
-//                     skuAttr.skuID
-//                     FROM
-//                     aladdin_product_sku_user.t_product_attr_value as attrValue
-//                     LEFT JOIN aladdin_product_sku_user.t_product_attr as attr ON attr.ID = attrValue.attrID
-//                     LEFT JOIN aladdin_product_sku_user.t_product_sku_attr as skuAttr ON attrValue.ID = skuAttr.attrValueID
-//                     WHERE attrValue.ID IN ({$attrValId}) AND attr.productID = {$proId}
-//                 ";
-
-//         $ret = M('')->query($sql);
-//         foreach ($ret as $key => $value) {
-//             $data[$value['attrvalueid']] = $value;
-//         }
-//         return $data;
-//     }
-    
-    
-
     
     /**
      *  sku数据存在数据库时的更新操作
@@ -213,8 +166,8 @@ class ProductAttrModel extends Model{
         $sku_save = array(
             'uid'  => UID,
             'name' => $sku['name'],
-            'skuPrice'=>mony_format($sku['supply_price'],'ten'),
-            'applyPrice'=>mony_format($sku['price'],'ten'),
+            'skuPrice'=>mony_format($sku['price'],'ten'),
+            'applyPrice'=>mony_format($sku['supply_price'],'ten'),
             'skuImg'=>$sku['skuimg'] ? $sku['skuimg'] : '',
             'updateTime'=>CURTIME,
             'skuStock'=>$sku['quantity'],

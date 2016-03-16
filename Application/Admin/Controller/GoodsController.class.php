@@ -245,9 +245,11 @@ class GoodsController extends AdminController{
                     
                     
                 }else{ 
+                    
                     $ret['info'] = '商品更新成功！';
                     /* 编辑更新商品基础信息 */
                     $updateInfo = $productModel->updateProInfo($proInfo);
+                    
                     if (!$updateInfo['status']) {
                         $ret = $updateInfo;
                         break;

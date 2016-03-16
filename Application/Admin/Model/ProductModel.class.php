@@ -32,8 +32,7 @@ class ProductModel extends Model{
                 $product['img'][$key]['qiniurul'] = qiniu_private_url($val['imgpath']);
                 
             }
-            /*获取供应商*/
-            //TODO
+
             /*获取分类*/
             $map_cate['ID'] = $product['categoryid'];
             $product['category'] = M('ProductCategory','','DB_PRODUCT')->where($map_cate)->field('ID,className')->find();
@@ -103,8 +102,8 @@ class ProductModel extends Model{
                     'shortName'     =>$proInfo['shortname'],
                     'productName'   =>$proInfo['fullname'],
                     'supplyID'      =>$proInfo['supplier'],
-                    'price'         =>mony_format($proInfo['price']),   //TODO转换单位分
-                    'applyPrice'    =>mony_format($proInfo['applyprice']),   //TODO转换单位分
+                    'price'         =>mony_format($proInfo['price'],'ten'),   //TODO转换单位分
+                    'applyPrice'    =>mony_format($proInfo['applyprice'],'ten'),   //TODO转换单位分
                     'weight'        =>weight_format($proInfo['weight'],'g'),//TODO转换单位克存放
                     'limitCount'    =>$proInfo['limitCount'],
                     'status'        =>$proInfo['status'],
@@ -113,6 +112,9 @@ class ProductModel extends Model{
                     'categoryID'    =>$proInfo['cateid'],
                     'freightTpl'    =>$proInfo['freightTpl'],//运费
                 );
+//                 dump($update_info);
+//                 dump($pro_map);
+//                 exit();
                 $updatePro = $this->where($pro_map)->save($update_info);
                 
                 if (!$updatePro) {
@@ -186,6 +188,7 @@ class ProductModel extends Model{
                     $skuIdList_new[] = $key;
                 }else{//页面传进来的key对应的数据都存在，即进入更新字段环节
                     $updateProAttr = $attrModel->updateProAttr($key,$proId,$value);
+                    
                     if (!$updateProAttr['status']) {//存在该key，进行更新sku数据
                         $ret['info'] ='【更新商品属性】字段更新出错：' .$updateProAttr['info'];
                         $ret['status'] = false;
