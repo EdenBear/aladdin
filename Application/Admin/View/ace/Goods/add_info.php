@@ -31,11 +31,16 @@
 					<tr>
 						<td>供应商</td>
 						<td>
-<!-- 							<select name="pro_info_supplier" id="" class='span12' title="请选择供应商!" required> -->
-<!-- 			                       <option value="">请选择供应商</option> -->
-<!-- 			                       <option value="1">阿迪达斯</option> -->
-<!-- 			                       <option value="2">耐克</option> -->
-<!-- 							</select> -->
+						
+							<select name="pro_info_supplier" id="" class='span12' title="请选择供应商!" required>
+		                       <option value="">请选择供应商</option>
+		                       <volist name='supplier' id='vo'>
+		                       
+		                         <option value="{$vo.id}" <eq name="product.supplyid" value='$vo.id'>selected</eq>>{$vo.name}</option>			                             
+		                       </volist>
+
+
+							</select>
 						</td>
 					</tr>
 					<tr>
@@ -83,15 +88,17 @@
 					</tr>
 					<tr>
 						<td>运费</td>
-<!-- 						<td> -->
-<!-- 							<label for="" class='radio'> -->
-<!-- 								<input type="radio" name='pro_info_freight' value='1' required title='请选择运费方式'>买家承担 -->
-<!-- 							</label> -->
-<!-- 							<label for="" class='radio'> -->
-<!-- 								<input type="radio" name='pro_info_freight' value='2'>包邮 -->
-<!-- 							</label> -->
-<!-- 							<label for="pro_info_freight" class="error"></label> -->
-<!-- 						</td> -->
+						<td>
+							<label for="freight_by" class='radio' >
+								<input type="radio" name='pro_info_freight' value='NOT' id='freight_by' required title='请选择运费方式'
+								<eq name='product.freight' value='NOT'>checked</eq>>包邮
+							</label>
+							<label for="freight_mjcd" class='radio'>
+								<input type="radio" name='pro_info_freight' value='' id='freight_mjcd' 
+								<if condition="($product.freight neq 'NOT') AND ($product.freight neq null) ">checked</if>>买家承担
+							</label>
+							<label for="pro_info_freight" class="error"></label>
+						</td>
 					</tr>
 					<tr>
 						<td>销售价格(元)</td>
@@ -156,6 +163,10 @@
 								<input type="radio" name='pro_info_status' value='UP#'
 								<eq name="product.status" value="UP#">checked</eq>>立即出售(上架后类目不可修改，请确认无误)
 							</label>
+							<label for="" class='radio'>
+								<input type="radio" name='pro_info_status' value='DW#'
+								<eq name="product.status" value="DW#">checked</eq>>下架
+							</label>
 							<label for="pro_info_status" class='error'></label>
 						</td>
 					</tr>
@@ -175,10 +186,48 @@
 /*ajax方式提交表单，进行验证*/
 $("#form-pro-info").validate();
  
+/* 运费模板选择*/
+var freightVal = '{$product.freight}';
+freightVal = freightVal == 'NOT' ? '' : freightVal;
 
+$('#freight_by').click(function(){
+	$(this).val('NOT');
+})
+$('#freight_mjcd').click(function(){
+	var supplierId = $("select[name='pro_info_supplier'] option:selected").val();
+	
+	if (supplierId == '') {
+		toastr.error("请先选择供应商！！");
+		return false;
+	}
+	var freight_mjcd_dom = $(this);
+	var tpl_http_url = "./admin.php?s=goods/freightTpl/supplierid/"+supplierId;
+	var myDialog = art.dialog({
+	    title: '选择运费模板',
+	    okVal: '确定',
+	    ok:function(){
+		    var freightBaoyou_Val = $(".freaighttpl input[name='freightid']:checked").val();
+		    freight_mjcd_dom.val(freightBaoyou_Val); 
+	    },
+	    width:375,
+	    height:253,
+	    padding:'10px 10px;',
+	    cancelVal: '取消',
+	    cancel: function () {}
+	});
+	
+	jQuery.ajax({
+	    url: tpl_http_url,
+	    success: function (data) {
+	        myDialog.content(data);// 填充对话框内容
+	    }
+	});
+	
+})
 
 /*ajax提交商品基础信息，先执行验证执行动作，再获取商品信息*/
 function proInfoValid(){
+
 	var proInfoValid = $("#form-pro-info").valid();
 	if (proInfoValid) {
 		//检查图片是是否上传了
@@ -200,6 +249,7 @@ function proInfoValid(){
 
 /* 获取商品基础信息数据*/
 function getProInfo(){
+	
 	var infoForm = $('#form-pro-info');
 	editor_pro_info_desc.sync();
 	var PRO_INFO_OBJ = new Object();
@@ -215,7 +265,7 @@ function getProInfo(){
 	PRO_INFO_OBJ.limitCount = infoForm.find("input[name='pro_info_limitCount']").val();//限购数量
 	PRO_INFO_OBJ.status = infoForm.find("input[name='pro_info_status']:checked").val();//上下架状态
 	PRO_INFO_OBJ.id = PRODUCT_ID;
-	
+	PRO_INFO_OBJ.freightTpl = infoForm.find("input[name='pro_info_freight']:checked").val();//运费模板id
 	
 	/*获取上架平台，拼接字符串，逗号隔开*/
 	var pro_platform = '';

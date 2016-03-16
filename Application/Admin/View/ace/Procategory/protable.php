@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="__ACE__/css/font-awesome.min.css" />
 <link rel="stylesheet" href="__ACE__/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="__ACE__/css/ace.min.css" />
 <style>
@@ -6,6 +7,7 @@
 	.table{font-size: 12px;}
 	.operate a{display: block;}
 	html{overflow: hidden;}
+	.next,.prev{height: 32px;}
 </style>
 <?php 
     $status = ['UP#'=>'上架','DW#'=>'下架','HOL'=>'暂不上架'];

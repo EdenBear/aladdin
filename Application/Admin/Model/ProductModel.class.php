@@ -48,9 +48,34 @@ class ProductModel extends Model{
                 $platform[$val] = true; 
                 $product['platform'] = $platform;
             }
+            
+            /* 运费模板 */
+            $product['freight'] = $this->freightByProid($proid);
 
             return $product;
         } 
+        
+        /**
+         * 根据商品id，获取运费模板id
+         * @param unknown $proId
+         * @return NULL|string
+         * date:2016年3月16日
+         * author: EK_熊
+         */
+        function freightByProid($proId){
+            $map['productID'] = $proId;
+            $join = array('t_freight_tpl ON t_freight_tpl.ID = t_product_freight.freightTplID');
+            $freight = M('ProductFreight','','DB_PRODUCT')->join($join)->where($map)->field('freighttplid,freighttype')->find();//运费模板id
+            if (!$freight) {
+                return null;
+            }
+            if ($freight['freighttype'] == 'NOT') {//包邮
+                $ret = 'NOT';
+            }else{
+                $ret = $freight['freighttplid'];
+            }
+            return $ret;
+        }
         
         /**
          * 更新商品基础信息
@@ -82,9 +107,11 @@ class ProductModel extends Model{
                     'applyPrice'    =>mony_format($proInfo['applyprice']),   //TODO转换单位分
                     'weight'        =>weight_format($proInfo['weight'],'g'),//TODO转换单位克存放
                     'limitCount'    =>$proInfo['limitCount'],
+                    'status'        =>$proInfo['status'],
                     'platform'      =>$proInfo['platform'],
                     'updateTime'    =>CURTIME,
                     'categoryID'    =>$proInfo['cateid'],
+                    'freightTpl'    =>$proInfo['freightTpl'],//运费
                 );
                 $updatePro = $this->where($pro_map)->save($update_info);
                 
@@ -110,7 +137,12 @@ class ProductModel extends Model{
                     $ret['info'] = '商品图片更新出错';
                     break;
                 }
-                
+                //保存运费信息
+                $proFreight = $this->updateFreightTpl($proInfo['freightTpl'],$proId,$proInfo['supplier']);
+                if (!$proFreight) {
+                    $ret['info'] = '运费模板数据处理异常！';
+                    break;
+                }                
                 $ret['info'] = '商品更新成功！';
                 $ret['status'] = true;
             }while(false);
@@ -162,12 +194,55 @@ class ProductModel extends Model{
                 }
             }
             
-            
-
-
             return $ret;
         }
+        /**
+         * 更新运费模板，包含新增和更新字段操作
+         * @param string $tplValue
+         * @param string $proId
+         * @param string $supplyId
+         * date:2016年3月16日
+         * author: EK_熊
+         */
+         function updateFreightTpl($tplValue,$proId,$supplyId){
+            $freightTplModel = M('FreightTpl','','DB_PRODUCT');
+            $proFretightModel = M('ProductFreight','','DB_PRODUCT');
+            if ($tplValue == 'NOT') {//包邮
+                $freTpl_map['freightType'] ='NOT';
+                $freightTplId = $freightTplModel->where($freTpl_map)->getField('ID');
         
+            }else{
+                $freightTplId = $tplValue;//非包邮模式，记录模板id
+            }
+        
+        
+            //添加前，检查profreight表，该商品的运费记录是否存在
+            $proFe_map['productID'] = $proId;
+            $proFreightData = $proFretightModel->where($proFe_map)->find();
+            if ($proFreightData['freighttplid'] !== $freightTplId) { //进来的数据和在库的freight id 不一致才进行表操作
+                if ($proFreightData){//存在进行更新
+                    $save_profe['freightTplID']=$freightTplId;
+                    $save_profe_map['ID'] = $proFreightData['id'];
+        
+                    $ret = $proFretightModel->where($save_profe_map)->save($save_profe);
+        
+                }else{//不存在，新增
+                    $add = array(
+                        'productID' => $proId,
+                        'freightTplID'=>$freightTplId,
+                        'status'      =>'OK#',
+                        'uid'=>UID,
+                        'supplyID'=>$supplyId,
+                        'createTime'=>CURTIME,
+                    );
+                    $ret = $proFretightModel->add($add);
+                }
+            }else{
+                return true;
+            }
+            return $ret;
+        
+        }       
 
    
         

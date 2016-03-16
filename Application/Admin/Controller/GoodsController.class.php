@@ -32,14 +32,12 @@ class GoodsController extends AdminController{
         if ($dateStat && $dateEnd) $where['createTime'] = array('between',array($dateStat." 00:00:00",$dateEnd." 23:59:59"));
         
         $proModel = M('Product','','DB_PRODUCT');;
-        $proImgModel = M('ProductImg','','DB_PRODUCT');
         
         $list = $this->lists ($proModel,$where,$order='createTime DESC',$field=true);
         
         //循环拼接供应商supplyname，图片主图{$item.imgmaj},分类categoryname
         $list = $this->filterProData($list);
-
-
+        
 
         $this->assign('_list',$list);
         $this->meta_title = '商品管理';
@@ -208,7 +206,6 @@ class GoodsController extends AdminController{
         if ($proid){
             $product = D('Product')->getOneProByid($proid);
             $this->assign('product',$product);
- 
         }
 
         
@@ -275,13 +272,33 @@ class GoodsController extends AdminController{
                 $this->success($ret['info']);
             }   
         }
-        $this->meta_title = '编辑商品';
         
-        $this->assign('attr',$attr);
+        //获取供应商数据
+        $map_supplier['status'] = 'OK#';
+        $supplier = M('Supplier','','DB_SUPPLIER')->where($map_supplier)->field('ID,name')->select();
+
+        
+        $this->assign('supplier',$supplier);
+        $this->meta_title = '编辑商品';
         $this->display();
     }   
 
-
+    /**
+     * 运费模板页，带分页
+     * 获取运费模板数据
+     * date:2016年3月15日
+     * author: EK_熊
+     */
+    public function freightTpl(){
+        $supplierId = I('supplierid');
+        
+        $where['supplyID'] = $supplierId;
+        $field = 'ID,freightName';
+        $freightModel = M('FreightTpl','','DB_PRODUCT');
+        $list = $this->lists ($freightModel,$where,$order='createTime DESC',$field);
+        $this->assign('list',$list);
+        $this->display();
+    }
     
     /**
      * 商品添加：基本信息展示页
@@ -311,9 +328,6 @@ class GoodsController extends AdminController{
     * author: EK_熊
     */
     public function addProInfo($proInfo){
-
-        
-        //TODO 处理运费
         do{
             
             $ret['status'] = false;
@@ -334,6 +348,7 @@ class GoodsController extends AdminController{
                 'createTime'    =>date('Y-m-d H:i:s'),
                 'sellType'      =>'NOR',
                 'categoryID'    =>$proInfo['cateid'],
+                'freightTpl'    =>$proInfo['freightTpl'],//运费
             );
             $productModel = M('Product','','DB_PRODUCT');
             
@@ -361,6 +376,13 @@ class GoodsController extends AdminController{
             $proImgModel = D('ProductImg')->batcAddProImg($proInfo['img'],$proId);
             if (!$proImgModel) {
                 $ret['info'] = '商品图片详情添加异常！';
+                break;
+            }
+            
+            //保存运费信息
+            $proFreight = D('Product')->updateFreightTpl($proInfo['freightTpl'],$proId,$proInfo['supplier']);
+            if (!$proFreight) {
+                $ret['info'] = '运费模板数据处理异常！';
                 break;
             }
             $ret['status'] = true;

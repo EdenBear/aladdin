@@ -144,7 +144,8 @@ function qiniu_upload($isPublic = false){
  * author: EK_熊
  */
 function weight_format($num,$units=''){
-    $num = intval($num);
+    $num = round((float)$num,2);
+    
     switch ($units){
         case 'kg': $ret = $num/1000;break;
         case 'g': $ret = $num*1000;break;
@@ -161,7 +162,7 @@ function weight_format($num,$units=''){
  * author: EK_熊
  */
 function mony_format($num,$units='ten'){
-    $num = intval($num);
+    $num = round((float)$num,2);
 
     switch ($units){
         case 'yuan': $ret = $num/100;break;

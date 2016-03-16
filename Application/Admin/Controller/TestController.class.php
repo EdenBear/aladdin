@@ -35,20 +35,12 @@ class TestController extends AdminController{
 //                 ";
 //             $ret = M('')->query($sql);
 //             dump($ret);
-//             $join = array('t_product_attr ON t_product_attr.ID = attrvalue.attrID');
-//             $m = M('ProductAttrValue','','DB_PRODUCT')->alias('attrvalue')->table('t_product_attr')->join($join)->where('')->select();
+//             $join = array('t_freight_tpl_except except ON except.freightTplID = tpl.ID');
+//             $m = M('FreightTpl','','DB_PRODUCT')->alias('tpl')->join($join)->field('except.id,tpl.freightname')->select();
 //             dump($m);
         
-//         $sku_AttrValueID_ary = M('ProductSkuAttr','','DB_PRODUCT')->where("skuID=97")->field('attrValueID')->select();
-//         dump($sku_AttrValueID_ary);
-//         for ($h=0;$h<count($sku_AttrValueID_ary);$h++) {
-//             $skuKey .= $sku_AttrValueID_ary[$h]['attrvalueid']."-";
-//         }
-
-        $a1 = array('1','2','3');
-        $a2 = array('2','3');
-        dump(array_diff($a1,$a2));
-
+          dump(mony_format(12.329,'ten'));
+dump(mony_format(1230,'yuan'));
     }
     
 }

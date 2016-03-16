@@ -83,7 +83,7 @@ class ProcategoryController extends AdminController{
             $where['categoryID'] = $cateid;
             $proModel = M('Product','','DB_PRODUCT');;
             $proImgModel = M('ProductImg','','DB_PRODUCT');
-        
+            $_REQUEST['r'] = 1;
             $list = $this->lists ($proModel,$where,$order='createTime DESC',$field=true);
             //循环拼接供应商supplyname，图片主图{$item.imgmaj},分类categoryname
             $list = R('Goods/filterProData',array($list));
