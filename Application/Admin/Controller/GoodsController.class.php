@@ -24,9 +24,11 @@ class GoodsController extends AdminController{
         $dateEnd = I('date_end');
         $procode = I('procode');
         $proname = I('proname');
+        $supplier= I('supplier');
         $where = array();
         $where['status'] = array('neq','DEL');
         if ($id)      $where['ID'] = $id;
+        if ($supplier)$where['supplyID'] = $supplier;
         if ($procode) $where['productCode'] = $procode;
         if ($proname) $where['productName'] = array('like',"%$proname%");
         if ($dateStat && $dateEnd) $where['createTime'] = array('between',array($dateStat." 00:00:00",$dateEnd." 23:59:59"));
@@ -38,7 +40,11 @@ class GoodsController extends AdminController{
         //循环拼接供应商supplyname，图片主图{$item.imgmaj},分类categoryname
         $list = $this->filterProData($list);
         
-
+        //获取供应商数据
+        $map_supplier['status'] = 'OK#';
+        $supplier = M('Supplier','','DB_SUPPLIER')->where($map_supplier)->field('ID,name')->select();
+        
+        $this->assign('_supplier',$supplier);
         $this->assign('_list',$list);
         $this->meta_title = '商品管理';
         $this->display();
@@ -56,26 +62,32 @@ class GoodsController extends AdminController{
         if (!$list) return false;
         $proImgModel = M('ProductImg','','DB_PRODUCT');
         $categoryModel = M('ProductCategory','','DB_PRODUCT_CATEGORY');
-        
+        $supplierModel = M('Supplier','','DB_SUPPLIER');
+        //拼接图片
         foreach ($list as $key => $value) {
             $proidList[] = $value['id'];
             $cateIdList[] =$value['categoryid'];
+            $supplyIdList[] = $value['supplyid'];
         }
         $imgMaj_map['productID'] = array('in',$proidList);
         $imgMaj_map['imgPos'] = "MAJ";
         $imgMajList = $proImgModel->where($imgMaj_map)->getField('productID,imgPath'); //获取图片数据
         
         
-        
+        //拼接分类
         $cate_map['ID'] = array('in',$cateIdList);
         $cateNameList = $categoryModel->where($cate_map)->getField('ID,className');
-        
+        $supplier_map['ID'] = array('in',$supplyIdList);
+        $supplierList = $supplierModel->where($supplier_map)->getField('ID,name');
+
         foreach ($list as $key => $value ){
             $imgPath = $imgMajList[$value['id']];
             $list[$key]['imgmaj'] = $imgPath ? qiniu_private_url($imgPath): '';
             $list[$key]['categoryname'] = $cateNameList[$value['categoryid']];
+            $list[$key]['supplyname'] = $supplierList[$value['supplyid']];
         }
 
+        
         return $list;
     }
     

@@ -15,11 +15,13 @@
 						    <input class="span2" size="16" type="text" value="{$_GET['date_end']|default=''}" name='date_end' placeholder='{$curday}'  id='date_end' class='datepicker'>
         	            </label>
                         <label>供应商
-                            <select name="" id="">
-                            	<option value=""></option>
-                            	<option value=""></option>
-                            	<option value=""></option>
-                            </select>
+                            <select name="supplier" id="" class='span12'>
+		                       <option value="">请选择供应商</option>
+		                       <volist name='_supplier' id='vo'>
+		                       
+		                         <option value="{$vo.id}" <eq name="$_GET['supplier']" value='$vo.id'>selected</eq>>{$vo.name}</option>			                             
+		                       </volist>
+							</select>
                         </label>
                         <label for="">
                         	<button class="btn btn-sm btn-primary">供应商导出</button>
