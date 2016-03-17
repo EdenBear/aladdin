@@ -30,6 +30,9 @@ return array(
     /* 供应商库*/
     'DB_SUPPLIER'=>"mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_supplier", 
     
+    /* 订单库 */
+    'DB_ORDER'=>"mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_order",//订单主表    
+  
     
     'DB_CONFIG2' => 'mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_product_sku_user',
     'DB_CONFIG3' => 'mysql://root:79970531@qq.com@112.74.19.227:3306/aladdin_other',

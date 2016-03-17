@@ -39,8 +39,11 @@ class TestController extends AdminController{
 //             $m = M('FreightTpl','','DB_PRODUCT')->alias('tpl')->join($join)->field('except.id,tpl.freightname')->select();
 //             dump($m);
         
-          dump(mony_format(12.329,'ten'));
-dump(mony_format(1230,'yuan'));
+        $num = 123.11;
+        $ten = mony_format($num,'ten');
+          dump($ten);
+         $yuan =  mony_format($ten,'yuan');
+dump($yuan);
     }
     
 }

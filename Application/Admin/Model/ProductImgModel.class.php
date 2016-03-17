@@ -94,8 +94,12 @@ class ProductImgModel extends Model{
         return $ret;
     }
     
-    function isExist(){
-        
+    //根据商品id，获取商品主图,返回七牛私密路径
+    function amjImgbyPorid($proid){
+        $where['productID'] = $proid;
+        $where['imgPos'] = 'MAJ';
+        $url = $this->where($where)->getField('imgPath');
+        return qiniu_private_url($url);
     }
     
 }

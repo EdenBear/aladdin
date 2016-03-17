@@ -325,6 +325,13 @@
 
         <link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
         
+        <!-- datepicker -->
+        <link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">
+        <link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+        <script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+        
 	    <script type="text/javascript" src="__JS__/common.js"></script>
 	    <script type="text/javascript" src="__STATIC__/common.js"></script>
 	    <script type="text/javascript">
@@ -350,6 +357,20 @@
 	    			showMethod: "fadeIn",
 	    			hideMethod: "fadeOut"
 	    		}
+
+	    	/*时间控件*/
+	    	$('#date_stat').datetimepicker({
+	    	    format: 'yyyy-mm-dd',
+	    	    language:"zh-CN",
+	    	    minView:2,
+	    	    autoclose:true
+	    	});
+	    	$('#date_end').datetimepicker({
+	    	    format: 'yyyy-mm-dd',
+	    	    language:"zh-CN",
+	    	    minView:2,
+	    	    autoclose:true
+	    	});    		
 	    </script>
 	    <block name="script"></block>
     </body>

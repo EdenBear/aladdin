@@ -194,4 +194,28 @@ function array_level($arr){
     return max($al);
 }
 
+/**
+ * 数组格式转换，
+ * @param unknown $data    数据源
+ * @param string $fieldName 输出某个字段的值集合，默认是‘id’
+ * @param string $aryIndexName 某个字段作为索引值
+ * @return unknown
+ * date:2016年3月17日
+ * author: EK_熊
+ */
+function data_shift($data,$fieldName='id',$aryIndexName=''){
 
+    foreach ($data as $key => $val){
+
+        $idList[] = $val[$fieldName];
+        if ($aryIndexName) {
+            $ret['data'][$val[$aryIndexName]] = $val;
+        }else{
+            $ret['data'][] = $val;
+        }
+
+    }
+
+    $ret["{$fieldName}_list"] = array_unique($idList);
+    return $ret;
+}
