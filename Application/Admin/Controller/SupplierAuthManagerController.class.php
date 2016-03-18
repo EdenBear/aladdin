@@ -211,12 +211,12 @@ class SupplierAuthManagerController extends AdminController{
         $_POST['module'] =  'admin';
         $_POST['type']   =  AuthGroupModel::TYPE_ADMIN;
         $AuthGroup       =  D('AuthGroup','','DB_CONFIG4');
-        $data = $AuthGroup->create();
+        $data = $AuthGroup->db(4,'DB_CONFIG4')->create();
         if ( $data ) {
             if ( empty($data['id']) ) {
-                $r = $AuthGroup->add();
+                $r = $AuthGroup->db(4,'DB_CONFIG4')->add();
             }else{
-                $r = $AuthGroup->save();
+                $r = $AuthGroup->db(4,'DB_CONFIG4')->save();
             }
             if($r===false){
                 $this->error('操作失败'.$AuthGroup->getError());

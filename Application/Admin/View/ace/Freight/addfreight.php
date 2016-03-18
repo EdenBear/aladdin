@@ -77,12 +77,7 @@
 			                </div>
 			        <div class="clearfix form-actions">
 			           <div class="col-xs-12">
-			               <button id="sub-btn" class="btn btn-sm btn-success no-border" target-form="form-horizontal" type="submit">
-			                                             确认保存
-			               </button> 	  
-			                 <a href="javascript:;" class="btn btn-white" onclick="history.go(-1)">
-			                                              返回
-			                 </a>	
+			               <?=ace_srbtn()?>	
 			           </div>
 			       </div>    
 		       </div>

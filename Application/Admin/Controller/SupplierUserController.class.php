@@ -439,10 +439,16 @@ class SupplierUserController extends AdminController {
             $uid    =   $User->register($username, $password, $email,$username);
             if(0 < $uid){ //注册成功
                 $user = array('uid' => $uid, 'nickname' => I('nickname'), 'status' => 1);
+
                 if(!M('Member','','DB_CONFIG4')->add($user)){
                     $this->error('用户添加失败！');
                 } else {
-                    $this->success('用户添加成功！',U('index'));
+                	$data = array('uid' => $uid, 'supplierID' => UID, 'status' => 1,'add_time'=>date('Y-m-d H:i:s',time()));
+                	if(M('member_supplier','','DB_CONFIG4')->add($data)){
+                    	$this->success('用户添加成功！',U('index'));
+                	}else{
+                		$this->error('用户添加失败！');
+                	}
                 }
             } else { //注册失败，显示错误信息
                 $this->error($this->showRegError($uid));

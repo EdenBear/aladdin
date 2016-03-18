@@ -90,14 +90,18 @@ class MemberController extends AdminController{
 		$this->display();
 	}
 	
+	/**
+	 * 分页读取会员记录
+	 * @author ghan <glghan@sina.com>
+	 */
 	public function getChild(){
 		if(IS_POST){
 			$pid = I('post.pid');
-			$lastid = I('post.lastid');
+			$page = I('post.page');
 		}
 		$data = M('fxyq_vertical_relation','','DB_CONFIG3')->table('t_fxyq_vertical_relation f,aladdin_product_sku_user.t_user u')
 		->field('f.id,f.level,f.isleaf,f.distributionUserId,f.parentDistributionUserId,f.insertTime,u.mobileNum,u.nickName')
-		->where('u.mqID=f.distributionUserId and parentDistributionUserId='.$pid)->limit($lastid.',1')->select();
+		->where('u.mqID=f.distributionUserId and parentDistributionUserId='.$pid)->page($page.',10')->select();
 		//var_dump($data);exit();
 		echo json_encode($data);
 	

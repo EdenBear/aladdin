@@ -63,7 +63,7 @@
     				url:"{:U('getChild')}",
     				async:false,
     				type:"POST",
-    				data:{"pid":pid,"lastid":page},
+    				data:{"pid":pid,"page":page},
     				dataType:"json",
     				
     				success:function(ret){
@@ -86,7 +86,6 @@
         							elememt +='<td style="width:150px;text-align:center;">'+ret[i].inserttime+'</td>';
         							elememt +='</tr>';
             						}
-        						
 
         						if(nextLineID==-1){
         							$(".dataTable tbody").append(elememt);
@@ -115,7 +114,7 @@
 						nextLineID=$(".dataTable tbody tr:eq("+(index+1)+")").attr("id");
                 	}
                 	console.log(nextLineID);
-        			add(pid,0);
+        			add(pid,1);
         			
         			$(this).text('[-]');
         		}else{
@@ -138,7 +137,7 @@
 						nextLineID=$(".dataTable tbody tr:eq("+(index+1)+")").attr("id");
                 	}
                 	console.log(nextLineID);
-        			add(pid,0);
+        			add(pid,1);
         			$(this).text('[-]');
         		}else{
         				
