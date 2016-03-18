@@ -163,7 +163,6 @@ function weight_format($num,$units=''){
  */
 function mony_format($num,$units='ten'){
     $num = round((float)$num,2);
-
     switch ($units){
         case 'yuan': $ret = $num/100;break;
         case 'ten': $ret = $num*100;break;
@@ -219,3 +218,36 @@ function data_shift($data,$fieldName='id',$aryIndexName=''){
     $ret["{$fieldName}_list"] = array_unique($idList);
     return $ret;
 }
+
+/**
+ * 根据mqid，获取单条麦圈用户信息
+ * @param unknown $mqid
+ * @return Ambigous <mixed, boolean, NULL, string, unknown, multitype:, object>
+ * date:2016年3月18日
+ * author: EK_熊
+ */
+function get_mpdetail_one($mqid){
+    $userModel = M('User','','DB_PRODUCT_USER');
+    $where['mqID'] = $mqid;
+    return $userModel->where($where)->find();
+}
+
+/**
+ * 获取状态标记和输出的转换
+ * @param unknown $val   标记值，
+ * @param unknown $type  要转换的类型，或是是哪张表，比如订单，支付
+ * date:2016年3月18日
+ * author: EK_熊
+ */
+function get_status($val,$type){
+    $val = strtoupper($val);
+    $status = array(
+        'pay' =>['ALI'=>'支付宝','WXP'=>'微信','PAY'=>'贝宝','SUM'=>'余额支付'],
+        'order' =>['CAN'=>'已取消','COM'=>'已完成'],
+    );
+    return $status[$type][$val];
+    
+}
+
+
+

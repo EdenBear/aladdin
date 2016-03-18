@@ -1,22 +1,23 @@
 <?php
+namespace Admin\Model;
+use Think\Model;
 // +----------------------------------------------------------------------
-// | Date:2016年2月23日
+// | Date:2016年3月18日
 // +----------------------------------------------------------------------
 // | Author: EK_熊<1439527494@qq.com>
 // +----------------------------------------------------------------------
-// | Description: 此文件作用于 业务逻辑需要的配置信息
+// | Description: 此文件作用于****
 // +----------------------------------------------------------------------
-
-
-
-return array(
-    /*订单状态值列表*/
-    'STU_BOOK'=>array(
-        '1'=>'待收货',
-        '2'=>'待发货',
-        '3'=>'已完成',
-    ),   
+class SupplierModel extends Model{
+    protected $connection = 'DB_SUPPLIER';
+    
+    function getAllSupplier($field='id,name'){
+        $where['status'] = 'OK#';
+        return $this->where($where)->field($field)->select();
+    }
     
 
     
-);
+    
+    
+}

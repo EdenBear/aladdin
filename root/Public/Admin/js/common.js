@@ -13,6 +13,7 @@
             }
             
             window.location.href = url;
+
         });
 
         $('.search-form').find('input').keyup(function(event){

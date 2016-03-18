@@ -46,14 +46,22 @@ class OrderModel extends Model{
      * author: EK_熊
      */
     function getInfoList($orderData){
+        if (!$orderData) return null;
+        
             /* 1.传入父订单数据,取出id，获取子订单数据 */
         $parent_ord = data_shift($orderData); // 父订单id数组
         $sun_ord = $this->getSunOrd($parent_ord['id_list']);
+        if (!$sun_ord) return null;
+        
         $sun_ord = data_shift($sun_ord,'id'); // 子订单订单数据
         $pro_ord = $this->getProByOrdid($sun_ord['id_list']);
+        if (!$pro_ord) return null;
+        
         $pro_ord = data_shift($pro_ord,'productid','orderid');// 商品-订单关联数据,使用订单id做索引
-
-        $product_data = data_shift($this->productInfo($pro_ord['productid_list']),'id','id');//商品基本数据
+        $product_data = $this->productInfo($pro_ord['productid_list']);
+        if (!$pro_ord) return null;
+        
+        $product_data = data_shift($product_data,'id','id');//商品基本数据
 
         //把子订单数据和商品数据拼在一起，使用订单id做索引
         foreach ($pro_ord['data'] as $key=>$val){
@@ -97,7 +105,6 @@ class OrderModel extends Model{
     /**
      * 获取子订单数据，根据父订单的id批量获取
      * @param unknown $parentIdList   返回数据
-     * @param string $getId           是否需要返回id列表
      * @return $data['data']
      *         $data['id_list']
      * date:2016年3月17日
@@ -106,11 +113,24 @@ class OrderModel extends Model{
     function getSunOrd($parentIdList){
         $where['parentID'] = array('in',$parentIdList);
         $data = $this->where($where)->select(); 
-
         return $data;
         
     }
     
+    /**
+     * 根据父订单id，获取完成的子订单数据，join ord报表和ord
+     * 返回单条数据
+     * date:2016年3月18日
+     * author: EK_熊
+     */
+    function getSunOrd_joinPro($parentId){
+        $map_ord['parentID'] = $parentId;
+        $join = array(
+            't_order_product ordpro  ON ordpro.orderID = ord.ID'
+        );
+        $ret = $this->alias('ord')->where($map_ord)->field('*,ordpro.ID as ordproid')->join($join)->select();
+        return $ret;
+    }
     
     
     //根据子订单id，获取商品数据
@@ -125,4 +145,32 @@ class OrderModel extends Model{
         $data = $this->db_product->where($where)->field('id,productname,productcode,price,status')->select();
         return $data;
     }
+    
+    //根据商品自编号获取订单信息，只查一条，直接用join,返回父订单的id
+    function getDataByProCode($proCode){
+        
+        $pro_map['productCode'] = $proCode;        
+        $proId = $this->db_product->where($pro_map)->getField('ID');
+        $ord_map['productID'] = $proId; 
+        $join = array(
+            't_order_product ON t_order_product.orderID = t_order.ID', 
+        );
+        $ordId = $this->where($ord_map)->join($join)->getField('parentid');
+        return $ordId;
+    }
+    
+
+    
+    //获取订单号，根据订单号
+    function getPayNum($ordCode){
+        $map['orderCode'] = $ordCode;
+        return M('OrderPayment','','DB_ORDER')->where($map)->getField('payNum');
+    }
+    //获取支付类型
+    function getPayType($ordCode){
+        $map['orderCode'] = $ordCode;
+        $type= M('OrderPayment','','DB_ORDER')->where($map)->field('payChannel')->select();
+        return get_status($type[0]['paychannel'],'pay')."+".get_status($type[1]['paychannel'],'pay');
+    }
+    
 }

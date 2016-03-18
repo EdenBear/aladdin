@@ -18,18 +18,86 @@ class OrderController extends AdminController{
     
     //普通订单
     public function index_normal(){
-        
-        $orderModel = D('Order');
-
+        $search_day = I('search_day');
+        $search_status = I('search_status');
+        $dateStat = I('date_stat');
+        $dateEnd = I('date_end');
+        $keyword = I('keyword');
+        $select = I('select');
         $where['parentID'] = 0;
-//         $where['orderCode'] = '20160315033415532256';
-        $parentOrderData = $this->lists($orderModel,$where,$order='createTime DESC',$field=true);//获取父订单的编号信息
+        $orderModel = D('Order');
         
-        $list = $orderModel->getInfoList($parentOrderData);
-// dump($list[0]['order'][0]['pro_ord_info']);
+        switch ($search_status){
+            case 'stu_all':       $where = array(); break;
+            case 'stu_waitsend':  $where['shippingStatus'] = 'NOT'; break;
+            case 'stu_waitpay':   $where['payStatus'] = 'NOT'; break;
+            case 'stu_waitrece':  $where['shippingStatus'] = 'HAV'; break;
+            case 'stu_complete':  $where['orderStatus'] = 'COM';break;
+            case 'stu_close':     $where['orderStatus'] = 'CAN';break;
+        }
+        if ($dateStat && $dateEnd) $where['createTime'] = array('between',array($dateStat." 00:00:00",$dateEnd." 23:59:59"));
 
-//分两种查询：1.条件是order主表存在的；2.商品自编号，数据只有一条，不需要分页；3.查询供应商姓名，由order_pro表入手，取orderid，作为条件
+        if ($search_day){
+            $search_day_stat = $search_day;
+            $search_day_end = date('Y-m-d');
+            $where['createTime'] = array('between',array($search_day_stat." 00:00:00",$search_day_end." 23:59:59"));
+        }
+        
+        switch ($select){
+            case 'ord_code' :      $where['orderCode'] = $keyword; break;
+            case 'ord_rename' :    $where['recName'] = array('like',"%{$keyword}%"); break;
+            case 'ord_remobile' :  $where['recMobile'] = $keyword; break;
+            case 'pro_code' :     $selectProCode = true; break;
+
+        }
+        if ($selectProCode) {
+            $where = array();
+            $where['ID'] = $orderModel->getDataByProCode($keyword);
+        }
+        
+        $parentOrderData = $this->lists($orderModel,$where,$order='createTime DESC',$field=true);//获取父订单的编号信息
+        $list = $orderModel->getInfoList($parentOrderData);
+
+//TODO查询供应商
+        
+        $supplier = D('Supplier')->getAllSupplier();
+        $this->assign('supplier',$supplier);
         $this->assign('list',$list);
+        $this->display();
+    }
+    
+    
+    //获取订单详情数据
+    function detail(){
+        $ordId = I('ordId');
+        $map_par['ID'] = $ordId;
+        $ordModel = D('Order');
+        $imgModel = D('ProductImg');
+        $parent_ord_info = $ordModel->where($map_par)->find();//父订单信息
+        $parent_ord_info['addressall'] = $parent_ord_info['country'].$parent_ord_info['province'].$parent_ord_info['city'].$parent_ord_info['district'].$parent_ord_info['address'];
+        $parent_ord_info['ordetype'] = '普通商品';
+        if ($parent_ord_info['paystatus'] == 'PAY') {
+            $parent_ord_info['paynum'] = $ordModel->getPayNum($parent_ord_info['ordercode']);
+            $parent_ord_info['paytye'] = $ordModel->getPayType($parent_ord_info['ordercode']);
+        }else{
+            $parent_ord_info['paynum'] = '';
+        }
+        
+        $son_ord_info = $ordModel->getSunOrd_joinPro($parent_ord_info['id']);
+        foreach ($son_ord_info as $key => $val) {
+           $son_ord_info[$key]['img'] = $imgModel->amjImgbyPorid($val['productid']);
+
+
+           $son_ord_info[$key]['postfee'] = intval($val['postfee']) == 0 ? '包邮' : "￥".mony_format($val['postfee'],'yuan');
+           
+        }
+        
+        $userInfo = get_mpdetail_one($parent_ord_info['mqid']);//获取下单人的麦圈id和昵称
+        
+        $this->assign('user_info',$userInfo);
+        $this->assign('ord_parent',$parent_ord_info);
+        $this->assign('ord_son',$son_ord_info);
+        $this->meta_title = '订单详情';
         $this->display();
     }
     
