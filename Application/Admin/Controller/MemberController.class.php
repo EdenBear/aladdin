@@ -20,6 +20,12 @@ class MemberController extends AdminController{
 	 * @author han <glghan@sina.com>
 	 */
 	public function index(){
+		$type = I('type');
+		if(!empty($type)){
+			$status = 1;
+			$map[$type]    =   array('like', '%'.(string)$status.'%');
+		}
+		
 		$nickname = I('nickname');
         if(!empty($nickname)){
             $map['u.nickName']    =   array('like', '%'.(string)$nickname.'%');
@@ -28,53 +34,49 @@ class MemberController extends AdminController{
         if(!empty($mobile_num)){
             $map['u.mobileNum']    =   array('like', '%'.(string)$mobile_num.'%');
         }
-        $sort = I('sort');
-        if($sort != 'all'&&$sort != ''){
-        	var_dump($sort);exit;
-        	$map['u.sort'] = array('like','%'.(string)$sort.'%');
-        }
         
 
         $prefix = C('DB_PREFIX');
         $model = M()->db(2,'DB_CONFIG2')->table($prefix.'user u')
-                    ->join($prefix.'wx_user ua on ua.mqID = u.id','left');
-        $list   = $this->lists($model, $map,'','u.*,ua.openid,ua.country');
+                    ->join($prefix.'wx_user ua on ua.mqID = u.mqID','left')
+        			->join('aladdin_other.t_fxyq_vertical_relation f on f.distributionUserId=u.mqID','left');
+        $list   = $this->lists($model, $map,'','u.*,ua.openid,ua.country,f.parentDistributionUserId,f.level');
+        //var_dump($list);exit();
         $this->assign('_list', $list);
-        //$this->assign('detail',$detail);
+        
         $this->meta_title = '会员列表';
         $this->display();
+	}
+	
+	/**
+	 * 获取上一级
+	 * @author ghan <glghan@sina.com>
+	 */
+	public function getParent(){
+		$pid = I('post.pid');
+			if($pid!=0){
+			$data= M('fxyq_vertical_relation','','DB_CONFIG3')->field('distributionUserId')
+			->where('id='.$pid)->select();			
+			$mqID = $data[0]['distributionuserid'];			
+			$parent = M('user','','DB_CONFIG2')->field('nickName')->where('mqID='.$mqID)->select();
+			echo json_encode($parent);
+		}else{
+			echo json_encode(null);
+		}
 	}
 	
 	/**
 	 * 我的团队
 	 * @author ghan <glghan@sina.com>
 	 */
-	public function myTeam(){
-		$tree = D('fxyq_vertical_relation')->getTree(0,'id,distributionUserId,parentDistributionUserId,insertTime');
-		//var_dump($tree);exit();
-		$request    =   (array)I('request.');
-		$total      =   $tree? count($tree) : 1 ;
-		$listRows   =   C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
-		$page       =   new \Think\Page($total, $listRows, $request);
-		$tree       =   array_slice($tree, $page->firstRow, $page->listRows);
-		$p          =   $page->show();
-		//var_dump($tree);exit();
-		$this->assign('_page', $p? $p: '');
-		$this->assign('tree', $tree);
-        C('_SYS_GET_CATEGORY_TREE_', true); //标记系统获取分类树模板
-        $this->meta_title = '我的团队';
-        $this->display();
-	}
-	
 	public function team($pid=0){
 		if(IS_POST){
 			$pid = I('post.pid');
-			//var_dump($pid);exit();
 		}
 		$data = M('fxyq_vertical_relation','','DB_CONFIG3')->table('t_fxyq_vertical_relation f,aladdin_product_sku_user.t_user u')
         ->field('f.id,f.level,f.isleaf,f.distributionUserId,f.parentDistributionUserId,f.insertTime,u.mobileNum,u.nickName')
         ->where('u.mqID=f.distributionUserId and parentDistributionUserId='.$pid)->select();
-		
+		//var_dump($data);exit();
 		$request    =   (array)I('request.');
 		$total      =   $data? count($data) : 1 ;
 		$listRows   =   C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
@@ -92,11 +94,10 @@ class MemberController extends AdminController{
 		if(IS_POST){
 			$pid = I('post.pid');
 			$lastid = I('post.lastid');
-			//var_dump($lastid);exit();
 		}
 		$data = M('fxyq_vertical_relation','','DB_CONFIG3')->table('t_fxyq_vertical_relation f,aladdin_product_sku_user.t_user u')
 		->field('f.id,f.level,f.isleaf,f.distributionUserId,f.parentDistributionUserId,f.insertTime,u.mobileNum,u.nickName')
-		->where('u.mqID=f.distributionUserId and parentDistributionUserId='.$pid)->limit($lastid.',5')->select();
+		->where('u.mqID=f.distributionUserId and parentDistributionUserId='.$pid)->limit($lastid.',1')->select();
 		//var_dump($data);exit();
 		echo json_encode($data);
 	

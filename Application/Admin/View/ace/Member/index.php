@@ -7,9 +7,9 @@
             <div class="row">
                 <div class="col-sm-12">
                 	
-                	<a href="" style="font-size: 17px;margin-right:10px;">会员查询</a>
-                	<a href="" style="font-size: 17px;margin-right:10px;">金牌用户</a>
-                	<a href="" style="font-size: 17px;margin-right:10px;">渠道用户</a>
+                	<a href="{:U('index?type=u.isNormalMember')}" style="font-size: 17px;margin-right:10px;">会员查询</a>
+                	<a href="{:U('index?type=u.isGoldType')}" style="font-size: 17px;margin-right:10px;">金牌用户</a>
+                	<a href="{:U('index?type=u.isChannelType')}" style="font-size: 17px;margin-right:10px;">渠道用户</a>
                 	
                     <form action="<?=U('Member/index')?>" method="POST" class="search-form">
                         <label>昵称
@@ -48,15 +48,23 @@
 						<td><img src="{$vo.head_image}" /></td>
 						<td>{$vo.nickname}</td>
 						<td>{$vo.mobilenum}</td>
-						<td>{$vo.type}</td>
+						<td>
+						<if condition="$vo.isnormalmember eq 1">普通会员</if>
+						<if condition="$vo.isgoldtype eq 1">金牌用户</if>
+						<if condition="$vo.ischanneltype eq 1">渠道用户</if>
+						</td>
 						<td>{$vo.inserttime}</td>
-						<td>{$vo.usersource}</td>
-						<td>{$vo.position}</td>
+						<td>
+						<if condition="$vo.usersource eq 'WEB#'">从商场网站注册</if>
+						<if condition="$vo.usersource eq 'WX##'">从微信注册</if>
+						<if condition="$vo.usersource eq 'QQ##'">从QQ注册</if>
+						</td>
+						<td>第{$vo.level}层</td>
 						<td>
                             <a title="详情" class="ui-pg-div ui-inline btn-detail" data-id="{$vo.id}" style="background: blue;color:white;">
                                 详情
                             </a>
-                            <a title="团队" href="{:U('myTeam')}" class="ui-pg-div ui-inline btn-detail" style="background: orange;color:white;">
+                            <a title="团队" href="{:U('team')}" class="ui-pg-div ui-inline btn-detail" style="background: orange;color:white;">
                                 团队
                             </a>
                              <a title="订单" href="" class="ui-pg-div ui-inline confirm ajax-get" style="background: green;color:white;">
@@ -138,7 +146,11 @@
 					                <div class="profile-info-name"> 来源 </div>
 					
 					                <div class="profile-info-value">
-					                    <span class="editable">{$vo.usersource}&nbsp;</span>
+					                    <span class="editable">
+					                    <if condition="$vo.usersource eq 'WEB#'">从商场网站注册</if>
+										<if condition="$vo.usersource eq 'WX##'">从微信注册</if>
+										<if condition="$vo.usersource eq 'QQ##'">从QQ注册</if>
+					                    &nbsp;</span>
 					                </div>
 					            </div>
 					
@@ -165,10 +177,12 @@
 					
 					                <div class="profile-info-value">
 					                    <i class="icon-email light-orange bigger-110"></i>
+					                    <input type="hidden" value="{$vo.parentdistributionuserid}" >
+					                    <span class="referee"></span>
 					                    &nbsp;
 					                </div>
 					            </div>
-					
+								
 					            <div class="profile-info-row">
 					                <div class="profile-info-name"> 消费金额 </div>
 					
@@ -226,8 +240,26 @@
 		});
 		
 		$(".btn-detail").click(function(){
-			
 			var id = $(this).data('id');
+			var parentID = $(".detail-"+id).find("input").val();
+			console.log(parentID);
+			$.ajax({		
+				
+				url:"{:U('getParent')}",
+				type:"POST",
+				data:{"pid":parentID},
+				dataType:"json",
+				
+				success:function(ret){
+					if(ret!=null){
+						$(".referee").text(ret[0].nickname);
+					}else{
+						$(".referee").text('无');
+						}
+				}
+			});
+			
+			
 			$(".detail-"+id).toggle(1000);
 
 			var tr = $(".detail-"+id).get(0);

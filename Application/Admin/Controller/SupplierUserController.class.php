@@ -11,7 +11,7 @@ namespace Admin\Controller;
 use Admin\Service\ApiService;
 use User\Api\UserApi;
 /**
- * 后台用户控制器
+ * 供应商用户控制器
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 class SupplierUserController extends AdminController {
