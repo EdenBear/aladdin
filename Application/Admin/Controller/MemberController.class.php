@@ -39,9 +39,10 @@ class MemberController extends AdminController{
         $prefix = C('DB_PREFIX');
         $model = M()->db(2,'DB_CONFIG2')->table($prefix.'user u')
                     ->join($prefix.'wx_user ua on ua.mqID = u.mqID','left')
+                    ->join('aladdin_account.t_account_cash a on a.mqId=u.mqID','left')
         			->join('aladdin_other.t_fxyq_vertical_relation f on f.distributionUserId=u.mqID','left');
-        $list   = $this->lists($model, $map,'','u.*,ua.openid,ua.country,f.parentDistributionUserId,f.level');
-        //var_dump($list);exit();
+        $list   = $this->lists($model, $map,'','u.*,ua.openid,ua.country,f.parentDistributionUserId,f.level,a.remainingSum,a.frozenSum');
+        //var_dump($li.st);exit();
         $this->assign('_list', $list);
         
         $this->meta_title = '会员列表';

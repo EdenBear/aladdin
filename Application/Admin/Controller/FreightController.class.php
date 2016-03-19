@@ -205,7 +205,7 @@ class FreightController extends AdminController{
 				$this->error(M('freight_tpl_except','','DB_CONFIG2')->getError());
 			}
 		}
-		$country = M('xbdistrict')->db(3,'DB_CONFIG2')->where('pid=0')->select();
+		$country = M('xbdistrict')->db(3,'DB_CONFIG3')->where('pid=0')->select();
 		
 		$this->assign('country',$country);
 		$this->assign('id',$freightID);
@@ -245,7 +245,7 @@ class FreightController extends AdminController{
 		
 		$id = $_GET['id'];
 		$area = $areaModel->where('id='.$id)->select();
-		$country = M('xbdistrict','','DB_CONFIG2')->where('pid=0')->select();
+		$country = M('xbdistrict','','DB_CONFIG3')->where('pid=0')->select();
 		//var_dump($area);exit();
 		$this->assign('country',$country);
 		$this->assign('area',$area);
@@ -282,7 +282,7 @@ class FreightController extends AdminController{
 	 */
 	public function getAddressByPid(){
 		$pid = $_POST['pid'];
-		$address = M('xbdistrict','','DB_CONFIG2')->where('pid='.$pid)->select();
+		$address = M('xbdistrict','','DB_CONFIG3')->where('pid='.$pid)->select();
 		echo json_encode($address);
 	}
 }	

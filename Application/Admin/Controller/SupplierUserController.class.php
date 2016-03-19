@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 use Admin\Service\ApiService;
-use User\Api\UserApi;
+use User\Supplier\UserApi;
 /**
  * 供应商用户控制器
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
@@ -260,12 +260,46 @@ class SupplierUserController extends AdminController {
      * @author huajie <banhuajie@163.com>
      */
     public function saveAction(){
-        $res = D('Action','','DB_CONFIG4')->update();
+        $res = $this->update();
         if(!$res){
-            $this->error(D('Action','','DB_CONFIG4')->getError());
+            $this->error(M('Action','','DB_CONFIG4')->getError());
         }else{
             $this->success($res['id']?'更新成功！':'新增成功！', Cookie('__forward__'));
         }
+    }
+    
+    /**
+     * 新增或更新一个行为
+     * @return boolean fasle 失败 ， int  成功 返回完整的数据
+     * @author huajie <banhuajie@163.com>
+     */
+    public function update(){
+    	/* 获取数据对象 */
+    	$data = M('Action','','DB_CONFIG4')->create($_POST);
+    	if(empty($data)){
+    		return false;
+    	}
+    
+    	/* 添加或新增行为 */
+    	if(empty($data['id'])){ //新增数据
+    		$id = M('Action','','DB_CONFIG4')->add(); //添加行为
+    		if(!$id){
+    			$this->error = '新增行为出错！';
+    			return false;
+    		}
+    	} else { //更新数据
+    		$status = M('Action','','DB_CONFIG4')->save(); //更新基础内容
+    		if(false === $status){
+    			$this->error = '更新行为出错！';
+    			return false;
+    		}
+    	}
+    	//删除缓存
+    	S('action_list', null);
+    
+    	//内容添加或更新完成
+    	return $data;
+    
     }
 
     /**
@@ -402,12 +436,12 @@ class SupplierUserController extends AdminController {
             }
             
             if(! $u_m_model->where(array('id'=>$id))->save(array('email'=>$email,'update_time'=>NOW_TIME))){
-                $this->error('修改失败！');
+            	$this->error('修改失败！');
             }
             
             $model = M('member','','DB_CONFIG4');
             
-            if(!$model->where(array('uid'=>$id))->save(array('nickname'=>$nickname,'update_time'=>NOW_TIME))){
+            if(!$model->where(array('uid'=>$id))->save(array('nickname'=>$nickname,'update_time'=>date('Y-m-d H:i:s',time())))){
                 $this->error('修改失败！');
             }
             

@@ -26,8 +26,8 @@
                 	<?php foreach ($_list as $k => $v): ?>
 					<tr>
 						<td><?php echo $v['freightname'];?></td>
-                        <td>￥<?php echo round(($v['firstfreight']/100),2);?></td>
-                        <td>￥<?php echo round(($v['secfreight']/100),2);?></td>
+                        <td>￥<?php echo number_format(($v['firstfreight']/100),2);?></td>
+                        <td>￥<?php echo number_format(($v['secfreight']/100),2);?></td>
                         <td><?php 
                         	switch ($v['freighttype']){
 									case 'NOT':
@@ -48,7 +48,7 @@
 								}
                         ?></td>
                         <td><?php 
-                        	$fullsum = round($v['fullsum']/100,2);
+                        	$fullsum = number_format($v['fullsum']/100,2);
                         	switch ($v['fullstatus']){
 								case 'USE':
 									echo ('启用'.'('.$fullsum.')');

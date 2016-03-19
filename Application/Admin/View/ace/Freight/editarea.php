@@ -46,14 +46,14 @@
 			                <div class="form-group">
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right"><span style="color: red;">*</span>首重（元）</label>
 			                    <div class="col-xs-12 col-sm-6">
-			                        <input type="number" class="width-100" name="firstFreight" value="{$area['firstfreight']/100}">                    </div>
+			                        <input type="number" class="width-100" name="firstFreight" value="<?= number_format($area['firstfreight']/100,2);?>">                    </div>
 			                    <div class="help-block col-xs-12 col-sm-reset inline">
 			                    </div>
 			                </div>              
 			                <div class="form-group">
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right"><span style="color: red;">*</span>续重（元）</label>
 			                    <div class="col-xs-12 col-sm-6">
-			                       <input type="number" class="width-100" name="secFreight" value="{$area['secfreight']/100}">
+			                       <input type="number" class="width-100" name="secFreight" value="<?= number_format($area['secfreight']/100,2);?>">
 			                    </div>
 			                </div>
 			                <div class="form-group" id="status">
@@ -73,7 +73,7 @@
 				                $(function(){
 				        			if("{$area.fullstatus}"=='USE'){
 				        				$("#check").prop("checked",true);
-				        				var fullsum = "{$area.fullsum}"/100;
+				        				var fullsum = "<?= number_format($area['fullsum']/100,2);?>";
 				        				$("#fullsum").val(fullsum);
 				        				$("#free").show();
 				        			}else{

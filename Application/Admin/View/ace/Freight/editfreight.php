@@ -15,7 +15,7 @@
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right">
 			                    	<span style="color: red;">*</span>首重（元，1kg以内）</label>
 			                    <div class="col-xs-12 col-sm-6">		                    	
-			                        <input type="number" class="width-100" name="firstFreight" value="{$info['firstfreight']/100}">	
+			                        <input type="number" class="width-100" name="firstFreight" value="<?= number_format($info['firstfreight']/100,2);?>">	
 			                    </div>
 			                    <div class="help-block col-xs-12 col-sm-reset inline">
 			                    </div>
@@ -24,7 +24,7 @@
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right">
 			                    	<span style="color: red;">*</span>续重（元/kg）</label>
 			                    <div class="col-xs-12 col-sm-6">
-			                        <input type="number" class="width-100" name="secFreight" value="{$info['secfreight']/100}">                    
+			                        <input type="number" class="width-100" name="secFreight" value="<?= number_format($info['secfreight']/100,2);?>">                    
 			                    </div>
 			                    <div class="help-block col-xs-12 col-sm-reset inline">
 			                    </div>
@@ -63,7 +63,7 @@
                             </label>
                             <label id="free">
 	                            <span style="margin-left:0px;">满</span>
-	                            <input type="number" style="margin-left:0px;whith:30px;" value="0.0" name="fullSum" id="fullsum"><span>元包邮</span>
+	                            <input type="number" style="margin-left:0px;whith:30px;" value="0.00" name="fullSum" id="fullsum"><span>元包邮</span>
                             </label>
 			                </div>
 			                
@@ -135,7 +135,7 @@
         $(function(){
 			if("{$info.fullstatus}"=='USE'){
 				$("#check").prop("checked",true);
-				var fullsum = "{$info.fullsum}"/100;
+				var fullsum = "<?= number_format($info['fullsum']/100,2);?>"
 				$("#fullsum").val(fullsum);
 				$("#free").show();
 				$("#status").show();

@@ -187,7 +187,7 @@
 					                <div class="profile-info-name"> 消费金额 </div>
 					
 					                <div class="profile-info-value">
-					                    <span class="editable">￥&nbsp;</span>
+					                    <span class="editable">￥: 0.00&nbsp;</span>
 					                </div>
 					            </div>
 					
@@ -195,14 +195,21 @@
 					                <div class="profile-info-name"> 账户余额 </div>
 					
 					                <div class="profile-info-value">
-					                    <span class="editable">￥&nbsp;</span>
+					                    <span class="editable">￥: 
+					                    <if condition="$vo.remainingsum eq NULL">0.00
+					                    <else/><?= number_format($vo['remainingsum']*0.01,2);?>
+					                    </if>
+					                    &nbsp;</span>
 					                </div>
 					            </div>
 					
 					            <div class="profile-info-row">
 					                <div class="profile-info-name"> 账户冻结资金 </div>
-					                <div class="profile-info-value">
-					                                             ￥&nbsp;
+					                <div class="profile-info-value">￥: 				                                             	
+					                    <if condition="$vo.remainingsum eq NULL">0.00
+					                    <else/><?= number_format($vo['frozensum']*0.01,2);?>
+					                    </if>
+					                    &nbsp;
 					                </div>
 					            </div>
 							

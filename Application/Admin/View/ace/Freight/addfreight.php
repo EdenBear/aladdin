@@ -25,7 +25,7 @@
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right">
 			                    	<span style="color: red;">*</span>首重（元，1kg以内）</label>
 			                    <div class="col-xs-12 col-sm-6" id="first">
-			                        <input type="number" class="width-100" name="firstFreight" value="0.0">                    
+			                        <input type="number" class="width-100" name="firstFreight" value="0.00">                    
 			                    </div>
 			                    <div class="help-block col-xs-12 col-sm-reset inline">
 			                    </div>
@@ -34,7 +34,7 @@
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right">
 			                    	<span style="color: red;">*</span>续重（元/kg）</label>
 			                    <div class="col-xs-12 col-sm-6">
-			                        <input type="number" class="width-100" name="secFreight" value="0.0">                    
+			                        <input type="number" class="width-100" name="secFreight" value="0.00">                    
 			                    </div>
 			                    <div class="help-block col-xs-12 col-sm-reset inline">
 			                    </div>
@@ -69,7 +69,7 @@
                             </label>
                             <label id="free">
 	                            <span style="margin-left:0px;">满</span>
-	                            <input type="number" style="margin-left:0px;whith:30px;" name="fullSum" value="0.0"><span>元包邮</span>
+	                            <input type="number" style="margin-left:0px;whith:30px;" name="fullSum" value="0.00"><span>元包邮</span>
                             </label>
 			                </div>
 			                

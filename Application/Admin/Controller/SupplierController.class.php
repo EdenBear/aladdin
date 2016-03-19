@@ -8,8 +8,7 @@
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-use Admin\Service\ApiService;
-use User\Api\UserApi;
+use User\Supplier\UserApi;
 
 
 /**
@@ -70,6 +69,7 @@ class SupplierController extends AdminController{
 			$supplier = M('Supplier','','DB_CONFIG4');
 			$data = $supplier->create();
 			if($data){
+				$data['platformServiceFee'] = $data['platformServiceFee']*100;
 				$data['o2oType'] = 3;
 				$data['memberId'] = UID;
 				$data['insertTime'] = date('Y-m-d H:i:s',time());

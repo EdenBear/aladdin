@@ -85,7 +85,7 @@
 			                <div class="form-group">
 			                    <label class="col-xs-12 col-sm-2 control-label no-padding-right">平台服务费</label>
 			                    <div class="col-xs-12 col-sm-6">
-			                       <input type="number" class="width-100" name="platformServiceFee" value="0.0">
+			                       <input type="number" class="width-100" name="platformServiceFee" value="0.00">
 			                    </div>
 			                </div>
 			                <div class="form-group">
