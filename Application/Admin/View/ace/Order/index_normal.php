@@ -43,7 +43,8 @@
     <!--搜索 具体条件-->
     <div class="search-panel">
     	<label class='left'>
-    		<select name="" id="">
+    		<select name="search_supplier" id="">
+    		  <option value="">全部</option>
     		  <volist name='supplier' id='vo'>
     		      <option value="{$vo.id}">{$vo.name}</option>
     		  </volist>
@@ -62,9 +63,9 @@
     	<label for="" class='search-btn' >
     		<button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('')}">搜索</button>
     		<a href="{:U('')}" class="btn btn-sm btn-primary" class="btn">清空搜索条件</a> 
-    		<button class='btn btn-sm btn-primary' type='button'>导出表格</button>
-    		<button class='btn btn-sm btn-primary' type='button'>飞豆运单导出</button>
-    		<button class='btn btn-sm btn-primary' type='button'>订单回填</button>
+    		<a href="{:U('ordExcelOutput')}" class="btn btn-sm btn-primary" class="btn">导出表格</a> 
+    		<a href="{:U('ordExcelOutput')}" class="btn btn-sm btn-primary" class="btn">飞豆运单导出</a> 
+    		<a href="{:U('ordExcelInut')}" class="btn btn-sm btn-primary" class="btn">订单回填</a> 
     	</label>
     </div>
 </form>

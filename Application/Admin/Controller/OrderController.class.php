@@ -18,8 +18,10 @@ class OrderController extends AdminController{
     
     //普通订单
     public function index_normal(){
+        unset($_SESSION[APP_NAME]['ord_map']);//页面加载，需要清空缓存里的查询条件
         $search_day = I('search_day');
         $search_status = I('search_status');
+        $search_supplier = I('search_supplier');
         $dateStat = I('date_stat');
         $dateEnd = I('date_end');
         $keyword = I('keyword');
@@ -36,7 +38,7 @@ class OrderController extends AdminController{
             case 'stu_close':     $where['orderStatus'] = 'CAN';break;
         }
         if ($dateStat && $dateEnd) $where['createTime'] = array('between',array($dateStat." 00:00:00",$dateEnd." 23:59:59"));
-
+        if ($search_supplier) $where['supID'] = $search_supplier;
         if ($search_day){
             $search_day_stat = $search_day;
             $search_day_end = date('Y-m-d');
@@ -58,8 +60,8 @@ class OrderController extends AdminController{
         $parentOrderData = $this->lists($orderModel,$where,$order='createTime DESC',$field=true);//获取父订单的编号信息
         $list = $orderModel->getInfoList($parentOrderData);
 
-//TODO查询供应商
-        
+//TODO查询供应商,参考商品编号做法
+        $_SESSION[APP_NAME]['ord_map'] = $where;//每次查询都把查询条件保存到session,方便执行导出
         $supplier = D('Supplier')->getAllSupplier();
         $this->assign('supplier',$supplier);
         $this->assign('list',$list);
@@ -67,7 +69,12 @@ class OrderController extends AdminController{
     }
     
     
-    //获取订单详情数据
+    /**
+     * 订单详情
+     * 
+     * date:2016年3月19日
+     * author: EK_熊
+     */
     function detail(){
         $ordId = I('ordId');
         $map_par['ID'] = $ordId;
@@ -86,10 +93,8 @@ class OrderController extends AdminController{
         $son_ord_info = $ordModel->getSunOrd_joinPro($parent_ord_info['id']);
         foreach ($son_ord_info as $key => $val) {
            $son_ord_info[$key]['img'] = $imgModel->amjImgbyPorid($val['productid']);
-
-
            $son_ord_info[$key]['postfee'] = intval($val['postfee']) == 0 ? '包邮' : "￥".mony_format($val['postfee'],'yuan');
-           
+           $parent_ord_info['addressall'] = $parent_ord_info['country'].$parent_ord_info['province'].$parent_ord_info['city'].$parent_ord_info['district'].$parent_ord_info['address'];
         }
         
         $userInfo = get_mpdetail_one($parent_ord_info['mqid']);//获取下单人的麦圈id和昵称
@@ -102,14 +107,107 @@ class OrderController extends AdminController{
     }
     
     
-    
+    //订单导出excel ,根据查询条件
+    public function ordExcelOutput(){
+        $where = $_SESSION[APP_NAME]['ord_map'];
+        $ordModel = D('Order');
+        $userModel = M('User','','DB_PRODUCT_USER');
+        $payModel = M('OrderPayment','','DB_ORDER');
+        $proModel = M('Product','','DB_PRODUCT');
 
+            //TODO加入供应商条件,需要重做，参考飞豆订单做法
+        $parentId = $ordModel->where($where)->getField('id',true);
+        $ord_data = $ordModel->getSunOrd_joinPro($parentId);
+        $ord_data = push_field_fromTable($ord_data,$userModel,'mqID','mqID','nickName,mobileNum');
+        $ord_data = push_field_fromTable($ord_data,$payModel,'orderCode','orderCode','payNum');
+        $ord_data = push_field_fromTable($ord_data,$proModel,'productID','ID','productCode');
+      
+        foreach ($ord_data as $key => $val){
+            $ordStatus = $ord_data[$key]['orderstatus'];
+            $ord_data[$key]['orderstatus'] = get_status($ordStatus, 'order');
+            $ord_data[$key]['addressall'] = $val['country'].$val['province'].$val['city'].$val['district'].$val['address'];
+            $ord_data[$key]['paytype'] = $ordModel->getPayType($val['ordercode']);
+        }
+        $fieldVal = array(
+            '供应商'=>'supname',
+            '父订单编号'=>'parentcode',
+            '子订单编号'=>'ordercode',
+            '支付单号'=>'paynum',
+            '订单状态'=>'orderstatus',
+            '商品编号'=>'productid',
+            '商品自编号'=>'productcode',
+            '商品名称'=>'productname',
+            '商品规格'=>'skuname',
+            '商品数量'=>'buynum',
+            '订单金额'=>'ordersum',
+            '供货价'=>'supprice',
+            '运费'=>'postfee',
+            '姓名'=>'recname',
+            '电话'=>'recmobile',
+            '地址'=>'addressall',
+            '物流公司'=>'logistics',
+            '运单号'=>'logisticsnum',
+            '客户留言'=>'notes',
+            '支付方式'=>'paytype',
+            '客服备注'=>'servicenote',
+        );
+        $title = date('Y-m-d')."订单导出.xls";
+        excel_output($ord_data,$fieldVal,$title);
+
+    }
     
     
+    public function ordExcelInput(){
+        $filePath = $_SERVER['DOCUMENT_ROOT']. dirname(__ROOT__)."/uploadfile/order/123.xls";
+        
+        $excelData = excel_input($filePath);
+        dump($excelData);
+    }
     
-    
-    
-    
+    //根据查询条件获取订单数据导出excel,默认条件是已付款，未发货
+    public function feidouOutPut(){
+
+        $ordModel = D('Order');
+        $proModel = M('Product','','DB_PRODUCT');
+        $where['payStatus'] = 'PAY';
+        $where['shippingStatus'] = 'NOT';
+        $where['parentID']  = array('neq','0');//只查子订单
+        
+        $select_map = $_SESSION[APP_NAME]['ord_map'];
+        $where = array_merge($select_map,$where);
+
+        $join = array(
+            't_order_product ordpro ON ordpro.orderID = ord.ID', 
+        );
+        $info = $ordModel->alias('ord')->where($where)->join($join)->select();
+        foreach ($info as $key=>$val){
+            $info[$key]['addressall'] = $val['country'].$val['province'].$val['city'].$val['district'].$val['address'];
+            $productCode = $proModel->where('ID='.$val['productid'])->getField('productCode');
+            $info[$key]['skuname_num'] ="[{$productCode}]{$val['skuname']}({$val['buynum']})" ;//拼凑
+            $info[$key]['postfee_type'] ='' ;//拼凑
+        }
+        //TODO缺少邮编,运费类型
+        $fieldVal = array(
+            '姓名'=>'recname',
+            '地址'=>'addressall',
+            '单位名称'=>'invoicename',
+            '手机号码'=>'recmobile',
+            '供应商'=>'supname',
+            '订单号'=>'productid',
+            '商品名称'=>'productname',
+            '商品[自编号]规格(数量)'=>'skuname_num',
+            '客户留言'=>'notes',
+            '订单备注'=>'servicenote',
+            '运费类型'=>'postfee_type',
+            '快递公司'=>'',
+            '快递单号'=>'',
+
+        );
+        $title = date('Y-m-d')."飞豆运单导出.xls";
+        excel_output($info,$fieldVal,$title);        
+        
+        dump($info);
+    }
     
     
     

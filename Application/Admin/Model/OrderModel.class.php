@@ -22,7 +22,7 @@ class OrderModel extends Model{
     }
     
     /**
-     * 逻辑处理数据
+     * 逻辑处理数据,用于订单列表页显示
      * @param unknown $orderData
      * @return $list = array (size=1)
   0 => 
@@ -120,17 +120,26 @@ class OrderModel extends Model{
     /**
      * 根据父订单id，获取完成的子订单数据，join ord报表和ord
      * 返回单条数据
+     * $parentId   str类型或者array类型
      * date:2016年3月18日
      * author: EK_熊
      */
     function getSunOrd_joinPro($parentId){
-        $map_ord['parentID'] = $parentId;
+        if (is_array($parentId)) {
+            $map_ord['parentID'] = array('IN',$parentId);
+        }else{
+            
+            $map_ord['parentID'] = $parentId;
+        }
         $join = array(
             't_order_product ordpro  ON ordpro.orderID = ord.ID'
         );
         $ret = $this->alias('ord')->where($map_ord)->field('*,ordpro.ID as ordproid')->join($join)->select();
         return $ret;
     }
+    
+
+
     
     
     //根据子订单id，获取商品数据
@@ -170,7 +179,13 @@ class OrderModel extends Model{
     function getPayType($ordCode){
         $map['orderCode'] = $ordCode;
         $type= M('OrderPayment','','DB_ORDER')->where($map)->field('payChannel')->select();
-        return get_status($type[0]['paychannel'],'pay')."+".get_status($type[1]['paychannel'],'pay');
+
+        if ($type && count($type) >1) {
+            $ret = get_status($type[0]['paychannel'],'pay')."+".get_status($type[1]['paychannel'],'pay');
+        }else{
+            $ret = get_status($type[0]['paychannel'],'pay');
+        }
+        return $ret;
     }
     
 }
