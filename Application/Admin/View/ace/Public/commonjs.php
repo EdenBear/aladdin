@@ -1,5 +1,6 @@
 <script type="text/javascript" src="__JS__/common.js"></script>
 <script type="text/javascript" src="__STATIC__/common.js"></script>
+
 <script>
 /*时间控件*/
 $('#date_stat').datetimepicker({

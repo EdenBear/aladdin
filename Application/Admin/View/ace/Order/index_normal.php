@@ -7,6 +7,7 @@
 .order-tb-head label{margin-right: 20px;}
 .order-tb-head label span{margin-right: 20px;width: 162px;display: inline-block;}
 </style>
+<script src="__STATIC__/artDialog/jquery.artDialog.js"></script>
 <?php 
     $status = ['CAN'=>'已取消','COM'=>'已完成','HOL'=>'暂不上架'];
     $curday = date('Y-m-d');
@@ -63,9 +64,9 @@
     	<label for="" class='search-btn' >
     		<button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('')}">搜索</button>
     		<a href="{:U('')}" class="btn btn-sm btn-primary" class="btn">清空搜索条件</a> 
-    		<a href="{:U('ordExcelOutput')}" class="btn btn-sm btn-primary" class="btn">导出表格</a> 
-    		<a href="{:U('ordExcelOutput')}" class="btn btn-sm btn-primary" class="btn">飞豆运单导出</a> 
-    		<a href="{:U('ordExcelInut')}" class="btn btn-sm btn-primary" class="btn">订单回填</a> 
+    		<a href="{:U('ordExcelOutput')}" class="btn btn-sm btn-primary">导出表格</a> 
+    		<a href="{:U('feidouOutPut')}" class="btn btn-sm btn-primary">飞豆运单导出</a> 
+    		<a href="javascript:;" class="btn btn-sm btn-primary" id="huitian">订单回填</a> 
     	</label>
     </div>
 </form>
@@ -146,10 +147,29 @@ aOh! 暂时还没有内容!
         <include file="Public/page"/>
     </div>
 </div> 
+
+
 <include file="Public:commonjs" />
 
 <script>
+var huitianUrl = "{:U('ordExcelInput')}";
+var huitianHtml = '<form id="huitianForm" action="'+huitianUrl+'" enctype="multipart/form-data" method="post"><input type="file" name="huitian" /></form>';
 
+$('#huitian').click(function(){
+
+	$.dialog({
+	    title: '提示',
+	    content: huitianHtml,
+	    okValue: '确定',
+	    top:'1%',
+	    ok: function () {
+		    $('#huitianForm').submit();
+			
+	    },
+	    cancelValue: '取消',
+	    cancel: function () {}
+	});
+})
 
 </script>
 

@@ -11,6 +11,9 @@
 <!-- load toastr.js  -->
 <link rel="stylesheet" href="__ACE__/css/toastr.css" />
 <script src="__ACE__/js/toastr.js"></script>
+
+<link rel="stylesheet" href="__STATIC__/artDialog/skins/simple.css">
+<script src="__STATIC__/artDialog/jquery.artDialog.js"></script>
 <style>
 table{font-size: 12px;}
 html{overflow: hidden;}

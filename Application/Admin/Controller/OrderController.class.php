@@ -52,16 +52,21 @@ class OrderController extends AdminController{
             case 'pro_code' :     $selectProCode = true; break;
 
         }
+
         if ($selectProCode) {
             $where = array();
             $where['ID'] = $orderModel->getDataByProCode($keyword);
+            $_SESSION[APP_NAME]['ord_select_procode'] = $keyword;
         }
-        
+        $_SESSION[APP_NAME]['ord_map'] = $where;//每次查询都把查询条件保存到session,方便执行导出
+       
         $parentOrderData = $this->lists($orderModel,$where,$order='createTime DESC',$field=true);//获取父订单的编号信息
+       
         $list = $orderModel->getInfoList($parentOrderData);
+        
 
 //TODO查询供应商,参考商品编号做法
-        $_SESSION[APP_NAME]['ord_map'] = $where;//每次查询都把查询条件保存到session,方便执行导出
+        
         $supplier = D('Supplier')->getAllSupplier();
         $this->assign('supplier',$supplier);
         $this->assign('list',$list);
@@ -109,16 +114,24 @@ class OrderController extends AdminController{
     
     //订单导出excel ,根据查询条件
     public function ordExcelOutput(){
-        $where = $_SESSION[APP_NAME]['ord_map'];
+
         $ordModel = D('Order');
         $userModel = M('User','','DB_PRODUCT_USER');
         $payModel = M('OrderPayment','','DB_ORDER');
         $proModel = M('Product','','DB_PRODUCT');
+        $where['parentID']  = array('neq','0');//只查子订单
+        
+        $select_map = $_SESSION[APP_NAME]['ord_map'];
+        if (isset($select_map['ID'])) unset($select_map['ID']);
+        $where = array_merge($select_map,$where);
+        $join = array(
+            't_order_product ordpro ON ordpro.orderID = ord.ID',
+        );
+        $ord_data = $ordModel->alias('ord')->where($where)->join($join)->select();
 
-            //TODO加入供应商条件,需要重做，参考飞豆订单做法
-        $parentId = $ordModel->where($where)->getField('id',true);
-        $ord_data = $ordModel->getSunOrd_joinPro($parentId);
-        $ord_data = push_field_fromTable($ord_data,$userModel,'mqID','mqID','nickName,mobileNum');
+//         $parentId = $ordModel->where($where)->getField('id',true);
+//         $ord_data = $ordModel->getSunOrd_joinPro($parentId);
+//         $ord_data = push_field_fromTable($ord_data,$userModel,'mqID','mqID','nickName,mobileNum');
         $ord_data = push_field_fromTable($ord_data,$payModel,'orderCode','orderCode','payNum');
         $ord_data = push_field_fromTable($ord_data,$proModel,'productID','ID','productCode');
       
@@ -126,7 +139,12 @@ class OrderController extends AdminController{
             $ordStatus = $ord_data[$key]['orderstatus'];
             $ord_data[$key]['orderstatus'] = get_status($ordStatus, 'order');
             $ord_data[$key]['addressall'] = $val['country'].$val['province'].$val['city'].$val['district'].$val['address'];
-            $ord_data[$key]['paytype'] = $ordModel->getPayType($val['ordercode']);
+            if ($val['paystatus'] == 'PAY') {
+                
+                $ord_data[$key]['paytype'] = $ordModel->getPayType($val['ordercode']);
+            }else{
+                $ord_data[$key]['paytype'] = '未支付';
+            }
         }
         $fieldVal = array(
             '供应商'=>'supname',
@@ -145,22 +163,131 @@ class OrderController extends AdminController{
             '姓名'=>'recname',
             '电话'=>'recmobile',
             '地址'=>'addressall',
-            '物流公司'=>'logistics',
-            '运单号'=>'logisticsnum',
             '客户留言'=>'notes',
             '支付方式'=>'paytype',
             '客服备注'=>'servicenote',
+            '物流公司'=>'logistics',
+            '运单号'=>'logisticsnum',
         );
-        $title = date('Y-m-d')."订单导出.xls";
+        $title = date('Y-m-d')."订单导出.xlsx";
         excel_output($ord_data,$fieldVal,$title);
 
     }
     
-    
+    /**
+     * 订单回填
+     * 
+     * date:2016年3月20日
+     * author: EK_熊
+     */
     public function ordExcelInput(){
-        $filePath = $_SERVER['DOCUMENT_ROOT']. dirname(__ROOT__)."/uploadfile/order/123.xls";
+        
+       
+        $setting = array(
+            'savePath'   =>    './OrdExcel/',    
+            'saveName'   =>    array('time',''),    
+            'exts'       =>    array('xls', 'xlsx','csv'),    
+            'autoSub'    =>    false,
+            'replace'    =>    true,
+        );
+        $upload = new \Think\Upload($setting);
+        $uploadInfo = $upload->upload($_FILES);
+        if ($uploadInfo){
+
+            $fileName= $uploadInfo['huitian']['savename'];
+            $fileNameShort= $uploadInfo['huitian']['md5'];//没带后缀的文件名
+        }else{
+            $this->error($upload->getError());
+        }
+
+        $filePath = SITE_PATH.'/Uploads/OrdExcel/'.$fileName;
+//         $filePath = $_SERVER['DOCUMENT_ROOT']. dirname(__ROOT__).$filepath;
         
         $excelData = excel_input($filePath);
+        $ordModel = D('Order');
+        $ordModel->startTrans();
+        $i = 1;//计数器
+        $ret['status'] = true;
+        foreach ($excelData as $key => $val) {
+            $orderCode = trim($val[5]);//订单号
+            $logisticsNum = trim($val[12]);//物流单号
+            $logistics = trim($val[11]);//物流公司名称
+            /* 重新构建数据，写入excel输出*/
+            $errorData[$key] = array(
+                'recname'=>trim($val[0]),
+                'addressall'=>trim($val[1]),
+                'invoicename'=>trim($val[2]),
+                'recmobile'=>trim($val[3]),
+                'supname'=>trim($val[4]),
+                'ordercode'=>trim($val[5]),
+                'productname'=>trim($val[6]),
+                'skuname_num'=>trim($val[7]),
+                'notes'=>trim($val[8]),
+                'servicenote'=>trim($val[9]),
+                'postfee_type'=>trim($val[10]),
+                'logistics'=>trim($val[11]),
+                'logistics_num'=>trim($val[12]),
+            );
+            if ($orderCode) {
+                if (empty($logisticsNum)) {
+                    $errorData[$key]['error'] = '尚未填写物流单号，停止导入！';
+                    $ret['info'] = "订单号：【{$orderCode}】,尚未填写物流单号，停止导入！";
+                    $ret['status'] = false;
+                    break;
+                }
+                if (empty($logistics)) {
+                    $errorData[$key]['error'] = '尚未填写物流公司，停止导入！';
+                    $ret['info'] = "订单号：【{$orderCode}】,尚未填写物流公司，停止导入！";
+                    $ret['status'] = false;
+                    break;
+                }
+                $save['logistics'] = $logistics;
+                $save['logisticsNum'] = $logisticsNum;
+                $map['orderCode'] = $orderCode;
+                
+                $updateOrd = $ordModel->where($map)->save($save);
+                if (!$updateOrd) {
+                    $errorData[$key]['error'] = '订单数据格式错误！！';
+                    $ret['info'] = "订单号：【{$orderCode}】数据出错，或者重复导入了，停止导入！！";
+                    $ret['status'] = false;
+                    break;
+                }
+                $i++;
+            }
+        }
+        if (!$ret['status']){
+            $fieldVal = array(
+                '姓名'=>'recname',
+                '地址'=>'addressall',
+                '单位名称'=>'invoicename',
+                '手机号码'=>'recmobile',
+                '供应商'=>'supname',
+                '订单号'=>'ordercode',
+                '商品名称'=>'productname',
+                '商品[自编号]规格(数量)'=>'skuname_num',
+                '客户留言'=>'notes',
+                '订单备注'=>'servicenote',
+                '运费类型'=>'postfee_type',
+                '快递公司'=>'logistics',
+                '快递单号'=>'logistics_num',
+                '错误说明'=>'error',
+        
+            );
+            $title = $fileNameShort."-bak.xlsx";
+            excel_output($errorData,$fieldVal,$title);
+        }        
+        if ($ret['status']){
+            $ordModel->commit();
+            $ret['info'] = "成功导入{$i}条记录";
+            $this->success($ret['info']);
+        }else{
+            $ordModel->rollback();
+            $this->error($ret['info']);
+        }
+        
+        
+        
+        dump($ret);
         dump($excelData);
     }
     
@@ -185,15 +312,16 @@ class OrderController extends AdminController{
             $productCode = $proModel->where('ID='.$val['productid'])->getField('productCode');
             $info[$key]['skuname_num'] ="[{$productCode}]{$val['skuname']}({$val['buynum']})" ;//拼凑
             $info[$key]['postfee_type'] ='' ;//拼凑
+
         }
-        //TODO缺少邮编,运费类型
+        //TODO缺少运费类型
         $fieldVal = array(
             '姓名'=>'recname',
             '地址'=>'addressall',
             '单位名称'=>'invoicename',
             '手机号码'=>'recmobile',
             '供应商'=>'supname',
-            '订单号'=>'productid',
+            '订单号'=>'ordercode',
             '商品名称'=>'productname',
             '商品[自编号]规格(数量)'=>'skuname_num',
             '客户留言'=>'notes',
@@ -203,10 +331,10 @@ class OrderController extends AdminController{
             '快递单号'=>'',
 
         );
-        $title = date('Y-m-d')."飞豆运单导出.xls";
-        excel_output($info,$fieldVal,$title);        
+        $title = date('Y-m-d')."飞豆运单导出.xlsx";
+        excel_output($info,$fieldVal,$title);  
+dump($info);
         
-        dump($info);
     }
     
     

@@ -136,6 +136,8 @@ function qiniu_upload($isPublic = false){
     return $info;
 }
 
+
+
 /**
  * 重量单位转换，
  * @param unknown $units  要转换的目标单位，'g','kg'
@@ -287,7 +289,7 @@ function excel_output($data,$fieldVal=array(),$path="",$type=1){
 
         for($i=0;$i<$length;$i++){
             $key = $field[$i];
-            $objActSheet->setCellValue($chars[$i].$j, $item[$key]);
+            $objActSheet->setCellValue($chars[$i].$j, " ".$item[$key]);
         }
         $j++;
     }

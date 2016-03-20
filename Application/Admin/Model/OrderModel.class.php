@@ -101,6 +101,8 @@ class OrderModel extends Model{
 
     }
     
+
+    
     
     /**
      * 获取子订单数据，根据父订单的id批量获取
@@ -111,6 +113,7 @@ class OrderModel extends Model{
      * author: EK_熊
      */
     function getSunOrd($parentIdList){
+        
         $where['parentID'] = array('in',$parentIdList);
         $data = $this->where($where)->select(); 
         return $data;
@@ -144,7 +147,10 @@ class OrderModel extends Model{
     
     //根据子订单id，获取商品数据
     function getProByOrdid($ordId){
+
         $where['orderID'] = array('in',$ordId);
+        
+       
         $data = $this->db_ord_product->where($where)->select();
         return $data;
     }
