@@ -105,11 +105,11 @@
     			<tr>
     				<td>
     					<div style='height: 24px;line-height: 24px;margin-bottom: 1px;'>订单编号：<span>{$item.ord_info.ordercode}</span></div>
-    					<div style='height: 24px;line-height: 24px;margin-bottom: 1px;'>商品编号：<span>{$item.pro_info.productcode}</span></div>
+    					<div style='height: 24px;line-height: 24px;margin-bottom: 1px;'>商品编号：<span>{$item.pro_ord_info.productcode}</span></div>
     					<div>
     						<div class='left' style='width: 31%; margin-right: 11px;'><img src="{$item.pro_info.img}" alt="" width='100px' /></div>
     						<div class='left' style='width: 65%;'>
-    							<p>{$item.pro_info.productname}</p>
+    							<p>{$item.pro_ord_info.productname}</p>
     							<p>{$item.pro_ord_info.skuname}</p>
     						</div>
     					</div>
@@ -122,7 +122,7 @@
     					<p>{$vo.parent_ord.recmobile}</p>
     				</td>
     				<td>{$item.ord_info.createtime}</td>
-    				<td>缺少备注字段</td>
+    				<td>{$item.ord_info.notes}</td>
     				<td>{$vo.parent_ord.invoicename}</td>
     				<td>{$item.ord_info.postfee}</td>
     				<td>{$item.ord_info.psum}</td>

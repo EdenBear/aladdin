@@ -55,10 +55,12 @@ class OrderModel extends Model{
         
         $sun_ord = data_shift($sun_ord,'id'); // 子订单订单数据
         $pro_ord = $this->getProByOrdid($sun_ord['id_list']);
+       
         if (!$pro_ord) return null;
         
         $pro_ord = data_shift($pro_ord,'productid','orderid');// 商品-订单关联数据,使用订单id做索引
         $product_data = $this->productInfo($pro_ord['productid_list']);
+        
         if (!$pro_ord) return null;
         
         $product_data = data_shift($product_data,'id','id');//商品基本数据
@@ -75,21 +77,23 @@ class OrderModel extends Model{
 
         /* 整合数据*/
         //TODO 考虑一张父订单多个子订单（商品）的情况
-        
         foreach ($orderData as $key => $val){
             $parentId = $val['id'];
             $proNum = 0;
             for($i=0; $i<count($sun_ord['data']);$i++){
                 $sun_ord_data = $sun_ord['data'][$i];
-                
-                if ($sun_ord_data['parentid'] == $parentId){
+               
+                if ($sun_ord_data['parentid'] == $parentId && $productList[$sun_ord_data['id']]){
+                    
                     $ordAry[$proNum]['ord_info'] = $sun_ord_data;
                     $ordAry[$proNum]['pro_info'] = $productList[$sun_ord_data['id']];
                     $ordAry[$proNum]['pro_ord_info'] = $pro_ord['data'][$sun_ord_data['id']];
                     
                     $proNum++;
                 }
+                
             }
+//             dump($ordAry);
             $data[$key] = array(
                 'parent_ord' => $val,
                 'order'=>$ordAry,
@@ -97,6 +101,7 @@ class OrderModel extends Model{
             );
             
         }
+        
         return $data;
 
     }
@@ -149,9 +154,13 @@ class OrderModel extends Model{
     function getProByOrdid($ordId){
 
         $where['orderID'] = array('in',$ordId);
+        $sessionMap =  $_SESSION[APP_NAME]['ord_select'];
+        if ($sessionMap){
+            $where = array_merge($sessionMap,$where);
+        }
         
-       
         $data = $this->db_ord_product->where($where)->select();
+
         return $data;
     }
     //获取商品基础信息
@@ -161,20 +170,18 @@ class OrderModel extends Model{
         return $data;
     }
     
-    //根据商品自编号获取订单信息，只查一条，直接用join,返回父订单的id
-    function getDataByProCode($proCode){
-        
-        $pro_map['productCode'] = $proCode;        
-        $proId = $this->db_product->where($pro_map)->getField('ID');
-        $ord_map['productID'] = $proId; 
-        $join = array(
-            't_order_product ON t_order_product.orderID = t_order.ID', 
-        );
-        $ordId = $this->where($ord_map)->join($join)->getField('parentid');
-        return $ordId;
-    }
-    
 
+    
+    //根据ordpro的供应商id，获取父订单的id
+    function findOrdPro($where){
+
+        $join = array(
+            't_order_product ON t_order_product.orderID = t_order.ID',
+        );
+        $ordId = $this->where($where)->join($join)->getField('parentid',true);
+        
+        return $ordId;        
+    }
     
     //获取订单号，根据订单号
     function getPayNum($ordCode){

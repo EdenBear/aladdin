@@ -38,10 +38,26 @@ class TestController extends AdminController{
 //             $join = array('t_freight_tpl_except except ON except.freightTplID = tpl.ID');
 //             $m = M('FreightTpl','','DB_PRODUCT')->alias('tpl')->join($join)->field('except.id,tpl.freightname')->select();
 //             dump($m);
-        
-        dump(get_status('ali','pay'));
-        
-        dump(strtoupper('asd'));
+//         $data=array(
+//             array(
+//                 'name'=>'nanaa',
+//                 'id'=>'1',
+//             ),
+
+//         );
+//         $field 		= array('name','id');
+//         $cellfield 	= array('姓名','编号');
+//         $title 		= "_卡券数据.xlsx";
+//         excel_output($data, $field, $cellfield, $title);
+
+//         $where["ID"] = 0;
+        $join = array(
+            't_order_product ordpro ON ordpro.orderID = ord.ID',
+        );
+        $field = 'ord.*,ordpro.ID as ordproid,ordpro.*';
+        $orderModel = D('Order')->alias('ord')->join($join);
+        $parentOrderData = $this->lists($orderModel,$where,$order='createTime DESC',$field);//获取父订单的编号信息
+        dump($parentOrderData);
     }
     
 }

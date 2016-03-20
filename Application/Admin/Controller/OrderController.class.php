@@ -19,6 +19,7 @@ class OrderController extends AdminController{
     //普通订单
     public function index_normal(){
         unset($_SESSION[APP_NAME]['ord_map']);//页面加载，需要清空缓存里的查询条件
+        unset($_SESSION[APP_NAME]['ord_select']);
         $search_day = I('search_day');
         $search_status = I('search_status');
         $search_supplier = I('search_supplier');
@@ -28,6 +29,9 @@ class OrderController extends AdminController{
         $select = I('select');
         $where['parentID'] = 0;
         $orderModel = D('Order');
+        if ($keyword && !$select){
+            $this->error('请确认查询条件');
+        }
         
         switch ($search_status){
             case 'stu_all':       $where = array(); break;
@@ -52,20 +56,26 @@ class OrderController extends AdminController{
             case 'pro_code' :     $selectProCode = true; break;
 
         }
+        //查询商品自编号    
+        if ($selectProCode || $search_supplier) {
+            if ($selectProCode) $sel_pro_ord_map['productCode'] = $keyword;
+            if ($search_supplier) $sel_pro_ord_map['supID'] = $search_supplier;
+            $paretIdList = $orderModel->findOrdPro($sel_pro_ord_map);
+            if ($paretIdList){
+                $where['ID'] = array('IN',$paretIdList);
+                $_SESSION[APP_NAME]['ord_select'] = $sel_pro_ord_map;
+            }else{
+                $this->error('Oh!匹配不到该数据~');
+            }
 
-        if ($selectProCode) {
-            $where = array();
-            $where['ID'] = $orderModel->getDataByProCode($keyword);
-            $_SESSION[APP_NAME]['ord_select_procode'] = $keyword;
         }
+
+
         $_SESSION[APP_NAME]['ord_map'] = $where;//每次查询都把查询条件保存到session,方便执行导出
-       
         $parentOrderData = $this->lists($orderModel,$where,$order='createTime DESC',$field=true);//获取父订单的编号信息
        
         $list = $orderModel->getInfoList($parentOrderData);
-        
 
-//TODO查询供应商,参考商品编号做法
         
         $supplier = D('Supplier')->getAllSupplier();
         $this->assign('supplier',$supplier);
