@@ -6,8 +6,8 @@
 .left{float:left}
 .order-tb-head label{margin-right: 20px;}
 .order-tb-head label span{margin-right: 20px;width: 162px;display: inline-block;}
+.proinfo div{margin:3px 0;}
 </style>
-<script src="__STATIC__/artDialog/jquery.artDialog.js"></script>
 <?php 
     $status = ['CAN'=>'已取消','COM'=>'已完成','HOL'=>'暂不上架'];
     $curday = date('Y-m-d');
@@ -62,10 +62,10 @@
     		<input type="text" name="keyword" value="{$_GET['keyword']}" placeholder="请输查询条件"/>
     	</label>
     	<label for="" class='search-btn' >
-    		<button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('')}">搜索</button>
+    		<button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('')}"><i class='icon-search'></i>搜索</button>
     		<a href="{:U('')}" class="btn btn-sm btn-primary" class="btn">清空搜索条件</a> 
-    		<a href="{:U('ordExcelOutput')}" class="btn btn-sm btn-primary">导出表格</a> 
-    		<a href="{:U('feidouOutPut')}" class="btn btn-sm btn-primary">飞豆运单导出</a> 
+    		<a href="{:U('excel_output_ord')}" class="btn btn-sm btn-primary" >导出表格</a> 
+    		<a href="{:U('excel_output_feidou')}" class="btn btn-sm btn-primary">飞豆运单导出</a> 
     		<a href="javascript:;" class="btn btn-sm btn-primary" id="huitian">订单回填</a> 
     	</label>
     </div>
@@ -86,14 +86,14 @@
         <table class='table table-bordered'>
     		<thead>
     			<tr>
-    				<th width='30%'>商品</th>
+    				<th width='25%'>商品</th>
+    				<th width=''>图片 </th>
     				<th>单价</th>
     				<th>供应商</th>
     				<th>数量</th>
     				<th>收货人</th>
     				<th>下单时间</th>
     				<th>备注</th>
-    				<th>发票抬头</th>
     				<th>运费</th>
     				<th>订单金额</th>
     				<th>操作</th>
@@ -103,29 +103,30 @@
     		  <volist name='vo.order' id='item'>
     		  
     			<tr>
-    				<td>
-    					<div style='height: 24px;line-height: 24px;margin-bottom: 1px;'>订单编号：<span>{$item.ord_info.ordercode}</span></div>
-    					<div style='height: 24px;line-height: 24px;margin-bottom: 1px;'>商品编号：<span>{$item.pro_ord_info.productcode}</span></div>
-    					<div>
-    						<div class='left' style='width: 31%; margin-right: 11px;'><img src="{$item.pro_info.img}" alt="" width='100px' /></div>
-    						<div class='left' style='width: 65%;'>
-    							<p>{$item.pro_ord_info.productname}</p>
-    							<p>{$item.pro_ord_info.skuname}</p>
-    						</div>
-    					</div>
+    				<td class='proinfo'>
+    					<div>订单编号：<span style='display: inline-table;width:71%;'>{$item.ord_info.ordercode}</span></div>
+    					<div>商品编号：<span>{$item.pro_ord_info.productcode}</span></div>
+    					<div>商品名称：<span style='display: inline-table;width:71%;'>{$item.pro_ord_info.productname}</span></div>
+    					<div>商品规格：<span style='display: inline-table;'>{$item.pro_ord_info.skuname}</span></div>
+
     				</td>
-    				<td>{$item.pro_info.price}</td>
+    				<td><div class='left' style='width: 31%; margin-right: 11px;'><img src="{$item.pro_info.img}" alt="" width='100px' /></div></td>
+    				<td>{:mony_format($item['pro_info']['price'],'yuan')}</td>
     				<td>{$item.pro_ord_info.supname}</td>
     				<td>{$item.pro_ord_info.buynum}</td>
     				<td>
-    					<p>{$vo.parent_ord.recname}</p>
-    					<p>{$vo.parent_ord.recmobile}</p>
+    					<p>姓名：{$vo.parent_ord.recname}</p>
+    					<p>手机：{$vo.parent_ord.recmobile}</p>
     				</td>
     				<td>{$item.ord_info.createtime}</td>
-    				<td>{$item.ord_info.notes}</td>
-    				<td>{$vo.parent_ord.invoicename}</td>
-    				<td>{$item.ord_info.postfee}</td>
-    				<td>{$item.ord_info.psum}</td>
+    				<td>
+    				    <p>客户留言：{$item.ord_info.notes}</p>
+    				    <p>抬头：{$vo.parent_ord.invoicename}</p>
+    				    
+    				</td>
+
+    				<td>{:mony_format($item['ord_info']['postfee'],'yuan')}</td>
+    				<td>{:mony_format($item['ord_info']['psum'],'yuan')}</td>
     				
     				<td><a href="{:U('detail',array('ordId'=>$vo['parent_ord']['id']))}" target="_blank">订单详情</a></td>
     			</tr>

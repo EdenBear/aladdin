@@ -92,6 +92,7 @@ class OrderController extends AdminController{
      */
     function detail(){
         $ordId = I('ordId');
+        if (!$ordId) $this->error('无效参数,禁止访问！');
         $map_par['ID'] = $ordId;
         $ordModel = D('Order');
         $imgModel = D('ProductImg');
@@ -122,23 +123,27 @@ class OrderController extends AdminController{
     }
     
     
-    //订单导出excel ,根据查询条件
-    public function ordExcelOutput(){
+    /**
+     * 订单导出，根据查询条件
+     * 
+     * date:2016年3月21日
+     * author: EK_熊
+     */
+    public function excel_output_ord(){
 
         $ordModel = D('Order');
         $userModel = M('User','','DB_PRODUCT_USER');
         $payModel = M('OrderPayment','','DB_ORDER');
         $proModel = M('Product','','DB_PRODUCT');
-        $where['parentID']  = array('neq','0');//只查子订单
-        
-        $select_map = $_SESSION[APP_NAME]['ord_map'];
-        if (isset($select_map['ID'])) unset($select_map['ID']);
-        $where = array_merge($select_map,$where);
+        $where = $this->selectCondition();
+
         $join = array(
             't_order_product ordpro ON ordpro.orderID = ord.ID',
         );
         $ord_data = $ordModel->alias('ord')->where($where)->join($join)->select();
-
+        if (!$ord_data) {
+            $this->error('匹配不到您要的数据！！');
+        }
 //         $parentId = $ordModel->where($where)->getField('id',true);
 //         $ord_data = $ordModel->getSunOrd_joinPro($parentId);
 //         $ord_data = push_field_fromTable($ord_data,$userModel,'mqID','mqID','nickName,mobileNum');
@@ -149,6 +154,8 @@ class OrderController extends AdminController{
             $ordStatus = $ord_data[$key]['orderstatus'];
             $ord_data[$key]['orderstatus'] = get_status($ordStatus, 'order');
             $ord_data[$key]['addressall'] = $val['country'].$val['province'].$val['city'].$val['district'].$val['address'];
+            $ord_data[$key]['ordersum'] = mony_format($val['ordersum'],'yuan');
+            $ord_data[$key]['postfee'] = mony_format($val['postfee'],'yuan');
             if ($val['paystatus'] == 'PAY') {
                 
                 $ord_data[$key]['paytype'] = $ordModel->getPayType($val['ordercode']);
@@ -180,8 +187,81 @@ class OrderController extends AdminController{
             '运单号'=>'logisticsnum',
         );
         $title = date('Y-m-d')."订单导出.xlsx";
-        excel_output($ord_data,$fieldVal,$title);
 
+//         excel_output($ord_data,$fieldVal,$title);
+        /* 订单导出，第一个单元格设置日期*/
+       if (isset($where['createTime'])){
+           $extendTxt =date('Y年m月d日',strtotime($where['createTime'][1][0])).'至' .date('Y年m月d日',strtotime($where['createTime'][1][1]));
+       }else{
+           $extendTxt = '至'.date('Y年m月d日',strtotime(CURTIME));
+       }
+
+        $this->excel_output_extend($ord_data,$fieldVal,$title,$extendTxt);
+    }
+    /**
+     *
+     * 导出EXCEL文件,特别针对订单导出，需要第一行显示时间日期这件特别麻烦的破事，没办法写公共函数
+     * @param string $data	数据内容   例如： $data=[array('name'=>'李磊','id'=>'1',),....]
+     * @param strin $fieldVal	data输出显示字段和表数据字段的对应关系,例如 array('供应商'=>'supname','订单金额'=>'ordersum',)
+     * @param strin $type 输出形式 1为直接下载 2为保存
+     * @param strin $path 保存位置type1时该值为下载文件名，type为2时有效
+     * @return NULL|string
+     * date:2016年3月19日
+     * author: EK_熊
+     */
+    function excel_output_extend($data,$fieldVal=array(),$path="",$extendTxt=''){
+        $Cellfield= array_keys($fieldVal);
+        $field = array_values($fieldVal);
+        if(!$field)
+            return null;
+        if(!$Cellfield)
+            $Cellfield = $field;
+        $type = ($type==2)?2:1;
+        $chars = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+    
+        $objExcel = new \Think\PHPExcel();
+        $objActSheet = $objExcel->getActiveSheet();
+        $length = sizeof($field);
+        //第一行第一列单元要写入他妹的日期
+        $objActSheet->setCellValue("A1", $extendTxt);
+        
+        //字段
+        $i = 0;
+        foreach($Cellfield as $f){
+            $objActSheet->setCellValue($chars[$i]."2", $f);//标题数据是从第二行开始
+            $i++;
+        }
+    
+        $j = 3;//数据就得从第三行开始
+        foreach($data as $item){
+    
+            for($i=0;$i<$length;$i++){
+                $key = $field[$i];
+                $objActSheet->setCellValue($chars[$i].$j, " ".$item[$key]);
+            }
+            $j++;
+        }
+    
+        $objWriter = \PHPExcel_IOFactory::createWriter($objExcel, 'Excel2007');
+        if($type==1){
+            if(!$path)
+                $path = "download.xlsx";
+            header("Content-Type: application/force-download");
+            header("Content-Type: application/octet-stream");
+            header("Content-Type: application/download");
+            header('Content-Disposition:inline;filename="'.$path.'"');
+            header("Content-Transfer-Encoding: binary");
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header("Pragma: no-cache");
+            $objWriter->save('php://output');
+            exit;
+        }else{
+            if(!$path)
+                return null;
+            $objWriter->save($path);
+            return $path;
+        }
+    
     }
     
     /**
@@ -211,7 +291,6 @@ class OrderController extends AdminController{
         }
 
         $filePath = SITE_PATH.'/Uploads/OrdExcel/'.$fileName;
-//         $filePath = $_SERVER['DOCUMENT_ROOT']. dirname(__ROOT__).$filepath;
         
         $excelData = excel_input($filePath);
         $ordModel = D('Order');
@@ -241,15 +320,15 @@ class OrderController extends AdminController{
             if ($orderCode) {
                 if (empty($logisticsNum)) {
                     $errorData[$key]['error'] = '尚未填写物流单号，停止导入！';
-                    $ret['info'] = "订单号：【{$orderCode}】,尚未填写物流单号，停止导入！";
+                    $ret['info'][$key] = "订单号：【{$orderCode}】,尚未填写物流单号，停止导入！";
                     $ret['status'] = false;
-                    break;
+                    continue;
                 }
                 if (empty($logistics)) {
                     $errorData[$key]['error'] = '尚未填写物流公司，停止导入！';
-                    $ret['info'] = "订单号：【{$orderCode}】,尚未填写物流公司，停止导入！";
+                    $ret['info'][$key] = "订单号：【{$orderCode}】,尚未填写物流公司，停止导入！";
                     $ret['status'] = false;
-                    break;
+                    continue;
                 }
                 $save['logistics'] = $logistics;
                 $save['logisticsNum'] = $logisticsNum;
@@ -257,10 +336,10 @@ class OrderController extends AdminController{
                 
                 $updateOrd = $ordModel->where($map)->save($save);
                 if (!$updateOrd) {
-                    $errorData[$key]['error'] = '订单数据格式错误！！';
-                    $ret['info'] = "订单号：【{$orderCode}】数据出错，或者重复导入了，停止导入！！";
+                    $errorData[$key]['error'] = '订单数据格式错误,或者数据已经存在了';
+                    $ret['info'][$key] = "订单号：【{$orderCode}】数据出错，或者重复导入了，停止导入！！";
                     $ret['status'] = false;
-                    break;
+                    continue;
                 }
                 $i++;
             }
@@ -283,8 +362,9 @@ class OrderController extends AdminController{
                 '错误说明'=>'error',
         
             );
-            $title = $fileNameShort."-bak.xlsx";
-            excel_output($errorData,$fieldVal,$title);
+            $title = SITE_PATH.'/Uploads/OrdExcel/'.$fileNameShort."-bak.xlsx";
+        
+            excel_output($errorData,$fieldVal,$title,2);
         }        
         if ($ret['status']){
             $ordModel->commit();
@@ -292,26 +372,45 @@ class OrderController extends AdminController{
             $this->success($ret['info']);
         }else{
             $ordModel->rollback();
-            $this->error($ret['info']);
+            $errorInfo = implode('</br>',$ret['info']);
+            $this->error($errorInfo);
         }
-        
-        
-        
-        dump($ret);
-        dump($excelData);
+
     }
     
-    //根据查询条件获取订单数据导出excel,默认条件是已付款，未发货
-    public function feidouOutPut(){
+    /**
+     * 获取导出查询功能里面的查询条件
+     * @return unknown
+     * date:2016年3月21日
+     * author: EK_熊
+     */
+    public function selectCondition(){
+        $where['parentID']  = array('neq','0');//只查子订单
+        $ord_map = $_SESSION[APP_NAME]['ord_map'] ? $_SESSION[APP_NAME]['ord_map'] : array();
+        $ord_select = $_SESSION[APP_NAME]['ord_select'] ? $_SESSION[APP_NAME]['ord_select'] :array();
+
+        if (isset($ord_map['ID'])) unset($ord_map['ID']);
+        $where = array_merge($ord_map,$where);
+        $where = array_merge($ord_map,$ord_select,$where);
+        return $where;
+    }
+    
+    
+    /**
+     * 飞豆订单导出
+     * 默认基础条件是已付款，未发货
+     * date:2016年3月21日
+     * author: EK_熊
+     */
+    public function excel_output_feidou(){
 
         $ordModel = D('Order');
         $proModel = M('Product','','DB_PRODUCT');
         $where['payStatus'] = 'PAY';
         $where['shippingStatus'] = 'NOT';
-        $where['parentID']  = array('neq','0');//只查子订单
         
-        $select_map = $_SESSION[APP_NAME]['ord_map'];
-        $where = array_merge($select_map,$where);
+        
+        $where = $this->selectCondition();//获取查询条件
 
         $join = array(
             't_order_product ordpro ON ordpro.orderID = ord.ID', 
@@ -321,7 +420,7 @@ class OrderController extends AdminController{
             $info[$key]['addressall'] = $val['country'].$val['province'].$val['city'].$val['district'].$val['address'];
             $productCode = $proModel->where('ID='.$val['productid'])->getField('productCode');
             $info[$key]['skuname_num'] ="[{$productCode}]{$val['skuname']}({$val['buynum']})" ;//拼凑
-            $info[$key]['postfee_type'] ='' ;//拼凑
+            $info[$key]['freighttype'] =get_status($val['freighttype'],'freight') ;
 
         }
         //TODO缺少运费类型
@@ -336,18 +435,26 @@ class OrderController extends AdminController{
             '商品[自编号]规格(数量)'=>'skuname_num',
             '客户留言'=>'notes',
             '订单备注'=>'servicenote',
-            '运费类型'=>'postfee_type',
+            '运费类型'=>'freighttype',
             '快递公司'=>'',
             '快递单号'=>'',
 
         );
         $title = date('Y-m-d')."飞豆运单导出.xlsx";
         excel_output($info,$fieldVal,$title);  
-dump($info);
         
     }
     
-    
+    public function updateOrdDetail(){
+        $orderModel = D('Order');
+        $data = $orderModel->create();
+        $updateOrder = $orderModel->where('ID='.$data['ID'])->save($data);
+        if ($updateOrder) {
+            $this->success('更新成功！！');
+        }else{
+            $this->error('更新失败,网络异常或者重复更新了');
+        }
+    }
     
     
     

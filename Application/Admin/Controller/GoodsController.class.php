@@ -601,5 +601,29 @@ class GoodsController extends AdminController{
 
  	}
     
+ 	/**
+ 	 * 
+ 	 * 
+ 	 * date:2016年3月21日
+ 	 * author: EK_熊
+ 	 */
+ 	public function excel_out_supplier(){
+ 	    $data = M('Supplier','','DB_SUPPLIER')->select();
+ 	    if (!$data) {
+ 	        $this->error('网络异常，获取不到数据！');
+ 	    }
+ 	    
+ 	    
+ 	    $fieldVal = array(
+ 	        '供应商名称'=>'name',
+ 	        '编号'=>'code',
+ 	        '结算周期/天'=>'balancecycle',
+ 	        '公司'=>'companyname',
+ 	        '联系人'=>'contactname',
+ 	        '电话'=>'contactphone',
+ 	        '是否启用'=>'status',
+ 	    );
+//  	    excel_output($data,$fieldVal,$title);
+ 	}
     
 }

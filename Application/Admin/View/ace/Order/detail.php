@@ -7,15 +7,18 @@
 li {list-style-type:none;}
 ul{margin: 0 0 0 5px;}
 textarea{resize: none;}
-.txt, .title{display: inline-block;}
+.txt, .title{display: inline-table;}
+.ord_info{height: 420px;}
 .ord_info .title{width: 68px;}
-.ord_info, .send_info, .transport_info{height: 400px;}
+.ord_info, .send_info, .transport_info{height: 416px;}
 .send_info .title{width: 54px;}
+.send_info .txt{width: 283px;;}
 .panel-body li{margin: 5px 0px;}
 .transport_info .title{width:70px}
-.pro{border: 1px solid #bce8f1;padding: 7px;width: 40%;}
-.pro p{max-width:310px}
+.pro{border: 1px solid #bce8f1;padding: 7px;width: 32%;margin-bottom: 15px;height: 235px;}
+.pro p{margin: 0 0 6px 0;}
 .pro .til{display:inline-block; width: 68px;}
+.pro .con{max-width: 351px;display: inline-table;}
 </style>
 <?php 
     $status = ['CAN'=>'已取消','COM'=>'已完成'];
@@ -50,35 +53,36 @@ textarea{resize: none;}
         <div class="panel panel-info send_info left" style='width:32%'>
           <div class="panel-heading">发货信息</div>
           <div class="panel-body">
-           <form action="" class='search-form'>
+           <form action="" class='updateDetail_form' id='updateDetail_form'>
+                <input type="hidden" value='{$ord_parent.id}' name='ID' />
                 <ul>
                     <li>
                         <span class='title'>收货人</span>
-                        <span class='txt'><input type="text" style='width: 223px;' value='{$ord_parent.recname}' /></span>
+                        <span class='txt'><input type="text" style='width: 271px;' name='recName' value='{$ord_parent.recname}' /></span>
                     </li>
                     <li>
                         <span class='title'>联系电话</span>
-                        <span class='txt'><input type="text" style='width: 223px;' value='{$ord_parent.recmobile}' /></span>
+                        <span class='txt'><input type="text" style='width: 271px;' name='recMobile' value='{$ord_parent.recmobile}' /></span>
                     </li>
                     <li>
                         <span class='title'>收货地址</span>
-                        <span class='txt'><textarea name="" id="" cols="28" rows="3">{$ord_parent.addressall}</textarea></span>
+                        <span class='txt'>
+                            <p style='margin-bottom: 0;height: 39px;'>{$ord_parent.addressall}</p>
+                            <textarea name="address" id="" cols="35" rows="3">{$ord_parent.address}</textarea>
+                        </span>
+                    </li>
+                    <li>
+                        <span class='title'>客户留言</span>
+                        <span class='txt'><textarea name="serviceNote" id="" cols="35" rows="3" readonly="readonly">{$ord_parent.notes|default='暂无留言'}</textarea></span>
                     </li>
                     <li>
                         <span class='title'>客服备注</span>
-                        <span class='txt'><textarea name="" id="" cols="28" rows="3"></textarea></span>
+                        <span class='txt'><textarea name="serviceNote" id="" cols="35" rows="3">{$ord_parent.servicenote}</textarea></span>
                     </li>
-                    <li>
-                        <span class='title'>添加备注</span>
-                        <span class='txt'><textarea name="" id="" cols="28" rows="3"></textarea></span>
-                    </li>
-                    <li>
-                        <span class='title'>客服跟进</span>
-                        <span class='txt'><input type="checkbox" name='is_kefu'/></span>
-                    </li>
+
                 </ul>   
                 <label for="" style='text-align: center;width: 100%;'>
-                    <button class="btn btn-sm btn-primary" type="button" id="search-btn" url="{:U('')}">确定</button>
+                    <button class="btn btn-sm btn-primary ajax-post" target-form='updateDetail_form'  url="{:U('updateOrdDetail')}">确定</button>
                     <a href="{:U('')}" class="btn btn-sm btn-primary" class="btn">取消</a> 
                 </label>        
            </form>
@@ -131,12 +135,15 @@ textarea{resize: none;}
     <div class="panel-body" >
         <volist name='ord_son' id='vo'>
             <div class="pro left">
+                <div>
+                    <p><span class='til'>商品名称：</span><span class='con'>{$vo.productname}</span></p>            
+                    <p><span class='til'>订单号：</span><span class='con'>{$vo.ordercode}</span></p> 
+                    <p><span class='til'>商品规格：</span><span class='con'>{$vo.skuname}</span></p>  
+                </div>
+                <p style='height:1px;'></p>
                 <div class="img left"><img src="{$vo.img}" alt="" width='90px' /></div>
                 <div class='pro_con left'>
-                    <p><span class='til'>商品名称：</span><span class='con'>{$vo.productname}</span></p>            
-                    <p><span class='til'>供应商：</span><span class='con'>{$vo.supname}</span></p>            
-                    <p><span class='til'>订单号：</span><span class='con'>{$vo.ordercode}</span></p>            
-                    <p><span class='til'>规格：</span><span class='con'>{$vo.skuname}</span></p>            
+                    <p><span class='til'>供应商：</span><span class='con'>{$vo.supname}</span></p> 
                     <p><span class='til'>数量：</span><span class='con'>{$vo.buynum}</span></p>            
                     <p><span class='til'>成交价：</span><span class='con'>￥{:mony_format($vo['ordersum'],'yuan')}</span></p>            
                     <p><span class='til'>运费：</span><span class='con'>{$vo.postfee}</span></p>            

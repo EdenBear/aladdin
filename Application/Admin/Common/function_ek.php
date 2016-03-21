@@ -247,6 +247,8 @@ function get_status($val,$type){
     $status = array(
         'pay' =>['ALI'=>'支付宝','WXP'=>'微信','PAY'=>'贝宝','SUM'=>'余额支付'],
         'order' =>['CAN'=>'已取消','COM'=>'已完成'],
+        'freight'=>['NOT'=>'包邮','NOE'=>'包邮(指定区域除外)','NAT'=>'全国统一价','NAE'=>'全国统一价(指定区域除外)','BUY'=>'运费到付'],
+        'supplier'=>['OK#'=>'正常','OFF'=>'停用'],
     );
     return $status[$type][$val];
     
