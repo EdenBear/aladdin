@@ -164,6 +164,7 @@ var calculateFunctionValue = function (func, args, defaultValue) {
 };
     //ajax post submit请求
     $('.ajax-post').click(function(){
+    	
         var target,query,form;
         var target_form = $(this).attr('target-form');
         var that = this;
@@ -287,11 +288,8 @@ function iFrameHeight() {
 	   ifm.height = subWeb.body.scrollHeight;
 	   ifm.width = subWeb.body.scrollWidth;
 	}   
-}  
+}
+//
 
-$('button.get').click(function(){
-	var url = $(this).attr('url');
-	window.location.href = url;
-})
 
 

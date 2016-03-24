@@ -249,6 +249,7 @@ function get_status($val,$type){
         'order' =>['CAN'=>'已取消','COM'=>'已完成'],
         'freight'=>['NOT'=>'包邮','NOE'=>'包邮(指定区域除外)','NAT'=>'全国统一价','NAE'=>'全国统一价(指定区域除外)','BUY'=>'运费到付'],
         'supplier'=>['OK#'=>'正常','OFF'=>'停用'],
+        'pin'=>['UP#'=>'进行中','DW#'=>'下架','DEL'=>'']
     );
     return $status[$type][$val];
     

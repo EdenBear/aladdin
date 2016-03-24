@@ -30,7 +30,7 @@ class SupplierController extends AdminController{
         }
 
         $prefix = C('DB_PREFIX');
-        $model = M()->db(2,'DB_CONFIG4')->table($prefix.'supplier u')
+        $model = M()->db(2,'DB_SUPPLIER')->table($prefix.'supplier u')
                     ->join($prefix.'member ua on ua.uid = u.id','left');
         $list   = $this->lists($model, $map,'','u.*,ua.nickname');
         //var_dump($list);exit();
@@ -61,12 +61,12 @@ class SupplierController extends AdminController{
             $uid    =   $User->register($username, $password, $email,$username);
 			if(0 < $uid){ //注册成功
 				$member = array('uid' => $uid, 'nickname' => I('name'), 'status' => 1);
-				$result = M('member','','DB_CONFIG4')->add($member);
+				$result = M('member','','DB_SUPPLIER')->add($member);
 			}else { //注册失败，显示错误信息
 				$this->error($this->showRegError($uid));
 			}
 			
-			$supplier = M('Supplier','','DB_CONFIG4');
+			$supplier = M('Supplier','','DB_SUPPLIER');
 			$data = $supplier->create();
 			if($data){
 				$data['platformServiceFee'] = $data['platformServiceFee']*100;
@@ -81,7 +81,7 @@ class SupplierController extends AdminController{
 				$ms['uid'] = $uid;
 				$ms['supplierID'] = $sid;
 				$ms['add_time'] =  date('Y-m-d H:i:s',time());
-				$id = M('member_supplier','','DB_CONFIG4')->add($ms);
+				$id = M('member_supplier','','DB_SUPPLIER')->add($ms);
 		            if($id){
 		            	
 		                 session('ADD_SUPPLIER',null);
@@ -103,7 +103,7 @@ class SupplierController extends AdminController{
 	 * @author han <glghan@sina.com>
 	 */
 	public function editSupplier(){
-		$supplier = M('Supplier','','DB_CONFIG4');
+		$supplier = M('Supplier','','DB_SUPPLIER');
 		
 		if(IS_POST){			
 			$data = $supplier->create();
@@ -138,7 +138,7 @@ class SupplierController extends AdminController{
 	 * @author han <glghan@sina.com>
 	 */
 	public function changeStatus($status='',$id=''){
-		$Supplier = M('Supplier','','DB_CONFIG4');
+		$Supplier = M('Supplier','','DB_SUPPLIER');
 		$data['ID'] = $id;
 		$data['status'] = $status;
 		if($data['status']=='OK'){

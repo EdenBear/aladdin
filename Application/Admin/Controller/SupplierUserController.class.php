@@ -132,7 +132,7 @@ class SupplierUserController extends AdminController {
         }
 
         $prefix = C('DB_PREFIX');
-        $model = M()->db(4,'DB_CONFIG4')->table($prefix.'ucenter_member um')
+        $model = M()->db(4,'DB_SUPPLIER')->table($prefix.'ucenter_member um')
                     ->join($prefix.'member m on m.uid = um.id','left');
         $list   = $this->lists($model, $map,'','m.*,um.username,um.id');
         $this->assign('_list', $list);
@@ -145,7 +145,7 @@ class SupplierUserController extends AdminController {
      * @author huajie <banhuajie@163.com>
      */
     public function updateNickname(){
-        $nickname = M('Member','','DB_CONFIG4')->getFieldByUid(UID, 'nickname');
+        $nickname = M('Member','','DB_SUPPLIER')->getFieldByUid(UID, 'nickname');
         $this->assign('nickname', $nickname);
         $this->meta_title = '修改昵称';
         $this->display('updatenickname');
@@ -160,7 +160,7 @@ class SupplierUserController extends AdminController {
         $nickname = I('post.nickname');
         empty($nickname) && $this->error('请输入昵称');
 
-        $Member =   D('Member','','DB_CONFIG4');
+        $Member =   D('Member','','DB_SUPPLIER');
         $data   =   $Member->create();
         if(!$data){
             $this->error($Member->getError());
@@ -220,7 +220,7 @@ class SupplierUserController extends AdminController {
      */
     public function action(){
         //获取列表数据
-        $Action =   M('Action','','DB_CONFIG4')->where(array('status'=>array('gt',-1)));
+        $Action =   M('Action','','DB_SUPPLIER')->where(array('status'=>array('gt',-1)));
         $list   =   $this->lists($Action);
         int_to_string($list);
         // 记录当前列表页的cookie
@@ -248,7 +248,7 @@ class SupplierUserController extends AdminController {
     public function editAction(){
         $id = I('get.id');
         empty($id) && $this->error('参数不能为空！');
-        $data = M('Action','','DB_CONFIG4')->field(true)->find($id);
+        $data = M('Action','','DB_SUPPLIER')->field(true)->find($id);
 
         $this->assign('data',$data);
         $this->meta_title = '编辑行为';
@@ -262,7 +262,7 @@ class SupplierUserController extends AdminController {
     public function saveAction(){
         $res = $this->update();
         if(!$res){
-            $this->error(M('Action','','DB_CONFIG4')->getError());
+            $this->error(M('Action','','DB_SUPPLIER')->getError());
         }else{
             $this->success($res['id']?'更新成功！':'新增成功！', Cookie('__forward__'));
         }
@@ -275,20 +275,20 @@ class SupplierUserController extends AdminController {
      */
     public function update(){
     	/* 获取数据对象 */
-    	$data = M('Action','','DB_CONFIG4')->create($_POST);
+    	$data = M('Action','','DB_SUPPLIER')->create($_POST);
     	if(empty($data)){
     		return false;
     	}
     
     	/* 添加或新增行为 */
     	if(empty($data['id'])){ //新增数据
-    		$id = M('Action','','DB_CONFIG4')->add(); //添加行为
+    		$id = M('Action','','DB_SUPPLIER')->add(); //添加行为
     		if(!$id){
     			$this->error = '新增行为出错！';
     			return false;
     		}
     	} else { //更新数据
-    		$status = M('Action','','DB_CONFIG4')->save(); //更新基础内容
+    		$status = M('Action','','DB_SUPPLIER')->save(); //更新基础内容
     		if(false === $status){
     			$this->error = '更新行为出错！';
     			return false;
@@ -347,13 +347,13 @@ class SupplierUserController extends AdminController {
     	$id    = array_unique((array)I('id',0));
     	$id    = is_array($id) ? implode(',',$id) : $id;
     	//如存在id字段，则加入该条件
-    	$fields = M($model,'','DB_CONFIG4')->getDbFields();
+    	$fields = M($model,'','DB_SUPPLIER')->getDbFields();
     	if(in_array('id',$fields) && !empty($id)){
     		$where = array_merge( array('id' => array('in', $id )) ,(array)$where );
     	}
     
     	$msg   = array_merge( array( 'success'=>'操作成功！', 'error'=>'操作失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
-    	if( M($model,'','DB_CONFIG4')->where($where)->save($data) ) {
+    	if( M($model,'','DB_SUPPLIER')->where($where)->save($data) ) {
     		$this->success($msg['success'],$msg['url'],$msg['ajax']);
     	}else{
     		$this->error($msg['error'],$msg['url'],$msg['ajax']);
@@ -428,7 +428,7 @@ class SupplierUserController extends AdminController {
             
             $nickname = I('post.nickname');
             $email = I('post.email');
-            $u_m_model = M('ucenter_member','','DB_CONFIG4');
+            $u_m_model = M('ucenter_member','','DB_SUPPLIER');
             
             if($u_m_model->where(array('email'=>$email,'id'=>array('NEQ',NULL)))->find()){
                 
@@ -439,7 +439,7 @@ class SupplierUserController extends AdminController {
             	$this->error('修改失败！');
             }
             
-            $model = M('member','','DB_CONFIG4');
+            $model = M('member','','DB_SUPPLIER');
             
             if(!$model->where(array('uid'=>$id))->save(array('nickname'=>$nickname,'update_time'=>date('Y-m-d H:i:s',time())))){
                 $this->error('修改失败！');
@@ -450,7 +450,7 @@ class SupplierUserController extends AdminController {
         }
         
         $prefix = C('DB_PREFIX');
-        $model = M()->db(4,'DB_CONFIG4')->table($prefix.'member m')
+        $model = M()->db(4,'DB_SUPPLIER')->table($prefix.'member m')
         ->join($prefix.'ucenter_member um on m.uid = um.id');
         
         $data = $model->field(array('m.nickname','um.email'))->where(array('um.id'=>$id))->find();
@@ -474,11 +474,11 @@ class SupplierUserController extends AdminController {
             if(0 < $uid){ //注册成功
                 $user = array('uid' => $uid, 'nickname' => I('nickname'), 'status' => 1);
 
-                if(!M('Member','','DB_CONFIG4')->add($user)){
+                if(!M('Member','','DB_SUPPLIER')->add($user)){
                     $this->error('用户添加失败！');
                 } else {
                 	$data = array('uid' => $uid, 'supplierID' => UID, 'status' => 1,'add_time'=>date('Y-m-d H:i:s',time()));
-                	if(M('member_supplier','','DB_CONFIG4')->add($data)){
+                	if(M('member_supplier','','DB_SUPPLIER')->add($data)){
                     	$this->success('用户添加成功！',U('index'));
                 	}else{
                 		$this->error('用户添加失败！');

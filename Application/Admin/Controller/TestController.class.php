@@ -1,6 +1,7 @@
 <?php
 namespace Admin\Controller;
 use Admin\Controller\AdminController;
+use Think\Model;
 // +----------------------------------------------------------------------
 // | Date:2016年2月23日
 // +----------------------------------------------------------------------
@@ -51,13 +52,18 @@ class TestController extends AdminController{
 //         excel_output($data, $field, $cellfield, $title);
 
 //         $where["ID"] = 0;
-        $join = array(
-            't_order_product ordpro ON ordpro.orderID = ord.ID',
-        );
-        $field = 'ord.*,ordpro.ID as ordproid,ordpro.*';
-        $orderModel = D('Order')->alias('ord')->join($join);
-        $parentOrderData = $this->lists($orderModel,$where,$order='createTime DESC',$field);//获取父订单的编号信息
-        dump($parentOrderData);
+
+//             $j = 50001;
+//             for ($i=0;$i<50000;$i++){
+//                 $add[$i] = array(
+//                     'name'=>'傻逼-'.$j++,
+//                 );
+//             }
+//             $data = $orModel->addAll($add);
+
+
+            
     }
+
     
 }

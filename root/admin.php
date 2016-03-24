@@ -42,7 +42,7 @@ define('CUSTOM_CONF_PATH',      ROOT_PATH.DS.'onethink/');
  * 定义情景配置
  * 正式环境：db_server; 本地开发环境db_local
  */
-define('APP_STATUS','db_server');
+define('APP_STATUS','db_local');
 
 /**
  * 引入核心入口

@@ -42,7 +42,7 @@ class AuthGroupModel extends Model {
     public function getGroups($where=array()){
         $map = array('status'=>1,'type'=>self::TYPE_ADMIN,'module'=>'admin');
         $map = array_merge($map,$where);
-        return $this->db(4,'DB_CONFIG4')->where($map)->select();
+        return $this->db(4,'DB_SUPPLIER')->where($map)->select();
     }
 
     /**
@@ -55,7 +55,7 @@ class AuthGroupModel extends Model {
         $uid = is_array($uid)?implode(',',$uid):trim($uid,',');
         $gid = is_array($gid)?$gid:explode( ',',trim($gid,',') );
 
-        $Access = M(self::AUTH_GROUP_ACCESS,'','DB_CONFIG4');
+        $Access = M(self::AUTH_GROUP_ACCESS,'','DB_SUPPLIER');
         if( isset($_REQUEST['batch']) ){
             //为单个用户批量添加用户组时,先删除旧数据
             $del = $Access->where( array('uid'=>array('in',$uid)) )->delete();
@@ -67,7 +67,7 @@ class AuthGroupModel extends Model {
         if( $del!==false ){
             foreach ($uid_arr as $u){
             	//判断用户id是否合法
-            	if(M('Member','','DB_CONFIG4')->getFieldByUid($u,'uid') == false){
+            	if(M('Member','','DB_SUPPLIER')->getFieldByUid($u,'uid') == false){
             		$this->error = "编号为{$u}的用户不存在！";
             		return false;
             	}
@@ -102,7 +102,7 @@ class AuthGroupModel extends Model {
         if (isset($groups[$uid]))
             return $groups[$uid];
         $prefix = C('DB_PREFIX');
-        $user_groups = M()->db(4,'DB_CONFIG4')
+        $user_groups = M()->db(4,'DB_SUPPLIER')
             ->field('uid,group_id,title,description,rules')
             ->table($prefix.self::AUTH_GROUP_ACCESS.' a')
             ->join ($prefix.self::AUTH_GROUP." g on a.group_id=g.id")
@@ -135,7 +135,7 @@ class AuthGroupModel extends Model {
             return $result;
         }
         $prefix = C('DB_PREFIX');
-        $result = M()->db(4,'DB_CONFIG4')
+        $result = M()->db(4,'DB_SUPPLIER')
             ->table($prefix.self::AUTH_GROUP_ACCESS.' g')
             ->join($prefix.self::AUTH_EXTEND.' c on g.group_id=c.group_id')
             ->where("g.uid='$uid' and c.type='$type' and !isnull(extend_id)")
@@ -176,7 +176,7 @@ class AuthGroupModel extends Model {
         if ( !is_numeric($type) ) {
             return false;
         }
-        return M(self::AUTH_EXTEND,'','DB_CONFIG4')->where( array('group_id'=>$gid,'type'=>$type) )->getfield('extend_id',true);
+        return M(self::AUTH_EXTEND,'','DB_SUPPLIER')->where( array('group_id'=>$gid,'type'=>$type) )->getfield('extend_id',true);
     }
 
     /**
@@ -206,7 +206,7 @@ class AuthGroupModel extends Model {
         $gid = is_array($gid)?implode(',',$gid):trim($gid,',');
         $cid = is_array($cid)?$cid:explode( ',',trim($cid,',') );
 
-        $Access = M(self::AUTH_EXTEND,'','DB_CONFIG4');
+        $Access = M(self::AUTH_EXTEND,'','DB_SUPPLIER');
         $del = $Access->where( array('group_id'=>array('in',$gid),'type'=>$type) )->delete();
 
         $gid = explode(',',$gid);
@@ -248,7 +248,7 @@ class AuthGroupModel extends Model {
      * @author 朱亚杰 <xcoolcc@gmail.com>
      */
     public function removeFromGroup($uid,$gid){
-        return M(self::AUTH_GROUP_ACCESS,'','DB_CONFIG4')->where( array( 'uid'=>$uid,'group_id'=>$gid) )->delete();
+        return M(self::AUTH_GROUP_ACCESS,'','DB_SUPPLIER')->where( array( 'uid'=>$uid,'group_id'=>$gid) )->delete();
     }
 
     /**
@@ -263,7 +263,7 @@ class AuthGroupModel extends Model {
         $l_table  = $prefix.self::MEMBER;
         $r_table  = $prefix.self::AUTH_GROUP_ACCESS;
         $r_table2 = $prefix.self::UCENTER_MEMBER;
-        $list     = M() ->db(4,'DB_CONFIG4')->field('m.uid,u.username,m.last_login_time,m.last_login_ip,m.status')
+        $list     = M() ->db(4,'DB_SUPPLIER')->field('m.uid,u.username,m.last_login_time,m.last_login_ip,m.status')
                        ->table($l_table.' m')
                        ->join($r_table.' a ON m.uid=a.uid')
                        ->join($r_table2.' u ON m.uid=u.id')
@@ -287,7 +287,7 @@ class AuthGroupModel extends Model {
             $ids   = $mid;
         }
 
-        $s = M($modelname,'','DB_CONFIG4')->where(array('id'=>array('IN',$ids)))->getField('id',true);
+        $s = M($modelname,'','DB_SUPPLIER')->where(array('id'=>array('IN',$ids)))->getField('id',true);
         if(count($s)===$count){
             return true;
         }else{

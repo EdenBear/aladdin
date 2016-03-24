@@ -20,7 +20,7 @@ class FreightController extends AdminController{
 	 */
 	public function freightList(){
 		$this->meta_title = '运费模板列表';
-		$list       =   M('freight_tpl','','DB_CONFIG2')->where('status="OK#" and freightType!="NOT"')->select();
+		$list       =   M('freight_tpl','','DB_PRODUCT')->where('status="OK#" and freightType!="NOT"')->select();
 		$request    =   (array)I('request.');
         $total      =   $list? count($list) : 1 ;
         $listRows   =   C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
@@ -43,7 +43,7 @@ class FreightController extends AdminController{
 	public function addFreight(){
 		
 		if(IS_POST){
-			$freight = M('freight_tpl','','DB_CONFIG2');
+			$freight = M('freight_tpl','','DB_PRODUCT');
 			$data = $freight->create();
 			if(!empty($data)){
 				if(!$data['fullStatus']){
@@ -81,7 +81,7 @@ class FreightController extends AdminController{
 	 * @author han <glghan@sina.com>
 	 */
 	public function editFreight(){
-		$freight = M('freight_tpl','','DB_CONFIG2');
+		$freight = M('freight_tpl','','DB_PRODUCT');
 		
 		if(IS_POST){			
             $data = $freight->create();
@@ -120,7 +120,7 @@ class FreightController extends AdminController{
 	 * @author han <glghan@sina.com>
 	 */
 	public function delFreight($id=''){
-		$freight = M('freight_tpl','','DB_CONFIG2');
+		$freight = M('freight_tpl','','DB_PRODUCT');
 		$data['ID'] = $id;
 		$data['status'] = 'DEL';
 		$data['delTime'] = date('Y-m-d H:i:s',time());
@@ -154,7 +154,7 @@ class FreightController extends AdminController{
 			//var_dump($where);exit();
 		}
 		
-		$list       =   M('freight_tpl_except','','DB_CONFIG2')->where($where)->select();
+		$list       =   M('freight_tpl_except','','DB_PRODUCT')->where($where)->select();
 		$request    =   (array)I('request.');
 		$total      =   $list? count($list) : 1 ;
 		$listRows   =   C('LIST_ROWS') > 0 ? C('LIST_ROWS') : 10;
@@ -176,7 +176,7 @@ class FreightController extends AdminController{
 	public function addArea(){
 		$freightID = I('get.id');
 		if(IS_POST){
-			$data = M('freight_tpl_except','','DB_CONFIG2')->create();
+			$data = M('freight_tpl_except','','DB_PRODUCT')->create();
 			if(!empty($data)){
 				if(!$data['fullStatus']){
 					$data['fullStatus'] = 'FOR';
@@ -192,7 +192,7 @@ class FreightController extends AdminController{
 				$data['createTime'] = date('Y-m-d H:i:s',time());
 				$data['updateTime'] = date('Y-m-d H:i:s',time());
 				
-				$id = M('freight_tpl_except','','DB_CONFIG2')->add($data);
+				$id = M('freight_tpl_except','','DB_PRODUCT')->add($data);
 				if($id){
 					session('FREIGHT_TPL_EXCEPT_ADD',null);
 					//记录行为
@@ -202,7 +202,7 @@ class FreightController extends AdminController{
 					$this->error('新增失败');
 				}
 			}else {
-				$this->error(M('freight_tpl_except','','DB_CONFIG2')->getError());
+				$this->error(M('freight_tpl_except','','DB_PRODUCT')->getError());
 			}
 		}
 		$country = M('xbdistrict')->db(3,'DB_CONFIG3')->where('pid=0')->select();
@@ -217,7 +217,7 @@ class FreightController extends AdminController{
 	 * @author han <glghan@sina.com>
 	 */
 	public function editArea(){
-		$areaModel = M('freight_tpl_except','','DB_CONFIG2');
+		$areaModel = M('freight_tpl_except','','DB_PRODUCT');
 		if(IS_POST){
 			$data = $areaModel->create();
 		
@@ -257,7 +257,7 @@ class FreightController extends AdminController{
 	 * @author han <glghan@sina.com>
 	 */
 	public function delArea($id=''){
-		$freight = M('freight_tpl_except','','DB_CONFIG2');
+		$freight = M('freight_tpl_except','','DB_PRODUCT');
 		$data['ID'] = $id;
 		$data['status'] = 'DEL';
 		$data['delTime'] = date('Y-m-d H:i:s',time());

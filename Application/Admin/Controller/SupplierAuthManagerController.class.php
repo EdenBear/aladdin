@@ -27,7 +27,7 @@ class SupplierAuthManagerController extends AdminController{
         //需要新增的节点必然位于$nodes
         $nodes    = $this->returnNodes(false);
 
-        $AuthRule = M('AuthRule','','DB_CONFIG4');
+        $AuthRule = M('AuthRule','','DB_SUPPLIER');
         $map      = array('module'=>'admin','type'=>array('in','1,2'));//status全部取出,以进行更新
         //需要更新和删除的节点必然位于$rules
         $rules    = $AuthRule->where($map)->order('name')->select();
@@ -104,7 +104,7 @@ class SupplierAuthManagerController extends AdminController{
     	$options    =   array();
     	$REQUEST    =   (array)I('request.');
     	if(is_string($model)){
-    		$model  =   M($model,'','DB_CONFIG4');
+    		$model  =   M($model,'','DB_SUPPLIER');
     	}
     
     	$OPT        =   new \ReflectionProperty($model,'options');
@@ -168,7 +168,7 @@ class SupplierAuthManagerController extends AdminController{
      * @author 朱亚杰 <zhuyajie@topthink.net>
      */
     public function editGroup(){
-        $auth_group = M('AuthGroup','','DB_CONFIG4')->where( array('module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
+        $auth_group = M('AuthGroup','','DB_SUPPLIER')->where( array('module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
                                     ->find( (int)$_GET['id'] );
         $this->assign('auth_group',$auth_group);
         $this->meta_title = '编辑用户组';
@@ -182,13 +182,13 @@ class SupplierAuthManagerController extends AdminController{
      */
     public function access(){
         $this->updateRules();
-        $auth_group = M('AuthGroup','','DB_CONFIG4')->where( array('status'=>array('egt','0'),'module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
+        $auth_group = M('AuthGroup','','DB_SUPPLIER')->where( array('status'=>array('egt','0'),'module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
                                     ->getfield('id,id,title,rules');
         $node_list   = $this->returnNodes();
         $map         = array('module'=>'admin','type'=>AuthRuleModel::RULE_MAIN,'status'=>1);
-        $main_rules  = M('AuthRule','','DB_CONFIG4')->where($map)->getField('name,id');
+        $main_rules  = M('AuthRule','','DB_SUPPLIER')->where($map)->getField('name,id');
         $map         = array('module'=>'admin','type'=>AuthRuleModel::RULE_URL,'status'=>1);
-        $child_rules = M('AuthRule','','DB_CONFIG4')->where($map)->getField('name,id');
+        $child_rules = M('AuthRule','','DB_SUPPLIER')->where($map)->getField('name,id');
 
         $this->assign('main_rules', $main_rules);
         $this->assign('auth_rules', $child_rules);
@@ -210,13 +210,13 @@ class SupplierAuthManagerController extends AdminController{
         }
         $_POST['module'] =  'admin';
         $_POST['type']   =  AuthGroupModel::TYPE_ADMIN;
-        $AuthGroup       =  D('AuthGroup','','DB_CONFIG4');
-        $data = $AuthGroup->db(4,'DB_CONFIG4')->create();
+        $AuthGroup       =  D('AuthGroup','','DB_SUPPLIER');
+        $data = $AuthGroup->db(4,'DB_SUPPLIER')->create();
         if ( $data ) {
             if ( empty($data['id']) ) {
-                $r = $AuthGroup->db(4,'DB_CONFIG4')->add();
+                $r = $AuthGroup->db(4,'DB_SUPPLIER')->add();
             }else{
-                $r = $AuthGroup->db(4,'DB_CONFIG4')->save();
+                $r = $AuthGroup->db(4,'DB_SUPPLIER')->save();
             }
             if($r===false){
                 $this->error('操作失败'.$AuthGroup->getError());
@@ -266,13 +266,13 @@ class SupplierAuthManagerController extends AdminController{
     	$id    = array_unique((array)I('id',0));
     	$id    = is_array($id) ? implode(',',$id) : $id;
     	//如存在id字段，则加入该条件
-    	$fields = M($model,'','DB_CONFIG4')->getDbFields();
+    	$fields = M($model,'','DB_SUPPLIER')->getDbFields();
     	if(in_array('id',$fields) && !empty($id)){
     		$where = array_merge( array('id' => array('in', $id )) ,(array)$where );
     	}
     
     	$msg   = array_merge( array( 'success'=>'操作成功！', 'error'=>'操作失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
-    	if( M($model,'','DB_CONFIG4')->where($where)->save($data) ) {
+    	if( M($model,'','DB_SUPPLIER')->where($where)->save($data) ) {
     		$this->success($msg['success'],$msg['url'],$msg['ajax']);
     	}else{
     		$this->error($msg['error'],$msg['url'],$msg['ajax']);
@@ -345,12 +345,12 @@ class SupplierAuthManagerController extends AdminController{
             $this->error('参数错误');
         }
 
-        $auth_group = M('AuthGroup','','DB_CONFIG4')->where( array('status'=>array('egt','0'),'module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
+        $auth_group = M('AuthGroup','','DB_SUPPLIER')->where( array('status'=>array('egt','0'),'module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
             ->getfield('id,id,title,rules');
         $prefix   = C('DB_PREFIX');
         $l_table  = $prefix.(AuthGroupModel::MEMBER);
         $r_table  = $prefix.(AuthGroupModel::AUTH_GROUP_ACCESS);
-        $model    = M()->db(4,'DB_CONFIG4')->table( $l_table.' m' )->join ( $r_table.' a ON m.uid=a.uid' );
+        $model    = M()->db(4,'DB_SUPPLIER')->table( $l_table.' m' )->join ( $r_table.' a ON m.uid=a.uid' );
         $_REQUEST = array();
         $list = $this->lists($model,array('a.group_id'=>$group_id,'m.status'=>array('egt',0)),'m.uid asc','m.uid,m.nickname,m.last_login_time,m.last_login_ip,m.status');
         int_to_string($list);
@@ -366,7 +366,7 @@ class SupplierAuthManagerController extends AdminController{
      * @author 朱亚杰 <zhuyajie@topthink.net>
      */
     public function category(){
-        $auth_group     =   M('AuthGroup','','DB_CONFIG4')->where( array('status'=>array('egt','0'),'module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
+        $auth_group     =   M('AuthGroup','','DB_SUPPLIER')->where( array('status'=>array('egt','0'),'module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
             ->getfield('id,id,title,rules');
         $group_list     =   D('Category')->getTree();
         $authed_group   =   AuthGroupModel::getCategoryOfGroup(I('group_id'));
@@ -389,13 +389,13 @@ class SupplierAuthManagerController extends AdminController{
      */
     public function group(){
         $uid            =   I('uid');
-        $auth_groups    =   D('AuthGroup','','DB_CONFIG4')->getGroups();
+        $auth_groups    =   D('AuthGroup','','DB_SUPPLIER')->getGroups();
         $user_groups    =   AuthGroupModel::getUserGroup($uid);
         $ids = array();
         foreach ($user_groups as $value){
             $ids[]      =   $value['group_id'];
         }
-        $nickname       =   D('Member','','DB_CONFIG4')->getNickName($uid);
+        $nickname       =   D('Member','','DB_SUPPLIER')->getNickName($uid);
         $this->assign('nickname',   $nickname);
         $this->assign('auth_groups',$auth_groups);
         $this->assign('user_groups',implode(',',$ids));
@@ -413,12 +413,12 @@ class SupplierAuthManagerController extends AdminController{
         if( empty($uid) ){
             $this->error('参数有误');
         }
-        $AuthGroup = D('AuthGroup','','DB_CONFIG4');
+        $AuthGroup = D('AuthGroup','','DB_SUPPLIER');
         if(is_numeric($uid)){
             if ( is_administrator($uid) ) {
                 $this->error('该用户为超级管理员');
             }
-            if( !M('Member','','DB_CONFIG4')->where(array('uid'=>$uid))->find() ){
+            if( !M('Member','','DB_SUPPLIER')->where(array('uid'=>$uid))->find() ){
                 $this->error('用户不存在');
             }
         }
@@ -446,7 +446,7 @@ class SupplierAuthManagerController extends AdminController{
         if( empty($uid) || empty($gid) ){
             $this->error('参数有误');
         }
-        $AuthGroup = D('AuthGroup','','DB_CONFIG4');
+        $AuthGroup = D('AuthGroup','','DB_SUPPLIER');
         if( !$AuthGroup->find($gid)){
             $this->error('用户组不存在');
         }
@@ -467,7 +467,7 @@ class SupplierAuthManagerController extends AdminController{
         if( empty($gid) ){
             $this->error('参数有误');
         }
-        $AuthGroup = D('AuthGroup','','DB_CONFIG4');
+        $AuthGroup = D('AuthGroup','','DB_SUPPLIER');
         if( !$AuthGroup->find($gid)){
             $this->error('用户组不存在');
         }
@@ -491,7 +491,7 @@ class SupplierAuthManagerController extends AdminController{
         if( empty($gid) ){
             $this->error('参数有误');
         }
-        $AuthGroup = D('AuthGroup','','DB_CONFIG4');
+        $AuthGroup = D('AuthGroup','','DB_SUPPLIER');
         if( !$AuthGroup->find($gid)){
             $this->error('用户组不存在');
         }

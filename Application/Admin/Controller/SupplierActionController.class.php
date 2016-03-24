@@ -37,7 +37,7 @@ class SupplierActionController extends AdminController {
     	$options    =   array();
     	$REQUEST    =   (array)I('request.');
     	if(is_string($model)){
-    		$model  =   M($model,'','DB_CONFIG4');
+    		$model  =   M($model,'','DB_SUPPLIER');
     	}
     
     	$OPT        =   new \ReflectionProperty($model,'options');
@@ -91,7 +91,7 @@ class SupplierActionController extends AdminController {
     public function edit($id = 0){
         empty($id) && $this->error('参数错误！');
 
-        $info = M('ActionLog','','DB_CONFIG4')->field(true)->find($id);
+        $info = M('ActionLog','','DB_SUPPLIER')->field(true)->find($id);
 
         $this->assign('info', $info);
         $this->meta_title = '查看行为日志';
@@ -110,7 +110,7 @@ class SupplierActionController extends AdminController {
         }elseif (is_numeric($ids)){
             $map['id'] = $ids;
         }
-        $res = M('ActionLog','','DB_CONFIG4')->where($map)->delete();
+        $res = M('ActionLog','','DB_SUPPLIER')->where($map)->delete();
         if($res !== false){
             $this->success('删除成功！');
         }else {
@@ -122,7 +122,7 @@ class SupplierActionController extends AdminController {
      * 清空日志
      */
     public function clear(){
-        $res = M('ActionLog','','DB_CONFIG4')->where('1=1')->delete();
+        $res = M('ActionLog','','DB_SUPPLIER')->where('1=1')->delete();
         if($res !== false){
             $this->success('日志清空成功！');
         }else {

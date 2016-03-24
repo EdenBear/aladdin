@@ -55,9 +55,15 @@
 	    
 	    <link rel="stylesheet" href="__STATIC__/artDialog/skins/simple.css">
 	    <script src="__STATIC__/artDialog/jquery.artDialog.js"></script>
-	    
-	    
-	    
+
+        <!-- datepicker -->
+        <link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">
+        <link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+        <script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+	    <!-- uploadify -->
+	    <link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
+        <script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
     </head>
     
     <body class="skin-2">
@@ -323,15 +329,10 @@
         <script src="__ACE__/js/toastr.js"></script>
         
 
-        <link rel="stylesheet" type="text/css" href="__STATIC__/uploadify/uploadify.css" />
-        
-        <!-- datepicker -->
-        <link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">
-        <link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
-        <script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
-        <script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 
         
+
+	    <script src="__STATIC__/artDialog/plugins/iframeTools.js"></script>
 	    <script type="text/javascript" src="__JS__/common.js"></script>
 	    <script type="text/javascript" src="__STATIC__/common.js"></script>
 	    <script type="text/javascript">
@@ -370,7 +371,8 @@
 	    	    language:"zh-CN",
 	    	    minView:2,
 	    	    autoclose:true
-	    	});    		
+	    	});  
+  	    	  		
 	    </script>
 	    <block name="script"></block>
     </body>

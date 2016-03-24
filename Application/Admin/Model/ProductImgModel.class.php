@@ -98,6 +98,7 @@ class ProductImgModel extends Model{
     function amjImgbyPorid($proid){
         $where['productID'] = $proid;
         $where['imgPos'] = 'MAJ';
+        $where['status'] = 'OK#';
         $url = $this->where($where)->getField('imgPath');
         return qiniu_private_url($url);
     }

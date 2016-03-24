@@ -37,7 +37,7 @@ class MemberController extends AdminController{
         
 
         $prefix = C('DB_PREFIX');
-        $model = M()->db(2,'DB_CONFIG2')->table($prefix.'user u')
+        $model = M()->db(2,'DB_PRODUCT')->table($prefix.'user u')
                     ->join($prefix.'wx_user ua on ua.mqID = u.mqID','left')
                     ->join('aladdin_account.t_account_cash a on a.mqId=u.mqID','left')
         			->join('aladdin_other.t_fxyq_vertical_relation f on f.distributionUserId=u.mqID','left');
@@ -59,7 +59,7 @@ class MemberController extends AdminController{
 			$data= M('fxyq_vertical_relation','','DB_CONFIG3')->field('distributionUserId')
 			->where('id='.$pid)->select();			
 			$mqID = $data[0]['distributionuserid'];			
-			$parent = M('user','','DB_CONFIG2')->field('nickName')->where('mqID='.$mqID)->select();
+			$parent = M('user','','DB_PRODUCT')->field('nickName')->where('mqID='.$mqID)->select();
 			echo json_encode($parent);
 		}else{
 			echo json_encode(null);
